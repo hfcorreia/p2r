@@ -11,7 +11,7 @@
 
 (define-empty-tokens terminator (EOF))
 
-(define-tokens container (NUM))
+(define-tokens literals (integer real))
 
 ; Lexer
 (define lex
@@ -20,5 +20,5 @@
     ("-"     (token--))
     ("*"     (token-*))
     ("/"     (token-/))
-    (numeric (token-NUM (string->number lexeme)))
+    (numeric (token-integer (string->number lexeme)))
     ((eof)   (token-EOF))))

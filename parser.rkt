@@ -8,15 +8,18 @@
    (start expr)
    (end EOF)
    (error void)
-   (tokens operators container terminator)
-   (precs (left * /)
-          (left + -))
+   (tokens operators literals terminator)
+   (precs (left + -)
+          (left * /))
    (grammar
-    (expr ((NUM)          (make-num-exp $1))
-         ((expr + expr)   (make-arith-exp + $1 $3))
-         ((expr - expr)   (make-arith-exp - $1 $3))
-         ((expr * expr)   (make-arith-exp * $1 $3))
-         ((expr / expr)   (make-arith-exp / $1 $3))))))
+    (expr ((integer)      $1)
+         ((expr + expr)   (printer + $1 $3))
+         ((expr - expr)   (printer - $1 $3))
+         ((expr * expr)   (printer * $1 $3))
+         ((expr / expr)   (printer / $1 $3))))))
          
-
-
+(define-syntax-rule 
+  (printer op ...)
+  (begin
+    (displayln (list op ...))
+    (eval (op ...))))
