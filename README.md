@@ -1,19 +1,22 @@
-## Available Tokens
+#Processing 2 Racket
+Implementation of the Processing Language in DrRacket.
 
-### Binary Operators
+---
+Reflects the current state that the parser supports!
+#Available Tokens
+
+##Binary Operators
 * + - * /
 
-### Literals
+##Literals
 * integer
-* real
-* string
+* float
 * char
 
 
-## Grammar
+#Grammar
 
-
-
+###BNF
 Expr    : integer
         | Expr + Expr
         | Expr - Expr
@@ -23,7 +26,7 @@ Expr    : integer
 
 
 
-Precedence rules:
+###Precedence rules:
 
 left : + -
 left : * /
