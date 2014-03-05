@@ -15,7 +15,7 @@
        (define-struct name fields #:mutable #:transparent))]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; AST struct definition
+;;; AST struct definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -24,3 +24,9 @@
 
 ;;; (make-num-exp (number))
 (p-define-struct num-exp (number))
+
+;;; (make-stmts (stmt stmts))
+(p-define-struct stmts (stmt stmts))
+
+;;; (make-stmt (stmt))
+(p-define-struct stmt (stmt))
