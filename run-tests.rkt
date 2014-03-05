@@ -1,25 +1,33 @@
 #lang racket
 
-(require rackunit
-         rackunit/text-ui)
+(require rackunit/text-ui
+         rackunit
+         "parser.rkt"
+         "lexer.rkt"
+         "ast.rkt")
 
-(run-tests
-(test-suite
- "Test integer literals"
- 
- 
- #:before (lambda () (displayln "Testing integer literals"))
+(define (parse input)
+  (simple-parser (lambda()(lex input))))
 
- (test-case
-  "Decimal tests"
-  (check-eq? 1 2))
- 
- (test-case
-  "Decimal tests2"
-  (check-eq? 1 2))))
+;;; Macro to generate a test case
+(define-syntax-rule
+  (new-test-case description input expected)
+  (test-case
+   description
+   (check-equal? (parse (open-input-string input)) expected)))
 
-; Test with whitespaces, CR, line feed, etc
-; Test with octal, hexadecimal, etc notations
-; Test with test with parentisis
-; Test with delimitator(Semicolon,etc)
-; Test with variable atribution
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test suites
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define-test-suite integers-literals
+  (new-test-case "Binary literal" "0b1111;" (stmt (num-exp 15)))
+  (new-test-case "Octal literal" "077;" (stmt (num-exp 63)))
+  (new-test-case "Decimal literal"  "112;" (stmt (num-exp 112))) 
+  (new-test-case "Long literal" "10L;" (stmt (num-exp 10)))
+  (new-test-case "Octal Long literal" "077L;" (stmt (num-exp 63)))
+  (new-test-case "Hexadecimal Long literal" "0xFFl;" (stmt (num-exp 255)))
+  (new-test-case "Hexadecimal literal" "0xFF;" (stmt (num-exp 255))))
+
+
+;;; Run test suites
+(run-tests integers-literals)
