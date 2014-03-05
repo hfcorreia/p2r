@@ -2,7 +2,7 @@
 Implementation of the Processing Language in DrRacket.
 
 ---
-Reflects the current state that the parser supports!
+Reflects the current state of parser!
 #Available Tokens
 
 ##Binary Operators
@@ -13,20 +13,27 @@ Reflects the current state that the parser supports!
 * float
 * char
 
+##Seperators
+* semicolon
 
 #Grammar
 
 ###BNF
-Expr    : integer
-        | Expr + Expr
-        | Expr - Expr
-        | Expr * Expr
-        | Expr / Expr
-        ;
+stmts   : stmt  
+        | stmt stmts  
+        ;  
 
+stmt    : expr semicolon  
+        ;  
 
+expr    : integer  
+        | expr + expr  
+        | expr - expr  
+        | expr * expr  
+        | expr / expr  
+        ;  
 
 ###Precedence rules:
 
-left : + -
-left : * /
+left : + -  
+left : * /  
