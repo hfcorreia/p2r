@@ -11,6 +11,7 @@ Reflects the current state of parser!
 ##Literals
 * integer
 * float
+* double
 * char
 
 ##Seperators
@@ -27,6 +28,8 @@ stmt    : expr semicolon
         ;  
 
 expr    : integer  
+        | float
+        | double
         | expr + expr  
         | expr - expr  
         | expr * expr  

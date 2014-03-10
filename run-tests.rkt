@@ -29,5 +29,24 @@
   (new-test-case "Hexadecimal literal" "0xFF;" (stmt (num-exp 255))))
 
 
+(define-test-suite float-literals
+  (new-test-case "NUM.f" "2.f;" (stmt (num-exp 2.0)))
+  (new-test-case "Exponent" "1e1f;" (stmt (num-exp 10.0)))
+  (new-test-case "NUM.NUMf" "3.14f;" (stmt (num-exp 3.14)))
+  (new-test-case "Positive exponent" "6.02e+2f;" (stmt (num-exp 602.0)))
+  (new-test-case "Float literal" "6.02E-2f;" (stmt (num-exp 0.0602)))
+  (new-test-case "Float literal" ".3f;" (stmt (num-exp .3))))
+
+(define-test-suite double-literals
+  (new-test-case "NUM.d" "2.d;" (stmt (num-exp 2.0)))
+  (new-test-case "Exponent" "1e1D;" (stmt (num-exp 10.0)))
+  (new-test-case "NUM.NUMd" "3.14D;" (stmt (num-exp 3.14)))
+  (new-test-case "Positive exponent" "6.02e+2d;" (stmt (num-exp 602.0)))
+  (new-test-case "Negative exponent" "6.02E-2D;" (stmt (num-exp 0.0602))))
+
 ;;; Run test suites
-(run-tests integers-literals)
+(define test-suites 
+  (list integers-literals float-literals double-literals))
+
+(map run-tests test-suites)
+

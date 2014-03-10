@@ -12,7 +12,9 @@
   (parser
    (start stmts)
    (end EOF)
-   (error void)
+   (error 
+    (lambda (tok-ok? tok-name tok-value)
+      (displayln (format "~a ~a ~a" tok-ok? tok-name tok-value))))
    (tokens operators literals seperators terminators)
    (precs (left + -)
           (left * /))
@@ -21,7 +23,9 @@
            ((stmt stmts)     (make-stmts $1 $2))) 
     (stmt  ((expr semicolon) (make-stmt $1)))
     
-    (expr  ((integer)        (make-num-exp $1))
+    (expr  ((float)          (make-num-exp $1))
+           ((integer)        (make-num-exp $1))
+           ((double)         (make-num-exp $1))
            ((expr + expr)    (make-arith-exp + $1 $3))
            ((expr - expr)    (make-arith-exp - $1 $3))
            ((expr * expr)    (make-arith-exp * $1 $3))
