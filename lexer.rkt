@@ -25,7 +25,7 @@
   (EOF))
 
 (define-tokens literals 
-  (integer float double char))
+  (integer float double char boolean))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
@@ -69,6 +69,10 @@
    ("-"      (token--))
    ("*"      (token-*))
    ("/"      (token-/))
+   
+   ;; boolean
+   ("true"   (token-boolean #t))
+   ("false"  (token-boolean #f))
    
    ;; integers
    (binary     

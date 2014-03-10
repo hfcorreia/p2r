@@ -13,6 +13,7 @@ Reflects the current state of parser!
 * float
 * double
 * char
+* boolean
 
 ##Seperators
 * semicolon
@@ -30,6 +31,7 @@ stmt    : expr semicolon
 expr    : integer  
         | float
         | double
+        | boolean
         | expr + expr  
         | expr - expr  
         | expr * expr  
