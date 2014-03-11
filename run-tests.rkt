@@ -47,13 +47,19 @@
   (new-test-case "true" "true;" (stmt (num-exp #t)))
   (new-test-case "false" "false;" (stmt (num-exp #f))))
 
+(define-test-suite char-literals
+  (new-test-case "simple char letter" "'a';" (stmt (num-exp #\a)))
+  (new-test-case "tab escaped sequence" "'\\t';" (stmt (num-exp #\tab)))
+  (new-test-case "quotation escaped sequence" "'\\\"';" (stmt (num-exp #\"))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Run test suites
 (define test-suites 
   (list integers-literals 
         float-literals 
         double-literals
-        boolean-literals))
+        boolean-literals
+        char-literals))
 
 (map run-tests test-suites)
 

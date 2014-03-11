@@ -5,14 +5,6 @@
 
 (provide (all-defined-out))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Aux funtions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Trims a string given 2 offsets
-(define (trim-string string left right)
-  (substring string left (- (string-length string) right)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Tokens definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-empty-tokens operators 
@@ -37,12 +29,12 @@
   (float-suf   (char-set "fF"))
   (double-suf  (char-set "dD"))
   (long-suf    (char-set "lL"))
-  (hex-digits  (re:/ "09" "af" "AF"))
+  (hex-digit   (re:/ "09" "af" "AF"))
   
   ;; integer literals
   (binary      (re:: #\0 "b" (re:+ (re:/ "01"))))
   (octal       (re:: #\0 (re:+ (re:/ "07"))))
-  (hexa        (re:: #\0 (char-set "xX") (re:+ hex-digits )))
+  (hexa        (re:: #\0 (char-set "xX") (re:+ hex-digit )))
   (decimal     (re:or #\0 (re:: (re:/ "19") (re:* (re:/ "09")))))
   
   ;; float literals
@@ -50,6 +42,13 @@
   (float-b     (re:: #\. digits (re:? exponent)))
   (float-c     (re:: digits (re:? exponent)))
   (exponent    (re:: (char-set "eE") (re:? (char-set "+-")) digits))
+  
+  ;; char literals
+  (char        (re:: #\' (re:~ whitespace #\' #\\) #\'))
+  (escape-seq  (re:or "\\b" "\\t" "\\n" "\\f" "\\r" "\\\"" "\\'" "\\\\"))
+  
+  
+ 
   
   )
 
@@ -60,6 +59,7 @@
   (lexer
    ;; whitespaces, linefeeds, newline, etc
    (whitespace (lex input-port))
+   (blank      (lex input-port))
    
    ;; seperators
    (";"      (token-semicolon))
@@ -96,5 +96,30 @@
    ((re:: (re:or float-a float-b float-c) double-suf)
     (token-double (string->number (trim-string lexeme 0 1) 10)))
    
+   ;; chars
+   (char         (token-char (string-ref lexeme 1)))
+   ((re:: #\' escape-seq #\')   
+    (token-char (escape->char (trim-string lexeme 1 1))))
+   
    ;; terminators
    ((eof)    (token-EOF))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Aux funtions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Trims a string given 2 offsets
+(define (trim-string string left right)
+  (substring string left (- (string-length string) right)))
+
+;;; Converts escape sequences to char
+(define (escape->char es)
+  (cond
+    ((string=? es "\\b") #\backspace)
+    ((string=? es "\\t") #\tab)
+    ((string=? es "\\r") #\return)
+    ((string=? es "\\n") #\newline)
+    ((string=? es "\\f") #\page)
+    ((string=? es "\\\"") #\")
+    ((string=? es "\\'") #\')
+    ((string=? es "\\\\'") #\\)))

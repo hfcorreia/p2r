@@ -32,6 +32,7 @@ expr    : integer
         | float
         | double
         | boolean
+        | char
         | expr + expr  
         | expr - expr  
         | expr * expr  
