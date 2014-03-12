@@ -43,4 +43,14 @@
      ((string-lit)         $1)
      ((char-lit)           $1)
      ((null-lit)           null))
+    
+    ;; name
+    ;; TODO: create ast structure for identifiers
+    (name
+     ((identifier)         $1)
+     ((qualified-name)     $1))
+    
+    (qualified-name
+     ((name period identifier) $1))
+     
     )))

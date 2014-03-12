@@ -14,7 +14,7 @@
         +=   -=   *=   /=    &=   |=    ^=    %=    <<=    >>=    >>>=))
 
 (define-empty-tokens keywords
-  (abstract    continue    for           new          switch
+  (abstract    continue    for          new          switch
                assert      default     if            package      synchronized
                boolean     do          goto          private      this
                break       double      implements    protected    throw
@@ -35,7 +35,7 @@
   (EOF null-lit))
 
 (define-tokens literals 
-  (integer-lit float-lit double-lit char-lit boolean-lit string-lit))
+  (identifier integer-lit float-lit double-lit char-lit boolean-lit string-lit))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
@@ -86,6 +86,10 @@
         "=="   "<="   ">="   "!="    "&&"   "||"    "++"    "--"
         "+"    "-"    "*"   "/"     "&"    "|"     "^"     "%"     "<<"     ">>"     ">>>"
         "+="   "-="   "*="  "/="    "&="   "|="    "^="    "%="    "<<="    ">>="    ">>>="))
+  
+  ;; identifier
+  (identifier     (re:: (re:or (re:/ "Az" "az") "_" "$")
+                         (re:*  (re:or (re:/ "Az" "az" "09") "_" "$")))) 
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -150,6 +154,9 @@
    
    ;; keywords
    (keyword        (string->symbol lexeme))
+   
+   ;; identifiers
+   (identifier     (token-identifier lexeme))
    
    ;; terminator
    ((eof)    (token-EOF))))
