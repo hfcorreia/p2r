@@ -31,8 +31,8 @@
    l-cbrack r-cbrack
    l-sbrack r-sbrack))
 
-(define-empty-tokens terminators 
-  (EOF))
+(define-empty-tokens empty-literals 
+  (EOF null-lit))
 
 (define-tokens literals 
   (integer-lit float-lit double-lit char-lit boolean-lit string-lit))
@@ -69,6 +69,7 @@
   ;; string literals
   (string      (re:: #\" (re:* (re:~ #\" )) #\"))
   
+  
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -90,7 +91,6 @@
    ("}"      (token-r-cbrack))
    ("["      (token-l-sbrack))
    ("]"      (token-r-sbrack))
-   
    
    ;; operators
    ("+"      (token-+))
@@ -132,7 +132,10 @@
    ;; strings
    (string          (token-string-lit (build-string lexeme)))
    
-   ;; terminators
+   ;; null
+   ("null"          (token-null-lit))
+   
+   ;; terminator
    ((eof)    (token-EOF))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

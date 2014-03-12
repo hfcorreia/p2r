@@ -15,7 +15,7 @@
    (error 
     (lambda (tok-ok? tok-name tok-value)
       (displayln (format "~a ~a ~a" tok-ok? tok-name tok-value))))
-   (tokens operators literals seperators terminators)
+   (tokens operators literals seperators keywords empty-literals)
    (precs (left + -)
           (left * /))
    (grammar
