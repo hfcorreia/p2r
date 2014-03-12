@@ -20,15 +20,15 @@
           (left * /))
    
    (grammar
-    (stmts 
+    (stmts
      ((stmt)           $1)
      ((stmt stmts)     (make-stmts $1 $2))) 
     
-    (stmt  
+    (stmt
      ((expr semicolon) (make-stmt $1)))
     
     (expr  
-     ((literals)         (make-num-exp $1))
+     ((literals)       (make-num-exp $1))
      ((expr + expr)    (make-arith-exp + $1 $3))
      ((expr - expr)    (make-arith-exp - $1 $3))
      ((expr * expr)    (make-arith-exp * $1 $3))

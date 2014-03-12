@@ -9,27 +9,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-empty-tokens operators 
   (=    >    <    !     ~    ?     :
-   ==   <=   >=   !=    &&   ||    ++    --
-   +    -    *    /     &    |     ^     %     <<     >>     >>>
-   +=   -=   *=   /=    &=   |=    ^=    %=    <<=    >>=    >>>=))
+        ==   <=   >=   !=    &&   ||    ++    --
+        +    -    *    /     &    |     ^     %     <<     >>     >>>
+        +=   -=   *=   /=    &=   |=    ^=    %=    <<=    >>=    >>>=))
 
 (define-empty-tokens keywords
   (abstract    continue    for           new          switch
-   assert      default     if            package      synchronized
-   boolean     do          goto          private      this
-   break       double      implements    protected    throw
-   byte        else        import        public       throws
-   case        enum        instanceof    return       transient
-   catch       extends     int           short        try
-   char        final       interface     static       void 
-   class       finally     long          strictfp     volatile
-   const       float       native        super        while))
+               assert      default     if            package      synchronized
+               boolean     do          goto          private      this
+               break       double      implements    protected    throw
+               byte        else        import        public       throws
+               case        enum        instanceof    return       transient
+               catch       extends     int           short        try
+               char        final       interface     static       void 
+               class       finally     long          strictfp     volatile
+               const       float       native        super        while))
 
 (define-empty-tokens seperators
   (semicolon period comma
-   l-paren  r-paren
-   l-cbrack r-cbrack
-   l-sbrack r-sbrack))
+             l-paren  r-paren
+             l-cbrack r-cbrack
+             l-sbrack r-sbrack))
 
 (define-empty-tokens empty-literals 
   (EOF null-lit))
@@ -69,7 +69,23 @@
   ;; string literals
   (string      (re:: #\" (re:* (re:~ #\" )) #\"))
   
+  ;; keywords
+  (keyword     (re:or "abstract"    "continue"    "for"           "new"          "switch"
+                      "assert"      "default"     "if"            "package"      "synchronized"
+                      "boolean"     "do"          "goto"          "private"      "this"
+                      "break"       "double"      "implements"    "protected"    "throw"
+                      "byte"        "else"        "import"        "public"       "throws"
+                      "case"        "enum"        "instanceof"    "return"       "transient" 
+                      "catch"       "extends"     "int"           "short"        "try"
+                      "char"        "final"       "interface"     "static"       "void"
+                      "class"       "finally"     "long"          "strictfp"     "volatile"
+                      "const"       "float"       "native"        "super"        "while"))
   
+  ;; operator
+  (operator   (re:or "="    ">"    "<"    "!"     "~"    "?"     ":"
+        "=="   "<="   ">="   "!="    "&&"   "||"    "++"    "--"
+        "+"    "-"    "*"   "/"     "&"    "|"     "^"     "%"     "<<"     ">>"     ">>>"
+        "+="   "-="   "*="  "/="    "&="   "|="    "^="    "%="    "<<="    ">>="    ">>>="))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -78,8 +94,8 @@
 (define lex
   (lexer
    ;; whitespaces, linefeeds, newline, etc
-   (whitespace (lex input-port))
-   (blank      (lex input-port))
+   ((re:+ whitespace) (lex input-port))
+   ((re:+ blank)      (lex input-port))
    
    ;; seperators
    (";"      (token-semicolon))
@@ -93,10 +109,7 @@
    ("]"      (token-r-sbrack))
    
    ;; operators
-   ("+"      (token-+))
-   ("-"      (token--))
-   ("*"      (token-*))
-   ("/"      (token-/))
+   (operator     (string->symbol lexeme))
    
    ;; boolean
    ("true"   (token-boolean-lit #t))
@@ -134,6 +147,9 @@
    
    ;; null
    ("null"          (token-null-lit))
+   
+   ;; keywords
+   (keyword        (string->symbol lexeme))
    
    ;; terminator
    ((eof)    (token-EOF))))
