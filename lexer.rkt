@@ -17,7 +17,7 @@
   (EOF))
 
 (define-tokens literals 
-  (integer float double char boolean))
+  (integer float double char boolean string))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
@@ -45,10 +45,11 @@
   
   ;; char literals
   (char        (re:: #\' (re:~ whitespace #\' #\\) #\'))
-  (escape-seq  (re:or "\\b" "\\t" "\\n" "\\f" "\\r" "\\\"" "\\'" "\\\\"))
-  
-  
- 
+  (escape-seq  (re:or "\\b" "\\t" "\\n" "\\f" "\\r" "\\\"" "\\'" "\\\\"
+                      (re:: #\\ (re:? (re:/ "03")) (re:/ "07") (re:/ "07"))
+                      (re:: #\\ (re:/ "07"))))
+  ;; string literals
+  (string      (re:: #\" (re:* (re:~ #\" )) #\"))
   
   )
 
@@ -88,7 +89,7 @@
    ((re:: hexa long-suf)
     (token-integer (string->number (trim-string lexeme 2 1) 16)))
    ((re:: octal long-suf)
-         (token-integer (string->number (trim-string lexeme 0 1)  8)))
+    (token-integer (string->number (trim-string lexeme 0 1)  8)))
    
    ;; floats
    ((re:: (re:or float-a float-b float-c) float-suf)
@@ -101,8 +102,41 @@
    ((re:: #\' escape-seq #\')   
     (token-char (escape->char (trim-string lexeme 1 1))))
    
+   ;; strings
+   (string         (token-string (build-string lexeme)))
+   
    ;; terminators
    ((eof)    (token-EOF))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; String lexer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define-tokens str-tokens
+  (str-end str-char))
+
+(define-empty-tokens empty-str-tokens
+  (str-eof))
+
+(define (build-string input)
+  (define (build-string-aux input-port)
+    (let ((token (string-lex input-port)))
+      (if (eq? (token-name token)
+               'str-eof)
+          (list)
+          (let ((value (if (char? (token-value token))
+                           (make-string 1 (token-value token))
+                           (token-value token))))
+            (cons value (build-string-aux input-port))))))
+  (string-append* "" (build-string-aux (open-input-string input))))
+
+(define string-lex
+  (lexer
+   (#\"          (string-lex input-port))
+   (escape-seq   (token-str-char (escape->char lexeme)))
+   ((re:~ #\")   (token-str-char lexeme))
+   (whitespace   (token-str-char lexeme))
+   (blank        (token-str-char lexeme))
+   ((eof)        (token-str-eof))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Aux funtions
@@ -115,11 +149,12 @@
 ;;; Converts escape sequences to char
 (define (escape->char es)
   (cond
-    ((string=? es "\\b") #\backspace)
-    ((string=? es "\\t") #\tab)
-    ((string=? es "\\r") #\return)
-    ((string=? es "\\n") #\newline)
-    ((string=? es "\\f") #\page)
+    ((string=? es "\\b") #\010)
+    ((string=? es "\\t") #\011)
+    ((string=? es "\\n") #\012)
+    ((string=? es "\\f") #\014)
+    ((string=? es "\\r") #\015)
     ((string=? es "\\\"") #\")
     ((string=? es "\\'") #\')
-    ((string=? es "\\\\'") #\\)))
+    ((string=? es "\\\\") #\\)
+    (else (integer->char (string->number (trim-string es 1 0)) 8))))

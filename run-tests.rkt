@@ -52,14 +52,23 @@
   (new-test-case "tab escaped sequence" "'\\t';" (stmt (num-exp #\tab)))
   (new-test-case "quotation escaped sequence" "'\\\"';" (stmt (num-exp #\"))))
 
+(define-test-suite string-literals
+  (new-test-case "empty string" "\"\";" (stmt (num-exp "")))
+  (new-test-case "blobs string" "\"blobs\";" (stmt (num-exp "blobs")))
+  (new-test-case "with spaces" "\"s pa ces \";" (stmt (num-exp "s pa ces ")))
+  (new-test-case "with spaces" "\"s pa ces \n\";" (stmt (num-exp "s pa ces \n")))
+  (new-test-case "with escape" "\" \\n\";" (stmt (num-exp " \n"))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Run test suites
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define test-suites 
   (list integers-literals 
         float-literals 
         double-literals
         boolean-literals
-        char-literals))
+        char-literals
+        string-literals))
 
 (map run-tests test-suites)
 
