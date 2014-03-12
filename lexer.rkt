@@ -8,7 +8,10 @@
 ;;; Tokens definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-empty-tokens operators 
-  ( + - * / ))
+  (=    >    <    !     ~    ?     :
+   ==   <=   >=   !=    &&   ||    ++    --
+   +    -    *    /     &    |     ^     %     <<     >>     >>>
+   +=   -=   *=   /=    &=   |=    ^=    %=    <<=    >>=    >>>=))
 
 (define-empty-tokens keywords
   (abstract    continue    for           new          switch
@@ -23,7 +26,10 @@
    const       float       native        super        while))
 
 (define-empty-tokens seperators
-  (semicolon))
+  (semicolon period comma
+   l-paren  r-paren
+   l-cbrack r-cbrack
+   l-sbrack r-sbrack))
 
 (define-empty-tokens terminators 
   (EOF))
@@ -76,6 +82,15 @@
    
    ;; seperators
    (";"      (token-semicolon))
+   ("."      (token-period))
+   (","      (token-comma))
+   ("("      (token-l-paren))
+   (")"      (token-r-paren))
+   ("{"      (token-l-cbrack))
+   ("}"      (token-r-cbrack))
+   ("["      (token-l-sbrack))
+   ("]"      (token-r-sbrack))
+   
    
    ;; operators
    ("+"      (token-+))
