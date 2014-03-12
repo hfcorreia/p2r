@@ -10,6 +10,18 @@
 (define-empty-tokens operators 
   ( + - * / ))
 
+(define-empty-tokens keywords
+  (abstract    continue    for           new          switch
+   assert      default     if            package      synchronized
+   boolean     do          goto          private      this
+   break       double      implements    protected    throw
+   byte        else        import        public       throws
+   case        enum        instanceof    return       transient
+   catch       extends     int           short        try
+   char        final       interface     static       void 
+   class       finally     long          strictfp     volatile
+   const       float       native        super        while))
+
 (define-empty-tokens seperators
   (semicolon))
 
@@ -17,7 +29,7 @@
   (EOF))
 
 (define-tokens literals 
-  (integer float double char boolean string))
+  (integer-lit float-lit double-lit char-lit boolean-lit string-lit))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
@@ -72,38 +84,38 @@
    ("/"      (token-/))
    
    ;; boolean
-   ("true"   (token-boolean #t))
-   ("false"  (token-boolean #f))
+   ("true"   (token-boolean-lit #t))
+   ("false"  (token-boolean-lit #f))
    
    ;; integers
    (binary     
-    (token-integer (string->number (trim-string lexeme 2 0) 2)))
+    (token-integer-lit (string->number (trim-string lexeme 2 0) 2)))
    (octal      
-    (token-integer (string->number lexeme 8)))
+    (token-integer-lit (string->number lexeme 8)))
    (hexa       
-    (token-integer (string->number (trim-string lexeme 2 0) 16)))
+    (token-integer-lit (string->number (trim-string lexeme 2 0) 16)))
    (decimal    
-    (token-integer (string->number lexeme 10)))
+    (token-integer-lit (string->number lexeme 10)))
    ((re:: decimal long-suf)       
-    (token-integer (string->number (trim-string lexeme 0 1) 10)))
+    (token-integer-lit (string->number (trim-string lexeme 0 1) 10)))
    ((re:: hexa long-suf)
-    (token-integer (string->number (trim-string lexeme 2 1) 16)))
+    (token-integer-lit (string->number (trim-string lexeme 2 1) 16)))
    ((re:: octal long-suf)
-    (token-integer (string->number (trim-string lexeme 0 1)  8)))
+    (token-integer-lit (string->number (trim-string lexeme 0 1)  8)))
    
    ;; floats
    ((re:: (re:or float-a float-b float-c) float-suf)
-    (token-float (string->number (trim-string lexeme 0 1) 10)))
+    (token-float-lit (string->number (trim-string lexeme 0 1) 10)))
    ((re:: (re:or float-a float-b float-c) double-suf)
-    (token-double (string->number (trim-string lexeme 0 1) 10)))
+    (token-double-lit (string->number (trim-string lexeme 0 1) 10)))
    
    ;; chars
-   (char         (token-char (string-ref lexeme 1)))
+   (char            (token-char-lit (string-ref lexeme 1)))
    ((re:: #\' escape-seq #\')   
-    (token-char (escape->char (trim-string lexeme 1 1))))
+    (token-char-lit (escape->char (trim-string lexeme 1 1))))
    
    ;; strings
-   (string         (token-string (build-string lexeme)))
+   (string          (token-string-lit (build-string lexeme)))
    
    ;; terminators
    ((eof)    (token-EOF))))
