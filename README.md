@@ -15,9 +15,16 @@ Reflects the current state of parser!
 * char
 * string
 * boolean
+* null
 
 ##Seperators
 * semicolon
+* l-paren (
+* r-paren )
+* l-cbrack {
+* r-cbrack }
+* l-sbrack [ 
+* r-sbrack ]
 
 #Grammar
 
@@ -29,17 +36,20 @@ stmts   : stmt
 stmt    : expr semicolon  
         ;  
 
-expr    : string  
-        | integer  
-        | float
-        | double
-        | boolean
-        | char
-        | expr + expr  
+expr    : expr + expr  
         | expr - expr  
         | expr * expr  
         | expr / expr  
         ;  
+
+literals: float-lit  
+        | double-lit  
+        | integer-lit  
+        | boolean-lit  
+        | string-lit  
+        | char-lit  
+        | null-lit  
+        ;
 
 ###Precedence rules:
 

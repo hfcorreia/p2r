@@ -18,18 +18,29 @@
    (tokens operators literals seperators keywords empty-literals)
    (precs (left + -)
           (left * /))
+   
    (grammar
-    (stmts ((stmt)           $1)
-           ((stmt stmts)     (make-stmts $1 $2))) 
-    (stmt  ((expr semicolon) (make-stmt $1)))
+    (stmts 
+     ((stmt)           $1)
+     ((stmt stmts)     (make-stmts $1 $2))) 
     
-    (expr  ((string-lit)         (make-num-exp $1))
-           ((char-lit)           (make-num-exp $1))
-           ((boolean-lit)        (make-num-exp $1))
-           ((float-lit)          (make-num-exp $1))
-           ((integer-lit)        (make-num-exp $1))
-           ((double-lit)         (make-num-exp $1))
-           ((expr + expr)    (make-arith-exp + $1 $3))
-           ((expr - expr)    (make-arith-exp - $1 $3))
-           ((expr * expr)    (make-arith-exp * $1 $3))
-           ((expr / expr)    (make-arith-exp * $1 $3))))))
+    (stmt  
+     ((expr semicolon) (make-stmt $1)))
+    
+    (expr  
+     ((literals)         (make-num-exp $1))
+     ((expr + expr)    (make-arith-exp + $1 $3))
+     ((expr - expr)    (make-arith-exp - $1 $3))
+     ((expr * expr)    (make-arith-exp * $1 $3))
+     ((expr / expr)    (make-arith-exp * $1 $3)))
+    
+    ;; literals
+    (literals
+     ((float-lit)          $1)
+     ((double-lit)         $1)
+     ((integer-lit)        $1)
+     ((boolean-lit)        $1)
+     ((string-lit)         $1)
+     ((char-lit)           $1)
+     ((null-lit)           null))
+    )))
