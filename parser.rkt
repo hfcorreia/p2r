@@ -23,7 +23,10 @@
            ((stmt stmts)     (make-stmts $1 $2))) 
     (stmt  ((expr semicolon) (make-stmt $1)))
     
-    (expr  ((float)          (make-num-exp $1))
+    (expr  ((string)         (make-num-exp $1))
+           ((char)           (make-num-exp $1))
+           ((boolean)        (make-num-exp $1))
+           ((float)          (make-num-exp $1))
            ((integer)        (make-num-exp $1))
            ((double)         (make-num-exp $1))
            ((expr + expr)    (make-arith-exp + $1 $3))

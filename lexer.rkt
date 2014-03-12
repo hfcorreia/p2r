@@ -5,14 +5,6 @@
 
 (provide (all-defined-out))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Aux funtions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Trims a string given 2 offsets
-(define (trim-string string left right)
-  (substring string left (- (string-length string) right)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Tokens definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define-empty-tokens operators 
@@ -25,7 +17,7 @@
   (EOF))
 
 (define-tokens literals 
-  (integer float double char))
+  (integer float double char boolean string))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
@@ -37,12 +29,12 @@
   (float-suf   (char-set "fF"))
   (double-suf  (char-set "dD"))
   (long-suf    (char-set "lL"))
-  (hex-digits  (re:/ "09" "af" "AF"))
+  (hex-digit   (re:/ "09" "af" "AF"))
   
   ;; integer literals
   (binary      (re:: #\0 "b" (re:+ (re:/ "01"))))
   (octal       (re:: #\0 (re:+ (re:/ "07"))))
-  (hexa        (re:: #\0 (char-set "xX") (re:+ hex-digits )))
+  (hexa        (re:: #\0 (char-set "xX") (re:+ hex-digit )))
   (decimal     (re:or #\0 (re:: (re:/ "19") (re:* (re:/ "09")))))
   
   ;; float literals
@@ -50,6 +42,14 @@
   (float-b     (re:: #\. digits (re:? exponent)))
   (float-c     (re:: digits (re:? exponent)))
   (exponent    (re:: (char-set "eE") (re:? (char-set "+-")) digits))
+  
+  ;; char literals
+  (char        (re:: #\' (re:~ whitespace #\' #\\) #\'))
+  (escape-seq  (re:or "\\b" "\\t" "\\n" "\\f" "\\r" "\\\"" "\\'" "\\\\"
+                      (re:: #\\ (re:? (re:/ "03")) (re:/ "07") (re:/ "07"))
+                      (re:: #\\ (re:/ "07"))))
+  ;; string literals
+  (string      (re:: #\" (re:* (re:~ #\" )) #\"))
   
   )
 
@@ -60,6 +60,7 @@
   (lexer
    ;; whitespaces, linefeeds, newline, etc
    (whitespace (lex input-port))
+   (blank      (lex input-port))
    
    ;; seperators
    (";"      (token-semicolon))
@@ -69,6 +70,10 @@
    ("-"      (token--))
    ("*"      (token-*))
    ("/"      (token-/))
+   
+   ;; boolean
+   ("true"   (token-boolean #t))
+   ("false"  (token-boolean #f))
    
    ;; integers
    (binary     
@@ -84,7 +89,7 @@
    ((re:: hexa long-suf)
     (token-integer (string->number (trim-string lexeme 2 1) 16)))
    ((re:: octal long-suf)
-         (token-integer (string->number (trim-string lexeme 0 1)  8)))
+    (token-integer (string->number (trim-string lexeme 0 1)  8)))
    
    ;; floats
    ((re:: (re:or float-a float-b float-c) float-suf)
@@ -92,5 +97,64 @@
    ((re:: (re:or float-a float-b float-c) double-suf)
     (token-double (string->number (trim-string lexeme 0 1) 10)))
    
+   ;; chars
+   (char         (token-char (string-ref lexeme 1)))
+   ((re:: #\' escape-seq #\')   
+    (token-char (escape->char (trim-string lexeme 1 1))))
+   
+   ;; strings
+   (string         (token-string (build-string lexeme)))
+   
    ;; terminators
    ((eof)    (token-EOF))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; String lexer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define-tokens str-tokens
+  (str-end str-char))
+
+(define-empty-tokens empty-str-tokens
+  (str-eof))
+
+(define (build-string input)
+  (define (build-string-aux input-port)
+    (let ((token (string-lex input-port)))
+      (if (eq? (token-name token)
+               'str-eof)
+          (list)
+          (let ((value (if (char? (token-value token))
+                           (make-string 1 (token-value token))
+                           (token-value token))))
+            (cons value (build-string-aux input-port))))))
+  (string-append* "" (build-string-aux (open-input-string input))))
+
+(define string-lex
+  (lexer
+   (#\"          (string-lex input-port))
+   (escape-seq   (token-str-char (escape->char lexeme)))
+   ((re:~ #\")   (token-str-char lexeme))
+   (whitespace   (token-str-char lexeme))
+   (blank        (token-str-char lexeme))
+   ((eof)        (token-str-eof))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Aux funtions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Trims a string given 2 offsets
+(define (trim-string string left right)
+  (substring string left (- (string-length string) right)))
+
+;;; Converts escape sequences to char
+(define (escape->char es)
+  (cond
+    ((string=? es "\\b") #\010)
+    ((string=? es "\\t") #\011)
+    ((string=? es "\\n") #\012)
+    ((string=? es "\\f") #\014)
+    ((string=? es "\\r") #\015)
+    ((string=? es "\\\"") #\")
+    ((string=? es "\\'") #\')
+    ((string=? es "\\\\") #\\)
+    (else (integer->char (string->number (trim-string es 1 0)) 8))))
