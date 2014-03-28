@@ -1,4 +1,4 @@
-#lang racket
+(module processing-ast racket
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Macro that provides and defines a new struct for the AST
@@ -29,4 +29,4 @@
 (p-define-struct stmts (stmt stmts))
 
 ;;; (make-stmt (stmt))
-(p-define-struct stmt (stmt))
+(p-define-struct stmt (stmt)))
