@@ -9,8 +9,9 @@ processing/lang/processing
          "../parser.rkt")
 
 (define (processing-read in)
-  (processing-read-syntax #f in))
-
+  (map syntax->datum (processing-read-syntax #f in)))
+  
 (define (processing-read-syntax src in)
-  (strip-context  (parse-processing src in)))
+  (list (strip-context (parse-processing src in))))
+    
 
