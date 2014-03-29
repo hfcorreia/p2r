@@ -36,7 +36,7 @@
        ((expr + expr)    (make-arith-exp + $1 $3))
        ((expr - expr)    (make-arith-exp - $1 $3))
        ((expr * expr)    (make-arith-exp * $1 $3))
-       ((expr / expr)    (make-arith-exp * $1 $3)))
+       ((expr / expr)    (make-arith-exp / $1 $3)))
       
       ;; literals
       (literals
