@@ -1,5 +1,5 @@
 #lang s-exp syntax/module-reader
-p2r/lang/processing
+processing/lang/processing
 
 #:read processing-read
 #:read-syntax processing-read-syntax
