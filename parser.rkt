@@ -3,12 +3,15 @@
            "lexer.rkt"
            "ast.rkt")
   
-  (provide (all-defined-out))
+  (provide parse-processing)
   
+  (define (parse-processing src port)
+      (port-count-lines! port)
+      (processing-parser (lambda () (lex port))))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Parser definition
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define simple-parser
+  (define processing-parser
     (parser
      (src-pos)
      (start stmts)

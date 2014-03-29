@@ -6,15 +6,12 @@
          "lexer.rkt"
          "ast.rkt")
 
-(define (parse input)
-  (simple-parser (lambda()(lex input))))
-
 ;;; Macro to generate a test case
 (define-syntax-rule
   (new-test-case description input expected)
   (test-case
    description
-   (check-equal? (parse (open-input-string input)) expected)))
+   (check-equal? (parse-processing #f (open-input-string input)) expected)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Test suites
