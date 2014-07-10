@@ -29,4 +29,17 @@
 (p-define-struct stmts (stmt stmts))
 
 ;;; (make-stmt (stmt))
-(p-define-struct stmt (stmt)))
+(p-define-struct stmt (stmt))
+
+;;; (make-modifier (modifier))
+(p-define-struct modifier (modifier))
+
+;;; (make-literal (symbol value))
+(p-define-struct literal (symbol value))
+
+;;; (make-type (name dims))
+(p-define-struct type (name dims))
+
+
+)
+

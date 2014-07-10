@@ -15,15 +15,17 @@
 
   (define-empty-tokens keywords
                        (abstract    continue    for          new          switch
-                                    assert      default     if            package      synchronized
-                                    boolean     do          goto          private      this
-                                    break       double      implements    protected    throw
-                                    byte        else        import        public       throws
-                                    case        enum        instanceof    return       transient
-                                    catch       extends     int           short        try
-                                    char        final       interface     static       void 
-                                    class       finally     long          strictfp     volatile
-                                    const       float       native        super        while))
+                        assert      default     if            package      synchronized
+                        boolean     do          goto          private      this
+                        break       double      implements    protected    throw
+                        byte        else        import        public       throws
+                        case        enum        instanceof    return       transient
+                        catch       extends     int           short        try
+                        char        final       interface     static       void 
+                        class       finally     long          strictfp     volatile
+                        const       float       native        super        while))
+
+
 
   (define-empty-tokens seperators
                        (semicolon period comma
@@ -35,7 +37,7 @@
                        (EOF null-lit))
 
   (define-tokens literals 
-                 (identifier integer-lit float-lit double-lit char-lit boolean-lit string-lit))
+                 (identifier int-lit long-lit float-lit double-lit char-lit boolean-lit string-lit))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
@@ -95,7 +97,7 @@
                        (re:*  (re:or (re:/ "Az" "az" "09") "_" "$")))) 
 
     ;; comments
-    (line-comment    (re:: "//" (re:* input-charcter) ))
+    (line-comment       (re:: "//" (re:* input-charcter) ))
 
     )
 
@@ -131,19 +133,20 @@
 
       ;; integers
       (binary     
-        (token-integer-lit (string->number (trim-string lexeme 2 0) 2)))
+        (token-int-lit (string->number (trim-string lexeme 2 0) 2)))
       (octal      
-        (token-integer-lit (string->number lexeme 8)))
+        (token-int-lit (string->number lexeme 8)))
       (hexa       
-        (token-integer-lit (string->number (trim-string lexeme 2 0) 16)))
+        (token-int-lit (string->number (trim-string lexeme 2 0) 16)))
       (decimal    
-        (token-integer-lit (string->number lexeme 10)))
+        (token-int-lit (string->number lexeme 10)))
+      ;; longs
       ((re:: decimal long-suf)       
-       (token-integer-lit (string->number (trim-string lexeme 0 1) 10)))
+       (token-long-lit (string->number (trim-string lexeme 0 1) 10)))
       ((re:: hexa long-suf)
-       (token-integer-lit (string->number (trim-string lexeme 2 1) 16)))
+       (token-long-lit (string->number (trim-string lexeme 2 1) 16)))
       ((re:: octal long-suf)
-       (token-integer-lit (string->number (trim-string lexeme 0 1)  8)))
+       (token-long-lit (string->number (trim-string lexeme 0 1)  8)))
 
       ;; floats
       ((re:: (re:or float-a float-b float-c) float-suf)
