@@ -8,10 +8,10 @@
   ;;; Tokens definitions
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-empty-tokens operators 
-                       (=    >    <    !     ~    ?     :
-                             ==   <=   >=   !=    &&   ||    ++    --
-                             +    -    *    /     &    |     ^     %     <<     >>     >>>
-                             +=   -=   *=   /=    &=   |=    ^=    %=    <<=    >>=    >>>=))
+                       (PIPE OR OREQUAL =    >    <    !     ~    ?     :
+                             ==   <=   >=   !=    &&   ++    --
+                             +    -    *    /     &    ^     %     <<     >>     >>>
+                             +=   -=   *=   /=    &=   ^=    %=    <<=    >>=    >>>=))
 
   (define-empty-tokens keywords
                        (abstract    continue    for          new          switch
@@ -125,7 +125,12 @@
       ("]"      (token-r-sbrack))
 
       ;; operators
-      (operator     (string->symbol lexeme))
+      (operator     (let ((l lexeme))
+                      (cond
+                        ((string=? l "|")  (token-PIPE))
+                        ((string=? l "||") (token-OR))
+                        ((string=? l "|=") (token-OREQUAL))
+                        (else (string->symbol lexeme)))))
 
       ;; boolean
       ("true"   (token-boolean-lit #t))
