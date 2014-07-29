@@ -1,23 +1,23 @@
 (module processing-ast racket
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Macro that provides and defines a new struct for the AST
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define-syntax p-define-struct
-  (syntax-rules ()
-    [(_ (name inherit) fields)
-     (begin
-       (provide (struct-out name))
-       (define-struct (name inherit) fields #:mutable #:transparent))]
-    [(_ name fields)
-     (begin
-       (provide (struct-out name))
-       (define-struct name fields #:mutable #:transparent))]))
+  (provide (all-defined-out))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; AST struct definitions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; AST struct definitions
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(p-define-struct make-todo (info))
-)
+  ;;; All nodes inherit from ast-node%
+  (define ast-node%
+    (class object%
+           (init-field src-info)
+           (abstract to-racket)
+           (super-new)))
+
+  (define todo-node%
+    (class ast-node%
+           (init-field msg)
+           (define/override (to-racket)
+                            (format "Todo: ~a" msg))
+           (super-new)))
+  )
 
