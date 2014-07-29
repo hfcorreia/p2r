@@ -64,7 +64,8 @@
           [(boolean-lit)        (make-object todo-node% $1 (build-src 1))] 
           [(string-lit)         (make-object todo-node% $1 (build-src 1))] 
           [(char-lit)           (make-object todo-node% $1 (build-src 1))] 
-          [(null-lit)           (make-object todo-node% null (build-src 1))])
+          [(null-lit)           (make-object todo-node% null (build-src 1))]
+          [(color-lit)          (make-object todo-node% $1 (build-src 1))])
 
         ;; Types
         (type

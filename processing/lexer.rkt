@@ -8,13 +8,15 @@
   ;;; Tokens definitions
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-empty-tokens operators 
-                       (PIPE OR OREQUAL =    >    <    !     ~    ?     :
-                             ==   <=   >=   !=    &&   ++    --
-                             +    -    *    /     &    ^     %     <<     >>     >>>
-                             +=   -=   *=   /=    &=   ^=    %=    <<=    >>=    >>>=))
+                       (
+                        PIPE OR OREQUAL =    >    <    !     ~    ?     :
+                        ==   <=   >=   !=    &&   ++    --
+                        +    -    *    /     &    ^     %     <<     >>     >>>
+                        +=   -=   *=   /=    &=   ^=    %=    <<=    >>=    >>>=))
 
-  (define-empty-tokens keywords
-                       (abstract    continue    for          new          switch
+  (define-empty-tokens keywords 
+                       (
+                        abstract    continue    for          new          switch
                         assert      default     if            package      synchronized
                         boolean     do          goto          private      this
                         break       double      implements    protected    throw
@@ -27,17 +29,19 @@
 
 
 
-  (define-empty-tokens seperators
-                       (semicolon period comma
-                                  l-paren  r-paren
-                                  l-cbrack r-cbrack
-                                  l-sbrack r-sbrack))
+  (define-empty-tokens seperators 
+                       (
+                        semicolon period comma
+                        l-paren  r-paren
+                        l-cbrack r-cbrack
+                        l-sbrack r-sbrack))
 
-  (define-empty-tokens empty-literals 
-                       (EOF null-lit))
+  (define-empty-tokens empty-literals (EOF null-lit))
 
   (define-tokens literals 
-                 (identifier int-lit long-lit float-lit double-lit char-lit boolean-lit string-lit))
+                 (
+                  identifier int-lit long-lit float-lit double-lit 
+                  char-lit boolean-lit string-lit token-lit color-lit))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
@@ -71,6 +75,9 @@
                         (re:: #\\ (re:/ "07"))))
     ;; string literals
     (string      (re:: #\" (re:* (re:~ #\" )) #\"))
+
+    ;; web color literal
+    (web-color  (re:: #\# (re:= 6 hex-digit)))
 
     ;; keywords
     (keyword     (re:or "abstract"    "continue"    "for"           "new"          "switch"
@@ -166,6 +173,9 @@
 
       ;; strings
       (string          (token-string-lit (build-string lexeme)))
+
+      ;; webcolor
+      (web-color      (token-color-lit   (build-string lexeme)))
 
       ;; null
       ("null"         (token-null-lit))
