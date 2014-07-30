@@ -6,12 +6,13 @@ processing/lang/processing
 #:whole-body-readers? #t
 
 (require syntax/strip-context
-         "../parser.rkt")
+         "../parser.rkt"
+         "../compile.rkt")
 
 (define (processing-read in)
   (map syntax->datum (processing-read-syntax #f in)))
   
 (define (processing-read-syntax src in)
-  (list (strip-context (parse-processing src in))))
+  (map strip-context (compile-processing (parse-processing src in))))
     
 
