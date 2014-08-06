@@ -3,8 +3,6 @@
   
   (provide compile-processing)
 
-  (define (compile-processing ast-list)
-    (map compile-processing-ast ast-list))
+  (define (compile-processing ast)
+    (list (send ast to-racket 0))))
 
-  (define (compile-processing-ast ast)
-    (send ast to-racket)))
