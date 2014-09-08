@@ -13,10 +13,11 @@ processing/lang/processing
   (map syntax->datum (processing-read-syntax #f in)))
 
 (define (processing-read-syntax src in)
-  (let ((value 
-          (map strip-context (compile-processing (parse-processing src in)))))
+  (define ast (parse-processing src in))
+  (define compiled-ast (compile-processing ast))
+  (let ((stripped (map strip-context compiled-ast)))
     (begin
-      (fprintf (current-output-port) (car value))
-      value)))
+      ;(fprintf (current-output-port) (car value))
+      stripped)))
 
 

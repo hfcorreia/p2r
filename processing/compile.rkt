@@ -4,5 +4,6 @@
   (provide compile-processing)
 
   (define (compile-processing ast)
-    (list (send ast to-racket 0))))
+    (cond ((not (null? ast)) (list (send ast to-racket 0)))
+          (else (list)))))
 

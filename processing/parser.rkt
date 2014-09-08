@@ -7,9 +7,14 @@
 
   (provide parse-processing)
 
-  (define (parse-processing src port)
-    (port-count-lines! port)
-    ((processing-parser src) (lambda () (lex port))))
+
+  (define (parse-processing src input-port)
+    ;; turns on line and column location for input-port
+    (port-count-lines! input-port)
+    ;; lexer uses this for source location in case of error
+    (file-path src) 
+    ((processing-parser src) (lambda () (lex input-port))))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Build Src
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,7 +32,6 @@
                                                    (syntax-e #'src-arg))))]
           [src  (datum->syntax stx (string->symbol "src"))])
          #'(srcinfo->list src start-pos end-pos))]))
-
 
   ;;; Creates a list with all the source info
   (define (srcinfo->list src start end)
@@ -185,8 +189,7 @@
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<compilation-unit>
-          [() 
-           (make-object todo-node% null 'empty-comp-unit null)]
+          [() null]
           [(<import-declarations> <global-declarations>) 
            (make-object todo-node% (list $1 $2) 'comp-unit-import-global (build-src 1))]
           [(<global-declarations>)
