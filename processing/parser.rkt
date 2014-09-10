@@ -72,23 +72,23 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<literal>
           [(int-lit)      
-           (make-object todo-node% null 'int-lit (build-src 1))]
+           (make-object literal% $1 'int (build-src 1))] 
           [(long-lit)     
-           (make-object todo-node% null 'long-lit (build-src 1))]
+           (make-object literal% $1 'long (build-src 1))] 
           [(float-lit)    
-           (make-object todo-node% null 'float-lit (build-src 1))] 
+           (make-object literal% $1 'float (build-src 1))] 
           [(double-lit)   
-           (make-object todo-node% null 'double-lit (build-src 1))] 
+           (make-object literal% $1 'double (build-src 1))] 
           [(boolean-lit)  
-           (make-object todo-node% null 'boolean-lit (build-src 1))] 
+           (make-object literal% $1 'boolean (build-src 1))] 
           [(string-lit)   
-           (make-object todo-node% null 'string-lit (build-src 1))] 
+           (make-object literal% $1 'string (build-src 1))] 
           [(char-lit)     
-           (make-object todo-node% null 'char-lit (build-src 1))] 
+           (make-object literal% $1 'char (build-src 1))] 
           [(null-lit)     
-           (make-object todo-node% null 'null-lit (build-src 1))]
+           (make-object literal% null 'null (build-src 1))] 
           [(color-lit)    
-           (make-object todo-node% null 'color-lit (build-src 1))])
+           (make-object literal% $1 'color (build-src 1))])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Types
@@ -178,7 +178,8 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<name>
           [(identifier)         
-           (make-object todo-node% null 'identifier (build-src 1))]
+           (make-object identifier% $1 (build-src 1))]
+          ;; TODO: Fix qualified names
           [(<qualified-name>)     
            (make-object todo-node% $1 'qualified-name (build-src 1))])
 
@@ -190,10 +191,9 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<compilation-unit>
           [() null]
-          [(<import-declarations> <global-declarations>) 
-           (make-object todo-node% (list $1 $2) 'comp-unit-import-global (build-src 1))]
-          [(<global-declarations>)
-           (make-object todo-node% $1 'comp-unit-global (build-src 1))])
+          [(<import-declarations> <global-declarations>) (list $1 $2)]
+          [(<global-declarations>) $1])
+           
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Global 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -207,7 +207,7 @@
           [(<global-member-declaration>) 
            (make-object todo-node% $1 'global-member-decl (build-src 1))]
           [(<global-stmt>)  
-           (make-object todo-node% $1 'global-stmt (build-src 1))])
+           (make-object global-stmt% $1 (build-src 1))])
 
         (<global-stmt>
           [(<stmt>) $1])
@@ -523,7 +523,7 @@
           [(<pre-dec-expr>) $1]
           [(<post-inc-expr>) $1]
           [(<post-dec-expr>) $1]
-          [(<method-invocation>) $1]
+          [(<method-call>) $1]
           ;; TODO: check if color in processing is a stmt-expr
           [(<color-instance-creation>) $1]
           [(<class-instance-creation-expr>) $1])
@@ -678,7 +678,7 @@
             [(l-paren <expr> r-paren) $2]
             [(<class-instance-creation-expr>) $1]
             [(<field-access>) $1]
-            [(<method-invocation>) $1]
+            [(<method-call>) $1]
             [(<array-access>) $1]
             [(<primitive-type> period class) $1]
             [(<name> period class) $1]
@@ -701,23 +701,24 @@
              (make-object todo-node% (list $1 $3) 'array-access (build-src 1))])
 
 
-          (<method-invocation>
+          (<method-call>
             [(<name> l-paren <args> r-paren) 
-             (make-object todo-node% (list $1 $3) 'method-invocation (build-src 1))]
+             (make-object method-call% $1 $3 (build-src 1))]
             [(<name> l-paren r-paren) 
-             (make-object todo-node% $1 'method-invocation (build-src 1))]
+             (make-object method-call% $1 null (build-src 1))]
+            ;; TODO: Solve the name resolution
             [(<primary> period identifier l-paren <args> r-paren)
-             (make-object todo-node% (list $1 $5) 'method-invocation (build-src 1))]
+             (make-object todo-node% (list $1 $5) 'method-call (build-src 1))]
             [(<primary> period identifier l-paren r-paren)
              (make-object todo-node% $1 (build-src 1))]
             [(super period identifier l-paren <args> r-paren)
-             (make-object todo-node% $5 'super-method-invocation (build-src 1))]
+             (make-object todo-node% $5 'super-method-call (build-src 1))]
             [(super period identifier l-paren r-paren)
-             (make-object todo-node% null 'super-method-invocation (build-src 1))]
+             (make-object todo-node% null 'super-method-call (build-src 1))]
             [(<name> period super period identifier l-paren <args> r-paren)
-             (make-object todo-node% (list $1 $7) 'method-invocation (build-src 1))]
+             (make-object todo-node% (list $1 $7) 'method-call (build-src 1))]
             [(<name> period super period identifier l-paren r-paren)
-             (make-object todo-node% $1 'method-invocation (build-src 1))])
+             (make-object todo-node% $1 'method-call (build-src 1))])
 
           (<class-instance-creation-expr>
             [(new <class-or-interface-type> l-paren <args> r-paren <class-body>)

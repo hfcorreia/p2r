@@ -1,3 +1,7 @@
-#lang racket/base
+#lang racket
 
-(provide (all-from-out racket/base))
+(require "../runtime.rkt")
+
+(provide (all-from-out racket)
+         (all-from-out "../runtime.rkt"))
+
