@@ -1,4 +1,4 @@
-(module processing-lexer racket 
+(module lexer racket 
   (require parser-tools/lex
            (prefix-in re: parser-tools/lex-sre)
            racket/string)

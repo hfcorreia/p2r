@@ -1,4 +1,4 @@
-(module processing-parser racket
+(module parser racket
   (require parser-tools/yacc
            parser-tools/lex
            syntax/readerr
