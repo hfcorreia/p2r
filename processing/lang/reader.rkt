@@ -6,18 +6,13 @@ processing/lang/processing
 #:whole-body-readers? #t
 
 (require syntax/strip-context
-         "../parser.rkt"
          "../compile.rkt")
 
-(define (processing-read in)
-  (map syntax->datum (processing-read-syntax #f in)))
+(define (processing-read input-port)
+  (map syntax->datum (processing-read-syntax #f input-port)))
 
-(define (processing-read-syntax src in)
-  (define ast (parse-processing src in))
-  (define compiled-ast (compile-processing ast))
-  (let ((stripped (map strip-context compiled-ast)))
-    (begin
-      ;(fprintf (current-output-port) (car value))
-      stripped)))
+(define (processing-read-syntax src input-port)
+  (map strip-context (compile-processing src input-port)))
+
 
 
