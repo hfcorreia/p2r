@@ -1,4 +1,4 @@
-(module processing-ast racket
+(module ast racket
 
   (require racket/class
            syntax/readerr
@@ -40,7 +40,11 @@
            (define/public (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
-
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/public (->xml)
+                          (read-error (format "Invalid use of ->racket ~a" this)))
+           
            (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -57,6 +61,12 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (send stmt ->racket))
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml)
+                            (format "<global-stmt>~%~a~%</global-stmt>~%"
+                                    (send stmt ->xml)))
 
            (super-instantiate ())))
            
@@ -76,6 +86,13 @@
            (define/override (->racket)
                             (->syntax-object (identifier->symbol)))
 
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml)
+                            (format "<identifier id=\"~a\" />~%"
+                                     identifier))
+
+           ;; Aux functions
            (define (identifier->symbol)
             (if (symbol? identifier)
               identifier 
@@ -99,6 +116,13 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket) (->syntax-object value))
 
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml)
+                            (format "<literal type=\"~a\" value=\"~a\" />~%"
+                                     type
+                                     value))
+
            (super-instantiate ())))
 
   ;;; Method Call
@@ -120,6 +144,12 @@
                               `(dispatch ,(send name ->racket) 
                                         ,(send (car args) ->racket))))
 
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml)
+                            (format "<method-call>~%~a~%<args>~a</args>~%</method-call>~%"
+                                     (send name ->xml)
+                                     (send (car args) ->xml)))
            (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -128,29 +158,17 @@
   (define todo-node%
     (class ast-node%
            (init-field child msg)
-           (define/override (->racket indent)
-                            (if (null? child)
-                              (format "~aTodo: ~a~%" (p-indent indent) msg)
-                              (string-append (format "~aTodo: ~a~%" 
-                                                     (p-indent indent) msg)
-                                             (traverse child (+ 2 indent)))))
+
+           (inherit ->syntax-object)
+           
+           (define/override (->racket)
+                            (->syntax-object
+                              (println "")))
+
+           (define/override (->xml)
+                            (format "<todo msg=\"~a\">~a<todo\\>"
+                                     msg
+                                     (send child ->xml)))
            (super-new)))
-
-  (define (traverse node indent)
-    (cond
-      ((null? node) "")
-      ((list? node)
-       (string-append (format "~aList: ~%" (p-indent indent))
-                      (foldl string-append "" 
-                             (map (lambda (x) (traverse x (+ 2 indent)))
-                                  node))))
-      ((is-a? node todo-node%)
-       (string-append (format "~aTodo: ~a~%" (p-indent indent) (get-field msg node))
-                      (traverse (get-field child node) (+ 2 indent))))
-      (else "")))
-
-  (define (p-indent val)
-    (make-string val #\space))
-
 
   )
