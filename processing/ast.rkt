@@ -146,7 +146,7 @@
            (define/override (->racket)
                             (->syntax-object
                               `(dispatch ,(send name ->racket) 
-                                         ,(send args ->racket))))
+                                         ,@(send args ->racket))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -184,8 +184,8 @@
                                     (make-string indent #\space)
                                     (string-append*
                                       (map (lambda (arg) 
-                                           (send arg ->xml (+ indent 2))) 
-                                         args))
+                                             (send arg ->xml (+ indent 2))) 
+                                           args))
                                     (make-string indent #\space)))
            (super-instantiate ())))
 
@@ -193,22 +193,49 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Debug stuff
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define todo? #f)
+  (define (clear-todo)
+    (set! todo? #f))
+
   (define todo-node%
     (class ast-node%
            (init-field child msg)
 
-           (inherit ->syntax-object)
+           (inherit ->syntax-object read-error)
 
            (define/override (->racket)
+                            (clear-todo)
                             (->syntax-object
-                              (println "")))
+                              (aux child)))
 
            (define/override (->xml indent)
-                            (format "~a<todo msg=\"~a\">~%~a~%~a</todo>~%"
-                                    (make-string indent #\space)
-                                    msg
-                                    (send child ->xml (+ indent 2))
-                                    (make-string indent #\space)))
-           (super-new)))
+                            (if (null? child)
+                              (format "~%~a<todo msg=\"~a\" />"
+                                      (make-string indent #\space)
+                                      msg)
+                              (format "~%~a<todo msg=\"~a\">~a~%~a</todo>"
+                                      (make-string indent #\space)
+                                      msg
+                                      (generate child (+ indent 2))
+                                      (make-string indent #\space))))
+
+           ;; aux funtion
+           (define (aux child)
+             (cond 
+               [(list? child) (map (lambda (node)
+                                     (aux node))
+                                   child)]
+               [(is-a? child ast-node%) (send child ->racket)]
+               [else child]))
+
+           (define (generate child indent)
+             (cond
+               [(list? child) (string-append* 
+                                (map (lambda (node)
+                                       (generate node (+ indent 2)))
+                                     child))]
+               [else (send child ->xml (+ indent 2))]))
+
+           (super-instantiate ())))
 
   )
