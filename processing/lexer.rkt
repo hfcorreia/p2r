@@ -115,6 +115,9 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define lex
     (lexer-src-pos
+      ;; special rule to ignore #lang processing directives
+      ((re:: #\# "lang processing") (return-without-pos (lex input-port)))
+
       ;; whitespaces, linefeeds, newline, etc
       ((re:+ whitespace)    (return-without-pos (lex input-port)))
       ((re:+ blank)         (return-without-pos (lex input-port)))
