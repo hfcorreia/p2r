@@ -5,22 +5,31 @@
     "parser.rkt") 
 
   (provide ast->xml
-           compile-processing-from-file
-           compile-processing-from-port)
+           compile-processing
+           build-ast)
 
-  (define (ast->xml ast path)
-    (with-output-to-file path
-                         (lambda ()
-                           (printf (send ast ->xml 0)))
-                         #:exists 'replace))
+  ;;
+  (define (ast->xml ast #:file [path #f])
+    (if (path-string? path)
+      (with-output-to-file path
+                           (lambda ()
+                             (map (lambda (elem) 
+                                    (printf (send elem ->xml 0))) ast))
+                           #:exists 'replace)
+      (map (lambda (elem) (printf (send elem ->xml 0))) ast)))
 
-  (define (compile-processing-from-file file)
-    (with-input-from-file file
+    
+  ;;
+  (define (build-ast file #:input-port [input-port #f])
+    (if (eq? input-port #f)
+      (with-input-from-file file
                           (lambda ()
                             (parse-processing file (current-input-port)))
-                          #:mode 'text))
+                          #:mode 'text)
+      (parse-processing file input-port)))
 
-  (define (compile-processing-from-port src input-port)
-    (let ((ast (parse-processing src input-port)))
-      (cond ((not (null? ast)) (map (lambda (elem) (send elem ->racket)) ast))
-            (else (list))))))
+  ;; 
+  (define (compile-processing ast)
+      (cond 
+        [(not (null? ast)) (map (lambda (elem) (send elem ->racket)) ast)]
+        [else (list)])))
