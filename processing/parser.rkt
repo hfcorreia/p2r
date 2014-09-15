@@ -194,7 +194,7 @@
         (<compilation-unit>
           [() null]
           [(<import-declarations> <global-declarations>) (list $1 $2)]
-          [(<global-declarations>) $1])
+          [(<global-declarations>) (reverse $1)])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Global 
@@ -837,27 +837,27 @@
         (<multiplicative-expr>
           [(<unary-expr>) $1]
           [(<multiplicative-expr> * <unary-expr>)
-           (make-object todo-node% (list $1 $3) 'multiply (build-src 1))]
+           (make-object binary-op% '* $1 $3 (build-src 1))]
           [(<multiplicative-expr> / <unary-expr>)
-           (make-object todo-node% (list $1 $3) 'divide (build-src 1))]
+           (make-object binary-op% '/ $1 $3 (build-src 1))]
           [(<multiplicative-expr> % <unary-expr>)
-           (make-object todo-node% (list $1 $3) 'mod (build-src 1))])
+           (make-object binary-op% '% $1 $3 (build-src 1))])
 
         (<additive-expr>
           [(<multiplicative-expr>) $1]
           [(<additive-expr> + <multiplicative-expr>)
-           (make-object todo-node% (list $1 $3) 'plus (build-src 1))]
+           (make-object binary-op% '+ $1 $3 (build-src 1))]
           [(<additive-expr> - <multiplicative-expr>)
-           (make-object todo-node% (list $1 $3) 'minus (build-src 1))])
+           (make-object binary-op% '- $1 $3 (build-src 1))])
 
         (<shift-expr>
           [(<additive-expr>) $1]
           [(<shift-expr> << <additive-expr>)
-           (make-object todo-node% (list $1 $3) 'shift-l (build-src 1))]
+           (make-object binary-op% '<< $1 $3 (build-src 1))]
           [(<shift-expr> >> <additive-expr>)
-           (make-object todo-node% (list $1 $3) 'shift-r (build-src 1))]
+           (make-object binary-op% '>> $1 $3 (build-src 1))]
           [(<shift-expr> >>> <additive-expr>)
-           (make-object todo-node% (list $1 $3) 'shift-? (build-src 1))])
+           (make-object binary-op% '>>> $1 $3 (build-src 1))])
 
         (<relational-expr>
           [(<shift-expr>) $1]
@@ -882,27 +882,27 @@
         (<and-expr>
           [(<equality-expr>) $1]
           [(<and-expr> & <equality-expr>)
-           (make-object todo-node% (list $1 $3) '& (build-src 1))])
+           (make-object binary-op% '& $1 $3 (build-src 1))])
 
         (<exclusive-or-expr>
           [(<and-expr>) $1]
           [(<exclusive-or-expr> ^ <and-expr>)
-           (make-object todo-node% (list $1 $3) '^ (build-src 1))])
+           (make-object binary-op% '^ $1 $3 (build-src 1))])
 
         (<inclusive-or-expr>
           [(<exclusive-or-expr>) $1]
           [(<inclusive-or-expr> PIPE <exclusive-or-expr>)
-           (make-object todo-node% (list $1 $3) 'pipe (build-src 1))])
+           (make-object binary-op% 'pipe $1 $3 (build-src 1))])
 
         (<conditional-and-expr>
           [(<inclusive-or-expr>) $1]
           [(<conditional-and-expr> && <inclusive-or-expr>)
-           (make-object todo-node% (list $1 $3) 'and (build-src 1))])
+           (make-object binary-op% '&& $1 $3 (build-src 1))])
 
         (<conditional-or-expr>
           [(<conditional-and-expr>) $1]
           [(<conditional-or-expr> OR <conditional-and-expr>)
-           (make-object todo-node% (list $1 $3) 'or (build-src 1))])
+           (make-object binary-op% 'or $1 $3 (build-src 1))])
 
         (<conditional-expr>
           [(<conditional-or-expr>) $1]

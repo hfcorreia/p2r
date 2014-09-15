@@ -145,4 +145,47 @@
                                     (make-string indent #\space)))
            (super-instantiate ())))
 
+  ;;; Binary Operator
+  (define binary-op%
+    (class expression%
+           ;; inits
+           (init-field operator arg1 arg2)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; Generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(,p-operator ,(send arg1 ->racket) 
+                                            ,(send arg2 ->racket))))
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<~a>~a~a~%~a</~a>"
+                                    (make-string indent #\space)
+                                    operator
+                                    (send arg1 ->xml (+ indent 2))
+                                    (send arg2 ->xml (+ indent 2))
+                                    (make-string indent #\space)
+                                    operator))
+           ;; Aux function
+           (define p-operator
+             (case operator
+               ['+ 'p-add]
+               ['- 'p-sub]
+               ['* 'p-mul]
+               ['/ 'p-div]
+               ['% 'p-mod]
+               ['& 'p-bit-and]
+               ['^ 'p-bit-xor]
+               ['pipe 'p-bit-or]
+               ['&& 'p-and]
+               ['or 'p-or]
+               ['<< 'p-shiftl]
+               ['>> 'p-shiftr]
+               ['>>> 'p-shiftr-zero]))
+
+           (super-instantiate ())))
   )
