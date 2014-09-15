@@ -3,7 +3,9 @@
            parser-tools/lex
            syntax/readerr
            "lexer.rkt"
-           "ast.rkt")
+           "ast/ast.rkt"
+           "ast/ast-expr.rkt"
+           "ast/ast-stmt.rkt")
 
   (provide parse-processing)
 

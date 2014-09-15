@@ -1,7 +1,7 @@
 (module compile racket
   (require 
     racket/file
-    "ast.rkt"
+    "ast/ast.rkt"
     "parser.rkt") 
 
   (provide ast->xml
