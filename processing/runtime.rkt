@@ -50,14 +50,17 @@
   (define (p-or arg1 arg2)
     (or arg1 arg2))
 
+  ;; TODO: emulate java behavior
   (define (p-shiftl arg1 arg2)
-    (println "TODO: shiftl"))
+    (arithmetic-shift arg1 arg2))
 
+  ;; TODO: emulate java behavior
   (define (p-shiftr arg1 arg2)
-    (println "TODO: shiftr"))
+    (arithmetic-shift arg1 (- arg2)))
 
+  ;; TODO: emulate java behavior
   (define (p-shiftr-zero arg1 arg2)
-    (println "TODO: shiftr-zero"))
+    (arithmetic-shift arg1 arg2))
 
 
   )

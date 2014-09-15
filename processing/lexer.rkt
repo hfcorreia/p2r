@@ -102,8 +102,8 @@
                        "^="    "%="    "<<="    ">>="    ">>>="))
 
     ;; identifier
-    (identifier  (re:: (re:or (re:/ "Az" "az") "_" "$")
-                       (re:*  (re:or (re:/ "Az" "az" "09") "_" "$")))) 
+    (identifier  (re:: (re:or "_" "$" (re:/ "az" "AZ"))
+                       (re:*  (re:or (re:/ "AZ" "az" "09") "_" "$")))) 
 
     ;; comments
     (line-comment       (re:: "//" (re:* input-charcter) ))
