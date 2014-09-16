@@ -50,15 +50,15 @@
   (define (p-or arg1 arg2)
     (or arg1 arg2))
 
-  ;; TODO: emulate java behavior
+  ;;; TODO: emulate java behavior
   (define (p-shiftl arg1 arg2)
     (arithmetic-shift arg1 arg2))
 
-  ;; TODO: emulate java behavior
+  ;;; TODO: emulate java behavior
   (define (p-shiftr arg1 arg2)
     (arithmetic-shift arg1 (- arg2)))
 
-  ;; TODO: emulate java behavior
+  ;;; TODO: emulate java behavior
   (define (p-shiftr-zero arg1 arg2)
     (arithmetic-shift arg1 arg2))
 
@@ -74,4 +74,18 @@
   (define (p-not arg)
     (not arg))
 
+  (define (p-lt arg1 arg2)
+    (< arg1 arg2))
+
+  (define (p-gt arg1 arg2)
+    (> arg1 arg2))
+
+  (define (p-lt-eq arg1 arg2)
+    (<= arg1 arg2))
+
+  (define (p-gt-eq arg1 arg2)
+    (>= arg1 arg2))
+
+  (define (p-instanceof arg1 arg2)
+    (format "TODO: ~a instanceof ~a" arg1 arg2))
   )

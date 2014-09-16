@@ -862,15 +862,15 @@
         (<relational-expr>
           [(<shift-expr>) $1]
           [(<shift-expr> < <shift-expr>)
-           (make-object todo-node% (list $1 $3) 'lt (build-src 1))]
+           (make-object relational-op% '< $1 $3 (build-src 1))]
           [(<relational-expr> > <shift-expr>)
-           (make-object todo-node% (list $1 $3) 'gt (build-src 1))]
+           (make-object relational-op% '> $1 $3 (build-src 1))]
           [(<relational-expr> <= <shift-expr>)
-           (make-object todo-node% (list $1 $3) 'le (build-src 1))]
+           (make-object relational-op% '<= $1 $3 (build-src 1))]
           [(<relational-expr> >= <shift-expr>)
-           (make-object todo-node% (list $1 $3) 'ge (build-src 1))]
+           (make-object relational-op% '>= $1 $3 (build-src 1))]
           [(<relational-expr> instanceof <reference-type>)
-           (make-object todo-node% (list $1 $3) 'instanceof (build-src 1))])
+           (make-object relational-op% 'instanceof $1 $3 (build-src 1))])
 
         (<equality-expr>
           [(<relational-expr>) $1]

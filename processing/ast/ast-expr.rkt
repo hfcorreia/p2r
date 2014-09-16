@@ -187,6 +187,7 @@
                ['>>> 'p-shiftr-zero]))
 
            (super-instantiate ())))
+
   ;;; Unary Operator
   (define unary-op%
     (class expression%
@@ -217,6 +218,41 @@
                ['- 'p-neg]
                ['not 'p-bit-not]
                ['! 'p-not]))
+
+           (super-instantiate ())))
+
+  ;;; Unary Operator
+  (define relational-op%
+    (class expression%
+           ;; inits
+           (init-field operator arg1 arg2)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; Generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(,p-operator ,(send arg1 ->racket)
+                                            ,(send arg2 ->racket))))
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<relational-op id=\"~a\">~a~a~%~a</relational-op>"
+                                    (make-string indent #\space)
+                                    operator
+                                    (send arg1 ->xml (+ indent 2))
+                                    (send arg2 ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+           ;; Aux function
+           (define p-operator
+             (case operator
+               ['< 'p-lt]
+               ['> 'p-gt]
+               ['<= 'p-lt-eq]
+               ['>= 'p-gt-eq]
+               ['instanceof 'p-instanceof]))
 
            (super-instantiate ())))
   )

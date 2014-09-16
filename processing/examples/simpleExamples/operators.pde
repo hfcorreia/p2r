@@ -20,3 +20,10 @@ println(-1);
 println(+(-1));
 println(~1);
 println(!false);
+
+println("Relational Operations");
+println(1<2);
+println(1>2);
+println(1<=2);
+println(2>=2);
+//println(2 instanceof Integer);
