@@ -86,6 +86,12 @@
   (define (p-gt-eq arg1 arg2)
     (>= arg1 arg2))
 
+  (define (p-eq arg1 arg2)
+    (eq? arg1 arg2))
+
+  (define (p-not-eq arg1 arg2)
+    (not (eq? arg1 arg2)))
+
   (define (p-instanceof arg1 arg2)
     (format "TODO: ~a instanceof ~a" arg1 arg2))
   )

@@ -862,22 +862,22 @@
         (<relational-expr>
           [(<shift-expr>) $1]
           [(<shift-expr> < <shift-expr>)
-           (make-object relational-op% '< $1 $3 (build-src 1))]
+           (make-object binary-op% '< $1 $3 (build-src 1))]
           [(<relational-expr> > <shift-expr>)
-           (make-object relational-op% '> $1 $3 (build-src 1))]
+           (make-object binary-op% '> $1 $3 (build-src 1))]
           [(<relational-expr> <= <shift-expr>)
-           (make-object relational-op% '<= $1 $3 (build-src 1))]
+           (make-object binary-op% '<= $1 $3 (build-src 1))]
           [(<relational-expr> >= <shift-expr>)
-           (make-object relational-op% '>= $1 $3 (build-src 1))]
+           (make-object binary-op% '>= $1 $3 (build-src 1))]
           [(<relational-expr> instanceof <reference-type>)
-           (make-object relational-op% 'instanceof $1 $3 (build-src 1))])
+           (make-object binary-op% 'instanceof $1 $3 (build-src 1))])
 
         (<equality-expr>
           [(<relational-expr>) $1]
           [(<equality-expr> == <relational-expr>)
-           (make-object todo-node% (list $1 $3) 'equal (build-src 1))]
+           (make-object binary-op% '== $1 $3 (build-src 1))]
           [(<equality-expr> != <relational-expr>)
-           (make-object todo-node% (list $1 $3) 'not-equal (build-src 1))])
+           (make-object binary-op% '!= $1 $3 (build-src 1))])
 
         (<and-expr>
           [(<equality-expr>) $1]
@@ -914,17 +914,17 @@
           [(<assignment>) $1])
 
         (<assignment-operator>
-          [(=) (make-object todo-node% null '= (build-src 1))]
-          [(*=) (make-object todo-node% null '*= (build-src 1))]
-          [(/=) (make-object todo-node% null '/= (build-src 1))]
-          [(%=) (make-object todo-node% null '%= (build-src 1))]
-          [(+=) (make-object todo-node% null '+= (build-src 1))]
-          [(-=) (make-object todo-node% null '-= (build-src 1))]
-          [(<<=) (make-object todo-node% null '<<= (build-src 1))]
-          [(>>=) (make-object todo-node% null '>>= (build-src 1))]
-          [(>>>=) (make-object todo-node% null '>>>= (build-src 1))]
-          [(&=) (make-object todo-node% null '&= (build-src 1))]
-          [(^=) (make-object todo-node% null '^= (build-src 1))]
+          [(=)       (make-object todo-node% null '= (build-src 1))]
+          [(*=)      (make-object todo-node% null '*= (build-src 1))]
+          [(/=)      (make-object todo-node% null '/= (build-src 1))]
+          [(%=)      (make-object todo-node% null '%= (build-src 1))]
+          [(+=)      (make-object todo-node% null '+= (build-src 1))]
+          [(-=)      (make-object todo-node% null '-= (build-src 1))]
+          [(<<=)     (make-object todo-node% null '<<= (build-src 1))]
+          [(>>=)     (make-object todo-node% null '>>= (build-src 1))]
+          [(>>>=)    (make-object todo-node% null '>>>= (build-src 1))]
+          [(&=)      (make-object todo-node% null '&= (build-src 1))]
+          [(^=)      (make-object todo-node% null '^= (build-src 1))]
           [(OREQUAL) (make-object todo-node% null 'or= (build-src 1))])
 
         (<expr>

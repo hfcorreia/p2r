@@ -27,3 +27,6 @@ println(1>2);
 println(1<=2);
 println(2>=2);
 //println(2 instanceof Integer);
+
+println(1==2);
+println(1!=2);
