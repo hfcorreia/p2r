@@ -163,13 +163,12 @@
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
            (define/override (->xml indent)
-                            (format "~%~a<~a>~a~a~%~a</~a>"
+                            (format "~%~a<binary-op id=\"~a\">~a~a~%~a</binary-op>"
                                     (make-string indent #\space)
                                     operator
                                     (send arg1 ->xml (+ indent 2))
                                     (send arg2 ->xml (+ indent 2))
-                                    (make-string indent #\space)
-                                    operator))
+                                    (make-string indent #\space)))
            ;; Aux function
            (define p-operator
              (case operator
@@ -186,6 +185,38 @@
                ['<< 'p-shiftl]
                ['>> 'p-shiftr]
                ['>>> 'p-shiftr-zero]))
+
+           (super-instantiate ())))
+  ;;; Unary Operator
+  (define unary-op%
+    (class expression%
+           ;; inits
+           (init-field operator arg)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; Generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(,p-operator ,(send arg ->racket))))
+                                   
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<unary-op id=\"~a\">~a~%~a</unary-op>"
+                                    (make-string indent #\space)
+                                    operator
+                                    (send arg ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+           ;; Aux function
+           (define p-operator
+             (case operator
+               ['+ 'p-pos]
+               ['- 'p-neg]
+               ['not 'p-bit-not]
+               ['! 'p-not]))
 
            (super-instantiate ())))
   )

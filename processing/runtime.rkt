@@ -62,5 +62,16 @@
   (define (p-shiftr-zero arg1 arg2)
     (arithmetic-shift arg1 arg2))
 
+  (define (p-pos arg)
+    arg)
+
+  (define (p-neg arg)
+    (- arg))
+
+  (define (p-bit-not arg)
+    (bitwise-not arg))
+
+  (define (p-not arg)
+    (not arg))
 
   )
