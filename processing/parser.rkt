@@ -766,11 +766,10 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<assignment>
           [(<left-hand> <assignment-operator> <assignment-expr>)
-           (make-object todo-node% (list $1 $2 $3) 'assigment (build-src 1))])
+           (make-object assignment% $2 $1 $3 (build-src 1))])
 
         (<left-hand>
-          [(<name>) 
-           (make-object todo-node% $1 'left-hand (build-src 1))]
+          [(<name>)  $1]
           [(<field-access>)
            (make-object todo-node% $1 'left-hand (build-src 1))]
           [(<array-access>) 
@@ -905,18 +904,18 @@
           [(<assignment>) $1])
 
         (<assignment-operator>
-          [(=)       (make-object todo-node% null '= (build-src 1))]
-          [(*=)      (make-object todo-node% null '*= (build-src 1))]
-          [(/=)      (make-object todo-node% null '/= (build-src 1))]
-          [(%=)      (make-object todo-node% null '%= (build-src 1))]
-          [(+=)      (make-object todo-node% null '+= (build-src 1))]
-          [(-=)      (make-object todo-node% null '-= (build-src 1))]
-          [(<<=)     (make-object todo-node% null '<<= (build-src 1))]
-          [(>>=)     (make-object todo-node% null '>>= (build-src 1))]
-          [(>>>=)    (make-object todo-node% null '>>>= (build-src 1))]
-          [(&=)      (make-object todo-node% null '&= (build-src 1))]
-          [(^=)      (make-object todo-node% null '^= (build-src 1))]
-          [(OREQUAL) (make-object todo-node% null 'or= (build-src 1))])
+          [(=)   '=]
+          [(*=)  '*=]
+          [(/=)  '/=]
+          [(%=)  '%=]
+          [(+=)  '+=]
+          [(-=)  '-=]
+          [(&=)  '&=]
+          [(^=)  '^=]
+          [(<<=) '<<=]
+          [(>>=) '>>=]
+          [(>>>=) '>>>=]
+          [(OREQUAL) 'or=])
 
         (<expr>
           [(<assignment-expr>) $1])

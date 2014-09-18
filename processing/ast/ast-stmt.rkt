@@ -11,6 +11,7 @@
     (class ast-node% 
            (init-field stmt)
 
+           (inherit-field src-info)
            ;; getters
            (define/public (get-stmt) stmt)
 
@@ -109,4 +110,5 @@
                                       "") 
                                     (make-string indent #\space)))
            (super-instantiate ())))
+
   )

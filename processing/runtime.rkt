@@ -10,7 +10,7 @@
 
   ;; Poor man's implementation
   (define (println arg)
-    (displayln 
+    (displayln
       (cond
         [(and (boolean? arg) arg) "true"]
         [(and (boolean? arg) (not arg)) "false"]
@@ -20,12 +20,19 @@
   ;; Declaration Operator
   (define-syntax p-declaration
     (syntax-rules ()
-      [(_ arg1)
-       (define arg1 undefined)]
-      [(_ arg1 arg2)
-       (define arg1 arg2)]))
-       
+      [(_ id)
+       (define id undefined)]
+      [(_ id expr)
+       (define id expr)]))
 
+
+  ;;; Assigments
+  (define-syntax p-assignment 
+    (syntax-rules ()
+      [(_ id expr)
+       (begin
+         (set! id expr)
+         expr)]))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; TODO: Check operator semantics against processing's semantics

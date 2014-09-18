@@ -209,7 +209,7 @@
            (define/override (->racket)
                             (->syntax-object 
                               `(,p-operator ,(send arg ->racket))))
-                                   
+
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -233,7 +233,7 @@
   (define assignment%
     (class expression%
            ;; inits
-           (init-field arg1 arg2)
+           (init-field operator left-val right-val) 
 
            (inherit ->syntax-object)
 
@@ -241,18 +241,33 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(p-assignment ,(send arg1 ->racket)
-                                             ,(send arg2 ->racket))))
-                                   
+                              `(,assignment-operator ,(send left-val ->racket)
+                                                     ,(send right-val ->racket))))
+
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
            (define/override (->xml indent)
-                            (format "~a<assignment>~a~a~%~a</assignment>"
+                            (format "~%~a<assignment>~a~a~%~a</assignment>"
                                     (make-string indent #\space)
-                                    (send arg1 ->xml (+ indent 2))
-                                    (send arg2 ->xml (+ indent 2))
+                                    (send left-val ->xml (+ indent 2))
+                                    (send right-val ->xml (+ indent 2))
                                     (make-string indent #\space)))
+           ;; aux function
+           (define assignment-operator
+             (case operator
+               ['=  'p-assignment]
+               ['*= 'p-assign-mul]
+               ['/= 'p-assign-div]
+               ['%= 'p-assign-mod]
+               ['+= 'p-assign-add]
+               ['-= 'p-assign-sub]
+               ['&= 'p-assign-bit-and]
+               ['^= 'p-assign-bit-xor]
+               ['<<= 'p-assign-shiftl]
+               ['>>= 'p-assign-shiftr]
+               ['>>>= 'p-assign-shiftr-zero]
+               ['or= 'p-assign-bit-or]))
 
            (super-instantiate ())))
 
