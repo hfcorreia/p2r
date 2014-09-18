@@ -18,18 +18,16 @@
                            #:exists 'replace)
       (map (lambda (elem) (printf (send elem ->xml 0))) ast)))
 
-    
+
   ;;
   (define (build-ast file #:input-port [input-port #f])
     (if (eq? input-port #f)
       (with-input-from-file file
-                          (lambda ()
-                            (parse-processing file (current-input-port)))
-                          #:mode 'text)
+                            (lambda ()
+                              (parse-processing file (current-input-port)))
+                            #:mode 'text)
       (parse-processing file input-port)))
 
   ;; 
   (define (compile-processing ast)
-      (cond 
-        [(not (null? ast)) (map (lambda (elem) (send elem ->racket)) ast)]
-        [else (list)])))
+    (map (lambda (elem) (send elem ->racket)) ast)))

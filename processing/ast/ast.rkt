@@ -47,6 +47,24 @@
 
            (super-instantiate ())))
 
+  ;;; Type nodes
+  (define primitive-type% 
+    (class ast-node%
+           (init-field type)
+
+           ;; ->racket: -> syntax-object?
+           ;; Generates the syntax object relative to the node
+           (define/override (->racket)
+                            (send type ->racket))
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<primitive-type type=\"~a\" />"
+                                    (make-string indent #\space)
+                                    type))
+           (super-instantiate ())))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Debug stuff
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

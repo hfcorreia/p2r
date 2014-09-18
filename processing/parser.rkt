@@ -97,39 +97,28 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<type>
           [(<primitive-type>) 
-           (make-object todo-node% $1 'primitive-type (build-src 1))]
+           (make-object primitive-type% $1 (build-src 1))]
           [(<reference-type>) 
-           (make-object todo-node% $1 'reference-type (build-src 1))])
+           (make-object todo-node% $1 'reference-type%  (build-src 1))])
 
         (<primitive-type>
-          [(<numeric-type>) 
-           (make-object todo-node% $1 'numeric-type (build-src 1))]
-          [(boolean)          
-           (make-object todo-node% null 'boolean (build-src 1))])
+          [(<numeric-type>) $1]
+          [(boolean) 'bool])
 
         (<numeric-type>
-          [(<integral-type>) 
-           (make-object todo-node% $1 'integral-type (build-src 1))]
-          [(<floating-type>) 
-           (make-object todo-node% $1 'floating-type (build-src 1))])
+          [(<integral-type>) $1]
+          [(<floating-type>) $1])
 
         (<integral-type>
-          [(byte)      
-           (make-object todo-node%  null 'byte  (build-src 1))]
-          [(short)     
-           (make-object todo-node%  null 'short (build-src 1))]
-          [(int)       
-           (make-object todo-node%  null 'int   (build-src 1))]
-          [(long)      
-           (make-object todo-node%  null 'long  (build-src 1))]
-          [(char)      
-           (make-object todo-node%  null 'char  (build-src 1))])
+          [(byte)   'byte]
+          [(short)  'short]   
+          [(int)    'int]
+          [(long)   'long]
+          [(char)   'char])
 
         (<floating-type>
-          [(float)     
-           (make-object todo-node% null 'float  (build-src 1))]
-          [(double)    
-           (make-object todo-node% null 'double (build-src 1))])
+          [(float)  'float]
+          [(double) 'double])   
 
         (<reference-type>
           [(<name>)      
@@ -207,7 +196,7 @@
           [(<class-declaration>)          
            (make-object todo-node% $1 'class-decl (build-src 1))]
           [(<global-member-declaration>) 
-           (make-object todo-node% $1 'global-member-decl (build-src 1))]
+           (make-object global-decl% $1 (build-src 1))]
           [(<global-stmt>)  
            (make-object global-stmt% $1 (build-src 1))])
 
@@ -352,9 +341,9 @@
           [(<formal-parameter-list> comma <formal-parameter>) (cons $3 $1)])
 
         (<formal-parameter>
-          [(<type> <var-declarator-id>)       
+          [(<type> <var-decl-id>)
            (make-object todo-node% (list $1 $2) 'formal-parameter (build-src 1))]
-          [(final <type> <var-declarator-id>) 
+          [(final <type> <var-decl-id>) 
            (make-object todo-node% (list $2 $3) 'final-formal-parameter (build-src 2))])
 
         (<throws>
@@ -437,22 +426,23 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<field-declaration>
           [(<modifiers> <type> <var-declarators> semicolon)
-           (make-object todo-node% (list $1 $2 $3) 'field-declaration (build-src 1))]
+           (make-object vars-decl% $1 $2 (reverse $3) (build-src 1))]
           [(<type> <var-declarators> semicolon)
-           (make-object todo-node% (list $1 $2) 'field-declaration (build-src 1))])
+           (make-object vars-decl% null $1 (reverse $2) (build-src 1))])
 
         (<var-declarators>
           [(<var-declarator>) (list $1)]
           [(<var-declarators> comma <var-declarator>) (cons $3 $1)])
 
         (<var-declarator>
-          [(<var-declarator-id>) $1]
-          [(<var-declarator-id> = <var-initializer>)
-           (make-object todo-node% (list $1 $3) 'var-declartor-id-init (build-src 1))])
+          [(<var-decl-id>) 
+           (make-object var-decl% $1 null (build-src 1))]
+          [(<var-decl-id> = <var-initializer>)
+           (make-object var-decl% $1 $3 (build-src 1))])
 
-        (<var-declarator-id> 
+        (<var-decl-id> 
           [(identifier)
-           (make-object todo-node% null 'var-declartor-id (build-src 1))]
+           (make-object identifier% $1 (build-src 1))]
           [(identifier <dims>)
            (make-object todo-node% $1 'var-declartor-id (build-src 1))])
 
@@ -770,8 +760,9 @@
            (make-object todo-node% (list $2 $3) 'new-array (build-src 1))]
           [(new <class-or-interface-type> <dims> <array-initializer>) 
            (make-object todo-node% (list $2 $3 $4) 'new-array (build-src 1))])
+
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        ;; Expressions and Assigments
+        ;; Expressions and Assignments
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<assignment>
           [(<left-hand> <assignment-operator> <assignment-expr>)

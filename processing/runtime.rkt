@@ -2,6 +2,8 @@
 
   (provide (all-defined-out))
 
+  (require racket/undefined)
+
   (define-syntax-rule
     (dispatch func ...)
     (func ...))
@@ -15,8 +17,18 @@
         [(not (null? arg)) arg]
         [else  ""])))
 
+  ;; Declaration Operator
+  (define-syntax p-declaration
+    (syntax-rules ()
+      [(_ arg1)
+       (define arg1 undefined)]
+      [(_ arg1 arg2)
+       (define arg1 arg2)]))
+       
+
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; TODO: Check operator semantics agains processing's semantics
+  ;; TODO: Check operator semantics against processing's semantics
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;; Arithmetic Operations

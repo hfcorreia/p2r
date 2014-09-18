@@ -229,4 +229,31 @@
 
            (super-instantiate ())))
 
+  ;;; assignment
+  (define assignment%
+    (class expression%
+           ;; inits
+           (init-field arg1 arg2)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; Generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(p-assignment ,(send arg1 ->racket)
+                                             ,(send arg2 ->racket))))
+                                   
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~a<assignment>~a~a~%~a</assignment>"
+                                    (make-string indent #\space)
+                                    (send arg1 ->xml (+ indent 2))
+                                    (send arg2 ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+
+           (super-instantiate ())))
+
   )
