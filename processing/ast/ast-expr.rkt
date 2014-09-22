@@ -241,8 +241,12 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(,assignment-operator ,(send left-val ->racket)
-                                                     ,(send right-val ->racket))))
+                              (if (equal? operator '=)
+                                `(p-assignment ,(send left-val ->racket)
+                                               ,(send right-val ->racket))
+                                `(p-assignment ,assignment-operator
+                                               ,(send left-val ->racket)
+                                               ,(send right-val ->racket)))))
 
 
            ;; ->xml: ->string?
@@ -256,18 +260,17 @@
            ;; aux function
            (define assignment-operator
              (case operator
-               ['=  'p-assignment]
-               ['*= 'p-assign-mul]
-               ['/= 'p-assign-div]
-               ['%= 'p-assign-mod]
-               ['+= 'p-assign-add]
-               ['-= 'p-assign-sub]
-               ['&= 'p-assign-bit-and]
-               ['^= 'p-assign-bit-xor]
-               ['<<= 'p-assign-shiftl]
-               ['>>= 'p-assign-shiftr]
-               ['>>>= 'p-assign-shiftr-zero]
-               ['or= 'p-assign-bit-or]))
+               ['*= 'p-mul]
+               ['/= 'p-div]
+               ['%= 'p-mod]
+               ['+= 'p-add]
+               ['-= 'p-sub]
+               ['&= 'p-bit-and]
+               ['^= 'p-bit-xor]
+               ['<<= 'p-shiftl]
+               ['>>= 'p-shiftr]
+               ['>>>= 'p-shiftr-zero]
+               ['or= 'p-bit-or]))
 
            (super-instantiate ())))
 

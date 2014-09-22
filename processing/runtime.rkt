@@ -31,9 +31,14 @@
     (syntax-rules ()
       [(_ id expr)
        (begin
-         (set! id expr)
-         expr)]))
-
+        (set! id expr)
+        id)]
+     [(_ op id expr)
+      (begin
+        (set! id (op id expr))
+        id)]))
+     
+         
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; TODO: Check operator semantics against processing's semantics
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
