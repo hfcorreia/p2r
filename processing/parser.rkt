@@ -426,9 +426,9 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<field-declaration>
           [(<modifiers> <type> <var-declarators> semicolon)
-           (make-object vars-decl% $1 $2 (reverse $3) (build-src 1))]
+           (make-object vars-decl% $1 $2 (reverse $3)  (build-src 1))]
           [(<type> <var-declarators> semicolon)
-           (make-object vars-decl% null $1 (reverse $2) (build-src 1))])
+           (make-object vars-decl% null $1 (reverse $2)  (build-src 1))])
 
         (<var-declarators>
           [(<var-declarator>) (list $1)]
@@ -454,13 +454,13 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<block>
           [(l-cbrack <block-stmts> r-cbrack)  
-           (make-object todo-node% $2 'block (build-src 1))]
+           (make-object block% (reverse $2) (build-src 1))]
           [(l-cbrack r-cbrack)              
-           (make-object todo-node% null 'block'(build-src 1))])
+           (make-object block% null (build-src 1))])
 
         (<block-stmts>
           [(<block-stmt>)  (list $1)]
-          [(<block-stmts> <block-stmt>) (cons $1 $2)])
+          [(<block-stmts> <block-stmt>) (cons $2 $1)])
 
         (<block-stmt>
           [(<local-var-decl-stmt>) $1]
@@ -470,10 +470,10 @@
           [(<local-var-decl> semicolon) $1])
 
         (<local-var-decl>
-          [(<type> <var-declarators>) 
-           (make-object todo-node% (list $1 $2) 'local-var-decl (build-src 1))]
           [(<modifiers> <type> <var-declarators>) 
-           (make-object todo-node% (list $1 $2 $3) 'local-var-decl (build-src 1))])
+           (make-object vars-decl% $1 $2 (reverse $3)  (build-src 1))]
+          [(<type> <var-declarators>) 
+           (make-object vars-decl% null $1 (reverse $2)  (build-src 1))])
 
         (<stmt>
           [(<stmt-no-trailing-substmt>) $1]

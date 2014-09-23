@@ -12,16 +12,15 @@
            (init-field stmt)
 
            (inherit-field src-info)
-           ;; getters
-           (define/public (get-stmt) stmt)
+
            (inherit ->syntax-object)
 
            ;; ->racket: -> syntax-object?
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                            `(begin 
-                               (void ,(send stmt ->racket)))))
+                              `(begin 
+                                 (void ,(send stmt ->racket)))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -112,6 +111,38 @@
                                       (send value ->xml (+ indent 2))
                                       "") 
                                     (make-string indent #\space)))
+           (super-instantiate ())))
+
+  (define block%
+    (class ast-node% 
+           (init-field stmts)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object
+                              (if (null? stmts) 
+                                `(let () (void))
+                                `(let ()
+                                   ,@(map (lambda (stmt)
+                                            (send stmt ->racket))
+                                          stmts)
+                                   (void)))))
+           ; stmts)))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<block>~a~%~a</block>~%"
+                                    (make-string indent #\space)
+                                    (string-append*
+                                      (map (lambda (stmt)
+                                             (send stmt ->xml (+ indent 2)))
+                                           stmts))
+                                    (make-string indent #\space)))
+
            (super-instantiate ())))
 
   )
