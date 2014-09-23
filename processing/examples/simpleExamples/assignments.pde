@@ -1,10 +1,15 @@
 #lang processing
-int y,z,t;
-int x=2;
 
+int y;
+int t;
+int x=1;
+
+
+y = x; // 1
+
+y *= 2; // 2
+
+x = t = y;
 println(x);
-
-t = z = y = 5;
-println(z);
 println(y);
 println(t);

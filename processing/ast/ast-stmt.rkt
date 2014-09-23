@@ -14,11 +14,14 @@
            (inherit-field src-info)
            ;; getters
            (define/public (get-stmt) stmt)
+           (inherit ->syntax-object)
 
            ;; ->racket: -> syntax-object?
            ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (send stmt ->racket))
+                            (->syntax-object
+                            `(begin 
+                               (void ,(send stmt ->racket)))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
