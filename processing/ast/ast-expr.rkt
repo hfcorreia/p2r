@@ -44,8 +44,10 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(dispatch ,(send name ->racket) 
-                                         ,@(send args ->racket))))
+                              (if (null? args)
+                                `(dispatch ,(send name ->racket))
+                                `(dispatch ,(send name ->racket) 
+                                           ,@(send args ->racket)))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -53,7 +55,9 @@
                             (format "~%~a<method-call>~a~a~%~a</method-call>"
                                     (make-string indent #\space)
                                     (send name ->xml (+ indent 2))
-                                    (send args ->xml (+ indent 2))
+                                    (if (null? args) 
+                                      ""
+                                      (send args ->xml (+ indent 2)))
                                     (make-string (+ 2 indent) #\space)))
            (super-instantiate ())))
 

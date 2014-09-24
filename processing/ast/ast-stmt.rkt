@@ -145,4 +145,66 @@
 
            (super-instantiate ())))
 
+  (define method-decl% 
+    (class ast-node% 
+           (init-field header body)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(define (,(send (send header get-id)
+                                              ->racket))
+                                 ,(send body ->racket))))
+
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<method-decl>~a~%~a%~a</method-decl>"
+                                    (make-string indent #\space)
+                                    (send header ->xml (+ indent 2))
+                                    (send body ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define method-header%
+    (class ast-node% 
+           (init-field modifiers type id parameters throws)
+
+           (inherit ->syntax-object)
+
+           ;; Getters
+           (define/public (get-id) id)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object '(void)))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~%~a<method-decl>~a~%~a~%~a~%~a~%~a~%~a</method-decl>"
+                                    (make-string indent #\space)
+                                    (if (null? modifiers)
+                                      ""
+                                      (send modifiers ->xml (+ indent 2)))
+                                    (send type ->xml (+ indent 2))
+                                    (send id ->xml (+ indent 2))
+                                    (if (null? parameters)
+                                      ""
+                                      (string-append*
+                                        (map (lambda (var)
+                                               (send var ->xml (+ indent 2)))
+                                             parameters)))
+                                    (if (null? throws)
+                                      ""
+                                      (send throws ->xml (+ indent 2)))
+                                    (make-string indent #\space)))
+
+           (super-instantiate ())))
   )

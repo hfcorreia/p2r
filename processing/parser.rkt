@@ -306,31 +306,34 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<method-declaration>
           [(<method-header> <method-body>) 
-           (make-object todo-node% (list $1 $2) 'method-decl (build-src 1))])
+           (make-object method-decl% $1 $2 (build-src 1))])
 
         (<method-header>
           [(<modifiers> <type> <method-declarator> <throws>) 
-           (make-object todo-node% (list $1 $2 $3 $4) 'method-header (build-src 3))]
+           (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
           [(<modifiers> <type> <method-declarator>) 
-           (make-object todo-node% (list $1 $2 $3) 'method-header (build-src 2))]
+          (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
           [(<type> <method-declarator> <throws>) 
-           (make-object todo-node% (list $1 $2 $3) 'method-header (build-src 2))]
+           (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
           [(<type> <method-declarator>) 
-           (make-object todo-node% (list $1 $2) 'method-header (build-src 2))]
-          [(<modifiers> void <method-declarator> <throws>)
-           (make-object todo-node% (list $1 $3 $4) 'method-header (build-src 3))]
-          [(<modifiers> void <method-declarator>)
-           (make-object todo-node% (list $1 $3) 'method-header (build-src 3))]
-          [(void <method-declarator> <throws>)
-           (make-object todo-node% (list $2 $3) 'method-header (build-src 2))]
-          [(void <method-declarator>)
-           (make-object todo-node% (list $2) 'method-header (build-src 2))])
+           (make-object method-header% null $1 (car $2) (cdr $2) null (build-src 2))]
+          [(<modifiers> <void> <method-declarator> <throws>) 
+           (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
+          [(<modifiers> <void> <method-declarator>) 
+          (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
+          [(<void> <method-declarator> <throws>) 
+           (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
+          [(<void> <method-declarator>) 
+           (make-object method-header% null $1 (car $2) (cdr $2) null (build-src 2))])
+
+        (<void>
+          [(void)   (make-object primitive-type% 'void (build-src 1))])
 
         (<method-declarator>
           [(identifier l-paren <formal-parameter-list> r-paren) 
-           (make-object todo-node% $3 'method-declarator (build-src 2))]
+           (cons (make-object identifier% $1 (build-src 1)) $3)]
           [(identifier l-paren r-paren) 
-           (make-object todo-node% null 'method-declarator (build-src 2))]
+           (cons (make-object identifier% $1 (build-src 1)) null)]
           [(identifier l-paren <formal-parameter-list> r-paren <dims>) 
            (make-object todo-node% (list $3 $5) 'method-declarator (build-src 2))]
           [(identifier l-paren r-paren <dims>) 
@@ -355,10 +358,8 @@
           [(<class-type-list> comma <class-type>) (cons $3 $1)])
 
         (<method-body>
-          [(<block>) 
-           (make-object todo-node% $1 'method-body (build-src 1))]
-          [(semicolon) 
-           (make-object todo-node% null 'empty-method-body (build-src 1))])
+          [(<block>)   $1]
+          [(semicolon) null])
 
         (<static-initializer>
           [(static <block>) 
