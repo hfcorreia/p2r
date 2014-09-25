@@ -3,6 +3,7 @@
 void foo(int x, int y){
   println(x);
   println(y);
+  return;
 }
 
-foo(1,2);
+println(foo(1,2));

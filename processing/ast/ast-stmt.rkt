@@ -128,8 +128,8 @@
                                 `(let ()
                                    ,@(map (lambda (stmt)
                                             (send stmt ->racket))
-                                          stmts)
-                                   (void)))))
+                                          stmts)))))
+                                   
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -156,14 +156,14 @@
                             (->syntax-object 
                               `(define 
                                  (,(send (send header get-id) ->racket)
-                                  ,@(send header ->racket))
+                                   ,@(send header ->racket))
                                  ,(send body ->racket))))
 
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
            (define/override (->xml indent)
-                            (format "~%~a<method-decl>~a~%~a%~a</method-decl>"
+                            (format "~%~a<method-decl>~a~%~a~%~a</method-decl>"
                                     (make-string indent #\space)
                                     (send header ->xml (+ indent 2))
                                     (send body ->xml (+ indent 2))
@@ -238,6 +238,33 @@
                               final
                               (send type ->xml (+ indent 2))
                               (send id ->xml (+ indent 2))
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define return% 
+    (class ast-node% 
+           (init-field expr)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              (if(null? expr)
+                                (void)
+                                (send expr ->racket))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<return>~%~a~%~a<return/>"
+                              (make-string indent #\space)
+                              (if (null? expr)
+                                ""
+                                (send expr ->xml (+ indent 2)))
                               (make-string indent #\space)))
 
            (super-instantiate ())))

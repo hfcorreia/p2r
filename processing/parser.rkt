@@ -628,9 +628,9 @@
 
         (<return-stmt>
           [(return <expr> semicolon) 
-           (make-object todo-node% null 'return (build-src 1))]
+           (make-object return% $2 (build-src 1))]
           [(return semicolon) 
-           (make-object todo-node% null 'return (build-src 1))])
+           (make-object return% null (build-src 1))])
 
         (<synchronized-stmt>
           [(synchronized l-paren <expr> r-paren <block>)

@@ -14,6 +14,7 @@
       (cond
         [(and (boolean? arg) arg) "true"]
         [(and (boolean? arg) (not arg)) "false"]
+        [(void? arg) ""]
         [(not (null? arg)) arg]
         [else  ""])))
 
