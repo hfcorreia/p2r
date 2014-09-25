@@ -345,9 +345,9 @@
 
         (<formal-parameter>
           [(<type> <var-decl-id>)
-           (make-object todo-node% (list $1 $2) 'formal-parameter (build-src 1))]
+           (make-object formal-parameter% null $1 $2 (build-src 1))]
           [(final <type> <var-decl-id>) 
-           (make-object todo-node% (list $2 $3) 'final-formal-parameter (build-src 2))])
+           (make-object formal-parameter% 'final $2 $3 (build-src 2))])
 
         (<throws>
           [(throws <class-type-list>) 

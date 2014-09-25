@@ -1,7 +1,8 @@
 #lang processing
 
-void foo(){
-  println("My first function!");
+void foo(int x, int y){
+  println(x);
+  println(y);
 }
 
-foo();
+foo(1,2);

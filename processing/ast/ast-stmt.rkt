@@ -130,7 +130,6 @@
                                             (send stmt ->racket))
                                           stmts)
                                    (void)))))
-           ; stmts)))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -155,8 +154,9 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(define (,(send (send header get-id)
-                                              ->racket))
+                              `(define 
+                                 (,(send (send header get-id) ->racket)
+                                  ,@(send header ->racket))
                                  ,(send body ->racket))))
 
 
@@ -179,11 +179,17 @@
 
            ;; Getters
            (define/public (get-id) id)
+           (define/public (get-parameters) parameters)
 
            ;; ->racket: -> syntax-object?
            ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (->syntax-object '(void)))
+                            (->syntax-object 
+                              (map (lambda(arg)
+                                     (send arg ->racket))
+                                   parameters)))
+
+
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -205,6 +211,34 @@
                                       ""
                                       (send throws ->xml (+ indent 2)))
                                     (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define formal-parameter% 
+    (class ast-node% 
+           (init-field final type id)
+
+           (inherit ->syntax-object)
+
+           ;; Getters
+           (define/public (get-id) id)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              (send id ->racket)))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<formal-parameter>~a~%~a~%~a~%~a<formal-parameter/>"
+                              (make-string indent #\space)
+                              final
+                              (send type ->xml (+ indent 2))
+                              (send id ->xml (+ indent 2))
+                              (make-string indent #\space)))
 
            (super-instantiate ())))
   )
