@@ -45,8 +45,8 @@
            (define/override (->racket)
                             (->syntax-object
                               (if (null? args)
-                                `(dispatch ,(send name ->racket))
-                                `(dispatch ,(send name ->racket) 
+                                `(p-call ,(send name ->racket))
+                                `(p-call ,(send name ->racket)
                                            ,@(send args ->racket)))))
 
            ;; ->xml: ->string?
@@ -59,6 +59,7 @@
                                       ""
                                       (send args ->xml (+ indent 2)))
                                     (make-string (+ 2 indent) #\space)))
+
            (super-instantiate ())))
 
   ;;; Identifier 
@@ -70,7 +71,7 @@
            (inherit ->syntax-object)
 
            ;; getters
-           (define/public (get-identifier) identifier)
+           (define/public (get-id) identifier)
 
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
@@ -86,9 +87,8 @@
 
            ;; Aux functions
            (define (identifier->symbol)
-             (if (symbol? identifier)
-               identifier 
-               (string->symbol identifier))) 
+             (string->symbol 
+               (string-append "p-" identifier)))
 
            (super-instantiate ())))
 
