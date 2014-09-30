@@ -2,6 +2,7 @@
 
   (require racket/class
            "ast.rkt"
+           "ast-utils.rkt"
            "../lib/runtime.rkt")
 
   (provide (all-defined-out))
@@ -45,9 +46,9 @@
            (define/override (->racket)
                             (->syntax-object
                               (if (null? args)
-                                `(p-call ,(send name ->racket))
-                                `(p-call ,(send name ->racket)
-                                           ,@(send args ->racket)))))
+                                `(p-call ,(node->racket name))
+                                `(p-call ,(node->racket name)
+                                           ,@(node->racket args)))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -133,9 +134,7 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              (map (lambda (arg)
-                                     (send arg ->racket))
-                                   args)))
+                              (node->racket args)))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -161,8 +160,8 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(,p-operator ,(send arg1 ->racket) 
-                                            ,(send arg2 ->racket))))
+                              `(,p-operator ,(node->racket arg1) 
+                                            ,(node->racket arg2))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -212,7 +211,7 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(,p-operator ,(send arg ->racket))))
+                              `(,p-operator ,(node->racket arg))))
 
 
            ;; ->xml: ->string?
@@ -246,11 +245,11 @@
            (define/override (->racket)
                             (->syntax-object 
                               (if (equal? operator '=)
-                                `(p-assignment ,(send left-val ->racket)
-                                               ,(send right-val ->racket))
+                                `(p-assignment ,(node->racket left-val)
+                                               ,(node->racket right-val))
                                 `(p-assignment ,assignment-operator
-                                               ,(send left-val ->racket)
-                                               ,(send right-val ->racket)))))
+                                               ,(node->racket left-val)
+                                               ,(node->racket right-val)))))
 
 
            ;; ->xml: ->string?

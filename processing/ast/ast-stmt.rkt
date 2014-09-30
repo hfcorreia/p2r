@@ -19,8 +19,7 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(begin 
-                                 (void ,(send stmt ->racket)))))
+                              `(void ,(node->racket stmt))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -40,7 +39,7 @@
            ;; ->racket: -> syntax-object?
            ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (send decl ->racket))
+                            (node->racket decl))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -64,9 +63,7 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(begin ,@(map (lambda(var)
-                                               (send var ->racket))
-                                             vars))))
+                              `(begin ,@(node->racket vars))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -97,9 +94,9 @@
            (define/override (->racket)
                             (->syntax-object
                               (if (null? value)
-                                `(p-declaration ,(send var ->racket))
-                                `(p-declaration ,(send var ->racket)
-                                                ,(send value ->racket)))))
+                                `(p-declaration ,(node->racket var))
+                                `(p-declaration ,(node->racket var)
+                                                ,(node->racket value)))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -126,9 +123,8 @@
                               (if (null? stmts) 
                                 `(let () (void))
                                 `(let ()
-                                   ,@(map (lambda (stmt)
-                                            (send stmt ->racket))
-                                          stmts)))))
+                                  ,@(node->racket stmts)
+                                  (void)))))
 
 
            ;; ->xml: ->string?
@@ -154,10 +150,9 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(define ,(send header ->racket)
+                              `(define ,(node->racket header)
                                  (call/ec (lambda (return)
-                                 ,(send body ->racket))))))
-
+                                 ,(node->racket body))))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -184,12 +179,8 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(,(send id ->racket)
-                                ,@(map (lambda(arg)
-                                          (send arg ->racket))
-                                        parameters))))
-
-
+                              `(,(node->racket id)
+                                ,@(node->racket parameters))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -254,7 +245,7 @@
                             (->syntax-object 
                               (if(null? expr)
                                 `(return (void))
-                                `(return ,(send expr ->racket)))))
+                                `(return ,(node->racket expr)))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node

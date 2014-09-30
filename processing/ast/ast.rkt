@@ -6,6 +6,15 @@
 
   (provide (all-defined-out))
 
+  ;;; Macro to simplyfy code generation
+  (define-syntax-rule
+    (node->racket arg)
+    (if (list? arg)
+      (map (lambda (elem)
+             (send elem ->racket))
+           arg)
+      (send arg ->racket)))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST struct definitions
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
