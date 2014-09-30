@@ -2,7 +2,7 @@
 
   (require racket/class
            "ast.rkt"
-           "../runtime.rkt")
+           "../lib/runtime.rkt")
 
   (provide (all-defined-out))
 

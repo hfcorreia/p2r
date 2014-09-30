@@ -2,7 +2,7 @@
 
   (require racket/class
            syntax/readerr
-           "../runtime.rkt")
+           "../lib/runtime.rkt")
 
   (provide (all-defined-out))
 

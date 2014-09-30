@@ -4,7 +4,7 @@
 
   (require racket/class
            "ast.rkt"
-           "../runtime.rkt")
+           "../lib/runtime.rkt")
 
   ;;; global stmt
   (define global-stmt%
