@@ -1,4 +1,4 @@
-(module ast-type racket
+(module ast/type racket
 
   (provide (all-defined-out))
 

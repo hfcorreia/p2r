@@ -1,9 +1,11 @@
 (module lexer racket 
+
+  (provide (all-defined-out))
+
   (require parser-tools/lex
            (prefix-in re: parser-tools/lex-sre)
            racket/string)
 
-  (provide (all-defined-out))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Tokens definitions
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

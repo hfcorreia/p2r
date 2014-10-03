@@ -1,4 +1,7 @@
 (module parser racket
+
+  (provide parse-processing)
+
   (require parser-tools/yacc
            parser-tools/lex
            syntax/readerr
@@ -7,9 +10,6 @@
            "ast/ast-type.rkt"
            "ast/ast-expr.rkt"
            "ast/ast-stmt.rkt")
-
-  (provide parse-processing)
-
 
   (define (parse-processing src input-port)
     ;; turns on line and column location for input-port

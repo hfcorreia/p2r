@@ -1,11 +1,11 @@
-(module ast-expr racket
+(module ast/expr racket
+
+  (provide (all-defined-out))
 
   (require racket/class
            "ast.rkt"
            "ast-utils.rkt"
            "../lib/runtime.rkt")
-
-  (provide (all-defined-out))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST expression nodes
