@@ -4,6 +4,7 @@
            syntax/readerr
            "lexer.rkt"
            "ast/ast.rkt"
+           "ast/ast-type.rkt"
            "ast/ast-expr.rkt"
            "ast/ast-stmt.rkt")
 
@@ -312,7 +313,7 @@
           [(<modifiers> <type> <method-declarator> <throws>) 
            (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
           [(<modifiers> <type> <method-declarator>) 
-          (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
+           (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
           [(<type> <method-declarator> <throws>) 
            (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
           [(<type> <method-declarator>) 
@@ -320,7 +321,7 @@
           [(<modifiers> <void> <method-declarator> <throws>) 
            (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
           [(<modifiers> <void> <method-declarator>) 
-          (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
+           (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
           [(<void> <method-declarator> <throws>) 
            (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
           [(<void> <method-declarator>) 

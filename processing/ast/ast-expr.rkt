@@ -37,10 +37,6 @@
 
            (inherit ->syntax-object)
 
-           ;; getters
-           (define/public (get-name) name)
-           (define/public (get-args) args)
-
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
@@ -48,7 +44,7 @@
                               (if (null? args)
                                 `(p-call ,(node->racket name))
                                 `(p-call ,(node->racket name)
-                                           ,@(node->racket args)))))
+                                         ,@(node->racket args)))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -71,9 +67,6 @@
 
            (inherit ->syntax-object)
 
-           ;; getters
-           (define/public (get-id) identifier)
-
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
@@ -86,7 +79,7 @@
                                     (make-string indent #\space)
                                     identifier))
 
-           ;; Aux functions
+           ;; Appends a 'p-' to each id of the original code
            (define (identifier->symbol)
              (string->symbol 
                (string-append "p-" identifier)))
@@ -100,10 +93,6 @@
            (init-field value type)
 
            (inherit ->syntax-object)
-
-           ;; getters
-           (define/public (get-value) value)
-           (define/public (get-type) type)
 
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
@@ -213,7 +202,6 @@
                             (->syntax-object 
                               `(,p-operator ,(node->racket arg))))
 
-
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
            (define/override (->xml indent)
@@ -250,7 +238,6 @@
                                 `(p-assignment ,assignment-operator
                                                ,(node->racket left-val)
                                                ,(node->racket right-val)))))
-
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node

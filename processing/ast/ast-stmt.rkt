@@ -3,12 +3,32 @@
   (provide (all-defined-out))
 
   (require racket/class
-           "ast.rkt"
-           "../lib/runtime.rkt")
+           "ast.rkt")
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; AST stmt nodes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define stmt%
+    (class ast-node%
+           (inherit read-error)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (read-error (format "Invalid use of ->racket ~a" this)))
+
+           ;; ->xml: ->string?
+           ;; Generates xml representation of the node
+           (define/override (->xml indent)
+                            (read-error (format "Invalid use of ->racket ~a" this)))
+
+           (super-instantiate ())))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;; global stmt
   (define global-stmt%
-    (class ast-node% 
+    (class stmt%
            (init-field stmt)
 
            (inherit-field src-info)
@@ -33,7 +53,7 @@
 
   ;;; global declaration
   (define global-decl%
-    (class ast-node% 
+    (class stmt%
            (init-field decl)
 
            ;; ->racket: -> syntax-object?
@@ -53,7 +73,7 @@
 
   ;;; variable declaration
   (define vars-decl%
-    (class ast-node% 
+    (class stmt%
            ;; TODO: types and modifiers
            (init-field modifiers type vars)
 
@@ -83,7 +103,7 @@
 
   ;;; variable declaration
   (define var-decl%
-    (class ast-node% 
+    (class stmt%
            ;; TODO: types and modifiers
            (init-field var value)
 
@@ -111,7 +131,7 @@
            (super-instantiate ())))
 
   (define block%
-    (class ast-node% 
+    (class stmt%
            (init-field stmts)
 
            (inherit ->syntax-object)
@@ -123,8 +143,8 @@
                               (if (null? stmts) 
                                 `(let () (void))
                                 `(let ()
-                                  ,@(node->racket stmts)
-                                  (void)))))
+                                   ,@(node->racket stmts)
+                                   (void)))))
 
 
            ;; ->xml: ->string?
@@ -141,7 +161,7 @@
            (super-instantiate ())))
 
   (define method-decl% 
-    (class ast-node% 
+    (class stmt%
            (init-field header body)
 
            (inherit ->syntax-object)
@@ -152,7 +172,7 @@
                             (->syntax-object 
                               `(define ,(node->racket header)
                                  (call/ec (lambda (return)
-                                 ,(node->racket body))))))
+                                            ,(node->racket body))))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -166,7 +186,7 @@
            (super-instantiate ())))
 
   (define method-header%
-    (class ast-node% 
+    (class stmt%
            (init-field modifiers type id parameters throws)
 
            (inherit ->syntax-object)
@@ -180,7 +200,7 @@
            (define/override (->racket)
                             (->syntax-object 
                               `(,(node->racket id)
-                                ,@(node->racket parameters))))
+                                 ,@(node->racket parameters))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -206,13 +226,10 @@
            (super-instantiate ())))
 
   (define formal-parameter% 
-    (class ast-node% 
+    (class stmt%
            (init-field final type id)
 
            (inherit ->syntax-object)
-
-           ;; Getters
-           (define/public (get-id) id)
 
            ;; ->racket: -> syntax-object?
            ;; generates the syntax object relative to the node
@@ -234,7 +251,7 @@
            (super-instantiate ())))
 
   (define return% 
-    (class ast-node% 
+    (class stmt%
            (init-field expr)
 
            (inherit ->syntax-object)
