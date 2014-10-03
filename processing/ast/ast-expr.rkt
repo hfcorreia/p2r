@@ -96,7 +96,8 @@
 
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
-           (define/override (->racket) (->syntax-object value))
+           (define/override (->racket) 
+                            (->syntax-object value))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node
@@ -105,6 +106,13 @@
                                     (make-string indent #\space)
                                     type
                                     value))
+
+           ;; TODO: use this to convert the literals 
+           ;(define literal-types 
+           ; (case type
+           ;   [(float? double?)
+           ;    (if (inexact? value) value (exact->inexact value))]
+           ;   [(char? int? long? boolean? short? byte?) value]))
 
            (super-instantiate ())))
 

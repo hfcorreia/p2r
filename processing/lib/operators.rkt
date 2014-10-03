@@ -5,47 +5,45 @@
   ;; Processing Operators
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (define (p-add arg1 arg2)
-    (+ arg1 arg2))
+  (define (p-add left right)
+    (+ left right))
 
-  (define (p-sub arg1 arg2)
-    (- arg1 arg2))
+  (define (p-sub left right)
+    (- left right))
 
-  (define (p-mul arg1 arg2)
-    (* arg1 arg2))
+  (define (p-mul left right)
+    (* left right))
 
-  (define (p-div arg1 arg2)
-    (/ arg1 arg2))
+  (define (p-div left right)
+    (/ left right))
 
-  (define (p-mod arg1 arg2)
-    (modulo arg1 arg2))
+  (define (p-mod left right)
+    (modulo left right))
 
-  (define (p-bit-and arg1 arg2)
-    (bitwise-and arg1 arg2))
+  (define (p-bit-and left right)
+    (bitwise-and left right))
 
-  (define (p-bit-xor arg1 arg2)
-    (bitwise-xor arg1 arg2))
+  (define (p-bit-xor left right)
+    (bitwise-xor left right))
 
-  (define (p-bit-or arg1 arg2)
-    (bitwise-ior arg1 arg2))
+  (define (p-bit-or left right)
+    (bitwise-ior left right))
 
-  (define (p-and arg1 arg2)
-    (and arg1 arg2))
+  (define (p-and left right)
+    (and left right))
 
-  (define (p-or arg1 arg2)
-    (or arg1 arg2))
+  (define (p-or left right)
+    (or left right))
 
-  ;;; TODO: emulate java behavior
-  (define (p-shiftl arg1 arg2)
-    (arithmetic-shift arg1 arg2))
+  (define (p-shiftl left right)
+    (arithmetic-shift left right))
 
-  ;;; TODO: emulate java behavior
-  (define (p-shiftr arg1 arg2)
-    (arithmetic-shift arg1 (- arg2)))
+  (define (p-shiftr left right)
+    (arithmetic-shift left (- right)))
 
-  ;;; TODO: emulate java behavior
-  (define (p-shiftr-zero arg1 arg2)
-    (arithmetic-shift arg1 arg2))
+  (define (p-shiftr-zero left right)
+    (+ (arithmetic-shift left (- right))
+       (arithmetic-shift 2 (bitwise-not right))))
 
   (define (p-pos arg)
     arg)
@@ -59,25 +57,25 @@
   (define (p-not arg)
     (not arg))
 
-  (define (p-lt arg1 arg2)
-    (< arg1 arg2))
+  (define (p-lt left right)
+    (< left right))
 
-  (define (p-gt arg1 arg2)
-    (> arg1 arg2))
+  (define (p-gt left right)
+    (> left right))
 
-  (define (p-lt-eq arg1 arg2)
-    (<= arg1 arg2))
+  (define (p-lt-eq left right)
+    (<= left right))
 
-  (define (p-gt-eq arg1 arg2)
-    (>= arg1 arg2))
+  (define (p-gt-eq left right)
+    (>= left right))
 
-  (define (p-eq arg1 arg2)
-    (eq? arg1 arg2))
+  (define (p-eq left right)
+    (eq? left right))
 
-  (define (p-not-eq arg1 arg2)
-    (not (eq? arg1 arg2)))
+  (define (p-not-eq left right)
+    (not (eq? left right)))
 
-  (define (p-instanceof arg1 arg2)
+  (define (p-instanceof left right)
     (error "instanceof not implemented!"))
 
   )
