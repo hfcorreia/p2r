@@ -235,7 +235,7 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              (send id ->racket)))
+                              (node->racket id)))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -246,6 +246,34 @@
                               final
                               (send type ->xml (+ indent 2))
                               (send id ->xml (+ indent 2))
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define if% 
+    (class stmt%
+           (init-field test then else)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(if ,(node->racket test)
+                                 ,(node->racket then)
+                                 ,(if (null? else) (void) (node->racket
+                                                            else)))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<if>~a~%~a~%~a~%~a<if/>"
+                              (make-string indent #\space)
+                              (send test ->xml)
+                              (send then ->xml)
+                              (if (null? else) "" (send else ->xml))
                               (make-string indent #\space)))
 
            (super-instantiate ())))

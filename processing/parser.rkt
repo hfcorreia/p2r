@@ -565,15 +565,15 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<if-then-stmt>
           [(if l-paren <expr> r-paren <stmt>) 
-           (make-object todo-node% (list $3 $5) 'if-then-stmt (build-src 1))])
+           (make-object if% $3 $5 null (build-src 1))])
 
         (<if-then-else-stmt>
           [(if l-paren <expr> r-paren <stmt-no-short-if> else <stmt>)
-           (make-object todo-node% (list $3 $5 $7) 'if-then-else-stmt (build-src 1))])
+           (make-object if% $3 $5 $7 (build-src 1))])
 
         (<if-then-else-stmt-no-short-if>
           [(if l-paren <expr> r-paren <stmt-no-short-if> else <stmt-no-short-if>)
-           (make-object todo-node% (list $3 $5 $7) 'if-then-else-stmt-no-if (build-src 1))])
+           (make-object if% $3 $5 $7 (build-src 1))])
 
         (<labeled-stmt>
           [(identifier : <stmt>) 
