@@ -1,18 +1,16 @@
 #lang processing
 
 void foo() {
-  int i = 0;
+  boolean i = false;
 
-  while (i < 10 ) {
-    if ( i == 5)  {
-      i = i + 1; 
-      continue;
-    }
-    else 
-      println(i);
-
-    i = i + 1; 
+  while ( i == false) {
+    println("just once");
+    i = true;
   }
+
+  do { 
+    println("still once");
+  } while( i == true);
 }
 
 foo();

@@ -278,6 +278,34 @@
 
            (super-instantiate ())))
 
+  (define do-while%
+    (class stmt%
+           (init-field test body)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                             `(call/ec (lambda (break)
+                                         (let loop ()
+                                           (call/ec (lambda (continue)
+                                                      ,(node->racket body)))
+                                           (when ,(node->racket test)
+                                             (loop)))))))
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<do-while>~a~%~a~%~a<do-while/>"
+                              (make-string indent #\space)
+                              (send test ->xml)
+                              (send body ->xml)
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
+
   (define while%
     (class stmt%
            (init-field test body)
@@ -288,12 +316,14 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(call/ec (lambda (break)
-                                          (let loop ()
-                                            (call/ec (lambda (continue)
-                                                       ,(node->racket body)))
-                                            (when ,(node->racket test)
-                                              (loop)))))))
+                              `(call/ec 
+                                 (lambda (break)
+                                   (letrec ([loop (lambda ()
+                                                    (when ,(node->racket test)
+                                                      (call/ec (lambda (continue)
+                                                                 ,(node->racket body)))
+                                                      (loop)))])
+                                     (loop))))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -306,6 +336,7 @@
                               (make-string indent #\space)))
 
            (super-instantiate ())))
+
 
 
   (define return% 

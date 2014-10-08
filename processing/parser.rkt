@@ -526,7 +526,7 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<do-stmt>
           [(do <stmt> while l-paren <expr> r-paren semicolon)
-           (make-object todo-node% (list $2 $5) 'do-stmt (build-src 1))])
+           (make-object do-while% $5 $2 (build-src 1))])
 
         (<while-stmt>
           [(while l-paren <expr> r-paren <stmt>)
