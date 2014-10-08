@@ -338,6 +338,59 @@
            (super-instantiate ())))
 
 
+  (define for% 
+    (class stmt%
+           (init-field initialization test increment body)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(call/ec 
+                                 (lambda (break)
+                                   ,(node->racket initialization)
+                                   (letrec ([loop (lambda ()
+                                                    (when ,(node->racket test)
+                                                      (call/ec (lambda (continue)
+                                                                 ,(node->racket body)))
+                                                      ,(node->racket increment)
+                                                      (loop)))])
+                                     (loop))))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<for>~a~%~a~%~a<for/>"
+                              (make-string indent #\space)
+                              (send test ->xml)
+                              (send body ->xml)
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define expr-list%
+    (class stmt%
+           (init-field exprs)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(begin ,@(node->racket exprs))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<break />"
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
 
   (define return% 
     (class stmt%
@@ -394,6 +447,24 @@
            (define/override (->racket)
                             (->syntax-object 
                               `(continue (void))))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format
+                              "~%~a<break />"
+                              (make-string indent #\space)))
+
+           (super-instantiate ())))
+
+  (define empty-stmt% 
+    (class stmt%
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                              (void))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node

@@ -10,7 +10,7 @@ void foo() {
 
   do { 
     println("still once");
-  } while( i == true);
+  } while( i == false);
 }
 
 foo();

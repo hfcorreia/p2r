@@ -506,7 +506,8 @@
           [(<try-stmt>) $1])
 
         (<empty-stmt>
-          [(semicolon) (make-object todo-node% null 'empty-stmt (build-src 1))])
+          [(semicolon) 
+           (make-object empty-stmt% (build-src 1))])
 
         (<expr-stmt>
           [(<stmt-expr>  semicolon) $1])
@@ -538,24 +539,26 @@
 
         (<for-stmt>
           [(for l-paren <finit> semicolon <expr> semicolon <fupdate> r-paren <stmt>)
-           (make-object todo-node% (list $3 $5 $7 $9) 'for-stmt (build-src 1))]
+           (make-object for% $3 $5 $7 $9 (build-src 1))]
           [(for l-paren <finit> semicolon semicolon <fupdate> r-paren <stmt>)
-           (make-object todo-node% (list $3 $6 $8) 'for-stmt (build-src 1))])
+           (make-object for% $3 null $8 (build-src 1))])
 
         (<for-stmt-no-short-if>
           [(for l-paren <finit> semicolon <expr> semicolon <fupdate> r-paren <stmt-no-short-if>)
-           (make-object todo-node% (list $3 $5 $7 $9) 'for-stmt-no-if (build-src 1))]
+           (make-object for% $3 $5 $7 $9 (build-src 1))]
           [(for l-paren <finit> semicolon semicolon <fupdate> r-paren <stmt-no-short-if>)
-           (make-object todo-node% (list $3 $6 $8) 'for-stmt-no-if (build-src 1))])
+           (make-object for% $3 null $8 (build-src 1))])
 
         (<finit>
-          [() null]
-          [(<local-var-decl>) (reverse $1)]
-          [(<stmt-expr-list>) (reverse $1)])
+          [() (make-object empty-stmt% null)]
+          [(<local-var-decl>) $1]
+          [(<stmt-expr-list>) 
+           (make-object expr-list% (reverse $1) (build-src 1))])
 
         (<fupdate>
-          [() null]
-          [(<stmt-expr-list>) (reverse $1)])
+          [() (make-object empty-stmt% null)]
+          [(<stmt-expr-list>) 
+           (make-object expr-list% (reverse $1) (build-src 1))])
 
         (<stmt-expr-list>
           [(<stmt-expr>) (list $1)]
