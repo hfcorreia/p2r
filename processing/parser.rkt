@@ -530,11 +530,11 @@
 
         (<while-stmt>
           [(while l-paren <expr> r-paren <stmt>)
-           (make-object todo-node% (list $3 $5) 'while-stmt (build-src 1))])
+           (make-object while% $3 $5 (build-src 1))])
 
         (<while-stmt-no-short-if>
           [(while l-paren <expr> r-paren <stmt-no-short-if>)
-           (make-object todo-node% (list $3 $5) 'while-stmt-no-if (build-src 1))])
+           (make-object while% $3 $5 (build-src 1))])
 
         (<for-stmt>
           [(for l-paren <finit> semicolon <expr> semicolon <fupdate> r-paren <stmt>)
@@ -619,13 +619,13 @@
           [(break identifier semicolon) 
            (make-object todo-node% null 'break (build-src 1))]
           [(break semicolon) 
-           (make-object todo-node% null 'break (build-src 1))])
+           (make-object break% (build-src 1))])
 
         (<continue-stmt>
           [(continue identifier semicolon) 
            (make-object todo-node% null 'continue (build-src 1))]
           [(continue semicolon) 
-           (make-object todo-node% null 'continue (build-src 1))])
+           (make-object continue% (build-src 1))])
 
         (<return-stmt>
           [(return <expr> semicolon) 
