@@ -3,7 +3,8 @@
   (provide (all-defined-out))
 
   (require racket/class
-           "ast.rkt")
+           "ast.rkt"
+           "../lib/runtime.rkt")
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST stmt nodes
@@ -25,6 +26,41 @@
            (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;; imports 
+  (define import%
+    (class stmt%
+           (init-field name version)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object import))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~a<import>~a~%~a</import>~%"
+                                    (make-string indent #\space)
+                                    (send name ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+
+
+           (define import
+             (let ([full-name (and (not (string? name)) 
+                                   (send name get-full-id))])
+               (cond 
+                 [(not full-name) 
+                  `(require ,(p-import name))]
+                 [(memq 'Racket full-name) 
+                  `(require ,(p-import 'Racket full-name))]
+                 [(memq 'PLaneT full-name) 
+                  `(require (planet ,(p-import 'PLaneT full-name version)))]
+                 [else (error "Processing Import's not implemented!")])))
+
+           (super-instantiate ())))
 
   ;;; global stmt
   (define global-stmt%
@@ -474,4 +510,5 @@
                               (make-string indent #\space)))
 
            (super-instantiate ())))
+
   )

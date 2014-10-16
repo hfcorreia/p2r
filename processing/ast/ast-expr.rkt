@@ -63,9 +63,16 @@
   (define identifier%
     (class expression%
            ;; inits
-           (init-field identifier)
+           (init-field id-list identifier)
 
            (inherit ->syntax-object)
+
+           (define/public (get-id)   (string->symbol identifier))
+           (define/public (get-list) id-list)
+
+           (define/public (get-full-id) 
+                          (append (reverse id-list)
+                                  (list identifier)))
 
            ;; ->racket: -> syntax-object?
            ;; Generates the syntax object relative to the node
@@ -79,10 +86,11 @@
                                     (make-string indent #\space)
                                     identifier))
 
-           ;; Appends a 'p-' to each id of the original code
+           ;; 
            (define (identifier->symbol)
-             (string->symbol 
-               (string-append "p-" identifier)))
+             (if (not (symbol? identifier))
+               (string->symbol identifier)
+               identifier))
 
            (super-instantiate ())))
 

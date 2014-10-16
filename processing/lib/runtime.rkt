@@ -15,6 +15,7 @@
     (p-call func ...)
     (func ...))
 
+
   ;;; Declaration Operator
   (define-syntax p-declaration
     (syntax-rules ()
@@ -36,23 +37,38 @@
          (set! id (op id expr))
          id)]))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; import racket modules
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define-syntax p-import
+    (syntax-rules ()
+      [(_ id) id]
+      [(_ 'Racket full-name)
+       (string->symbol 
+         (build-seperated-string (cdr full-name) #\/))]
+      [(_ 'PLaneT full-name version)
+       (string->symbol 
+         (if (eq? (length (cdr full-name)) 2)
+           ; foo/bar -> foo/bar:2:0
+           (string-append 
+             (build-seperated-string (cdr full-name) #\/)
+             version)
+           ; foo/bar/bazz -> foo/bar:2:0/bazz
+           (let ([vec (list->vector (cdr full-name))])
+             (vector-set! vec 1 (string-append 
+                                  (symbol->string (vector-ref vec 1))
+                                  version))
+             (build-seperated-string (vector->list vec) #\/))))]))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Print procedures
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (define (p-print . args)
-    (display (string-with-spaces (reverse (map arg->string args)))))
+    (display (build-seperated-string (reverse (map arg->string args)) #\space)))
 
   (define (p-println . args)
-    (displayln (string-with-spaces (reverse (map arg->string args)))))
+    (displayln (build-seperated-string (reverse (map arg->string args)) #\space)))
 
-  ;;; Aux
-  (define (string-with-spaces lst)
-    (cond 
-      [(null? lst) ""]
-      [(eq? (length lst) 1) (car lst)]
-      [else (format "~a ~a" (car lst) (string-with-spaces (cdr lst)))]))
-
-  ;;; Aux
+  ;;; Converts print arguments to be correctly printed
   (define (arg->string arg)
     (format "~a"
             (cond
@@ -61,6 +77,18 @@
               [(void? arg) ""]
               [(not (null? arg)) arg]
               [else  ""])))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; Aux procedures
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;; Given a list of strings generates a string seprated by char
+  (define (build-seperated-string lst char)
+    (cond 
+      [(null? lst) ""]
+      [(eq? (length lst) 1) (car lst)]
+      [else (format "~a~a~a" (car lst) char (build-seperated-string (cdr lst) char))]))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   )

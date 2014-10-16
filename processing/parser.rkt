@@ -66,7 +66,7 @@
             (position-offset start-pos)
             (- (position-offset end-pos)
                (position-offset start-pos)))))
-      (tokens operators literals seperators keywords empty-literals)
+      (tokens operators literals seperators keywords empty-literals custom)
 
       (grammar
 
@@ -170,20 +170,19 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<name>
           [(identifier)         
-           (make-object identifier% $1 (build-src 1))]
-          ;; TODO: Fix qualified names
-          [(<qualified-name>)     
-           (make-object todo-node% $1 'qualified-name (build-src 1))])
+           (make-object identifier% null $1 (build-src 1))]
+          [(<qualified-name>) $1])
 
         (<qualified-name>
           [(<name> period identifier) 
-           (make-object todo-node% $1 'name (build-src 1))])
+           (make-object identifier%  (append (list (send $1 get-id)) (send $1 get-list)) $3 (build-src 1))])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<compilation-unit>
           [() null]
-          [(<import-declarations> <global-declarations>) (list $1 $2)]
+          [(<import-declarations> <global-declarations>) (append (reverse $1)
+                                                                 (reverse $2))]
           [(<global-declarations>) (reverse $1)])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -214,18 +213,27 @@
           [(<import-declarations> <import-declaration>) (cons $2 $1)])
 
         (<import-declaration>
-          [(<single-type-import-declaration>)     
-           (make-object todo-node% $1 'single-type-import-decl (build-src 1))]
-          [(<type-import-on-demand-declaration>) 
-           (make-object todo-node% $1 'type-import-demand-decl (build-src 1))])
+          [(<single-type-import-declaration>)     $1]
+          [(<type-import-on-demand-declaration>)  $1]
+          ;; import extention for Racket libraries
+          [(<path-type-import-declaration>) $1]
+          [(<version-type-import-declaration>) $1])
+
+        (<version-type-import-declaration>
+          [(import <name> version semicolon)
+           (make-object import% $2 $3 (build-src 2))])
+
+        (<path-type-import-declaration>
+          [(import string-lit semicolon)
+           (make-object import% $2 null (build-src 2))])
 
         (<single-type-import-declaration>
           [(import <name> semicolon)
-           (make-object todo-node% $2 'import-name (build-src 2))])
+           (make-object import% $2 null (build-src 2))])
 
         (<type-import-on-demand-declaration>
           [(import <name> period * semicolon)
-           (make-object todo-node% $2 'import-name-on-demand (build-src 2))])
+           (make-object import% $2 null (build-src 2))])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Class
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -332,9 +340,9 @@
 
         (<method-declarator>
           [(identifier l-paren <formal-parameter-list> r-paren) 
-           (cons (make-object identifier% $1 (build-src 1)) $3)]
+           (cons (make-object identifier% null $1 (build-src 1)) $3)]
           [(identifier l-paren r-paren) 
-           (cons (make-object identifier% $1 (build-src 1)) null)]
+           (cons (make-object identifier% null $1 (build-src 1)) null)]
           [(identifier l-paren <formal-parameter-list> r-paren <dims>) 
            (make-object todo-node% (list $3 $5) 'method-declarator (build-src 2))]
           [(identifier l-paren r-paren <dims>) 
@@ -444,7 +452,7 @@
 
         (<var-decl-id> 
           [(identifier)
-           (make-object identifier% $1 (build-src 1))]
+           (make-object identifier% null $1 (build-src 1))]
           [(identifier <dims>)
            (make-object todo-node% $1 'var-declartor-id (build-src 1))])
 

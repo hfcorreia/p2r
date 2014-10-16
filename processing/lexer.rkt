@@ -42,15 +42,25 @@
   (define-empty-tokens empty-literals (EOF null-lit))
 
   (define-tokens literals 
-                 (
-                  identifier int-lit long-lit float-lit double-lit 
-                  char-lit boolean-lit string-lit token-lit color-lit))
+                 ( 
+                   identifier int-lit long-lit float-lit double-lit 
+                   char-lit boolean-lit string-lit token-lit color-lit))
+
+  (define-tokens custom
+                 (version))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-lex-abbrevs
     (input-charcter (re:~ #\return #\linefeed))
+
+    ;; import version
+    (import-version  (re:: digits #\: (re:or digits
+                                             (re:: import-sym digits)
+                                             (re:: digits "-" digits))))
+
+    (import-sym  (re:or "<" ">" "=" "<=" ">="))
 
     ;; numerals and suffix
     (digits      (re:+ (re:/ "09")))
@@ -192,6 +202,9 @@
 
       ;; identifiers
       (identifier     (token-identifier lexeme))
+
+      ;; import version
+      (import-version     (token-version (format ":~a" lexeme)))
 
       ;; terminator
       ((eof)    (token-EOF))))
