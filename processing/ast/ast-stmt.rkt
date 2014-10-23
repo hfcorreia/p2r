@@ -27,6 +27,29 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;; require extention
+  (define require% 
+    (class stmt%
+           (init-field name)
+
+           (inherit ->syntax-object)
+
+           ;; ->racket: -> syntax-object?
+           ;; generates the syntax object relative to the node
+           (define/override (->racket)
+                            (->syntax-object
+                              `(require ,name)))
+
+           ;; ->xml: ->string?
+           ;; generates xml representation of the node
+           (define/override (->xml indent)
+                            (format "~a<require>~a~%~a</require>"
+                                    (make-string indent #\space)
+                                    (send name ->xml (+ indent 2))
+                                    (make-string indent #\space)))
+
+           (super-instantiate ())))
+
   ;;; imports 
   (define import%
     (class stmt%
@@ -46,7 +69,6 @@
                                     (make-string indent #\space)
                                     (send name ->xml (+ indent 2))
                                     (make-string indent #\space)))
-
 
            (define import
              (let ([full-name (and (not (string? name)) 

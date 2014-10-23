@@ -66,7 +66,7 @@
             (position-offset start-pos)
             (- (position-offset end-pos)
                (position-offset start-pos)))))
-      (tokens operators literals seperators keywords empty-literals custom)
+      (tokens operators literals seperators keywords empty-literals)
 
       (grammar
 
@@ -216,16 +216,15 @@
           [(<single-type-import-declaration>)     $1]
           [(<type-import-on-demand-declaration>)  $1]
           ;; import extention for Racket libraries
-          [(<path-type-import-declaration>) $1]
-          [(<version-type-import-declaration>) $1])
+          [(<require-declaration>) $1])
 
-        (<version-type-import-declaration>
-          [(import <name> version semicolon)
-           (make-object import% $2 $3 (build-src 2))])
-
-        (<path-type-import-declaration>
-          [(import string-lit semicolon)
-           (make-object import% $2 null (build-src 2))])
+        (<require-declaration>
+          [(require string-lit semicolon)
+           (make-object require% $2 (build-src 2))]
+          [(require identifier semicolon)
+           (make-object require% (string->symbol $2) (build-src 2))]
+          [(require require-path semicolon)
+           (make-object require% (string->symbol $2) (build-src 2))])
 
         (<single-type-import-declaration>
           [(import <name> semicolon)

@@ -28,7 +28,8 @@
                         char        final       interface     static       void 
                         class       finally     long          strictfp     volatile
                         const       float       native        super        while
-                        color))
+                        ; custom keywords
+                        color       require))
 
 
 
@@ -44,23 +45,14 @@
   (define-tokens literals 
                  ( 
                    identifier int-lit long-lit float-lit double-lit 
-                   char-lit boolean-lit string-lit token-lit color-lit))
-
-  (define-tokens custom
-                 (version))
-
+                   char-lit boolean-lit string-lit token-lit color-lit
+                   ; custom token
+                   require-path))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (define-lex-abbrevs
     (input-charcter (re:~ #\return #\linefeed))
-
-    ;; import version
-    (import-version  (re:: digits #\: (re:or digits
-                                             (re:: import-sym digits)
-                                             (re:: digits "-" digits))))
-
-    (import-sym  (re:or "<" ">" "=" "<=" ">="))
 
     ;; numerals and suffix
     (digits      (re:+ (re:/ "09")))
@@ -103,7 +95,8 @@
                         "char"        "final"       "interface"     "static"       "void"
                         "class"       "finally"     "long"          "strictfp"     "volatile"
                         "const"       "float"       "native"        "super"        "while"
-                        "color"))
+                        ;; custom keywords
+                        "color"       "require"))
 
     ;; operator
     (operator   (re:or "="    ">"    "<"    "!"     "~"    "?"     ":"
@@ -120,6 +113,10 @@
     ;; comments
     (line-comment       (re:: "//" (re:* input-charcter) ))
 
+    ;; require path
+    (require-iden       (re:+ (re:or (re:/ "az" "AZ" "09")
+                                     "-" "_")))
+    (require-path       (re:: require-iden (re:* #\/ require-iden )))
     )
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -169,6 +166,7 @@
         (token-int-lit (string->number (trim-string lexeme 2 0) 16)))
       (decimal    
         (token-int-lit (string->number lexeme 10)))
+
       ;; longs
       ((re:: decimal long-suf)       
        (token-long-lit (string->number (trim-string lexeme 0 1) 10)))
@@ -203,8 +201,8 @@
       ;; identifiers
       (identifier     (token-identifier lexeme))
 
-      ;; import version
-      (import-version     (token-version (format ":~a" lexeme)))
+      ;; require
+      (require-path   (token-require-path lexeme))
 
       ;; terminator
       ((eof)    (token-EOF))))
