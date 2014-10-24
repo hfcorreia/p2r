@@ -38,7 +38,8 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(require ,name)))
+                              `(require ,@name)))
+
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node

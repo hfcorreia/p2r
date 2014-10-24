@@ -85,7 +85,7 @@
           [(boolean-lit)  
            (make-object literal% $1 'boolean (build-src 1))] 
           [(string-lit)   
-           (make-object literal% $1 'string (build-src 1))] 
+           (make-object literal% $1 'string (build-src 1))]
           [(char-lit)     
            (make-object literal% $1 'char (build-src 1))] 
           [(null-lit)     
@@ -215,16 +215,7 @@
         (<import-declaration>
           [(<single-type-import-declaration>)     $1]
           [(<type-import-on-demand-declaration>)  $1]
-          ;; import extention for Racket libraries
-          [(<require-declaration>) $1])
-
-        (<require-declaration>
-          [(require string-lit semicolon)
-           (make-object require% $2 (build-src 2))]
-          [(require identifier semicolon)
-           (make-object require% (string->symbol $2) (build-src 2))]
-          [(require require-path semicolon)
-           (make-object require% (string->symbol $2) (build-src 2))])
+          [(<require-import-declaration>)         $1])
 
         (<single-type-import-declaration>
           [(import <name> semicolon)
@@ -233,6 +224,98 @@
         (<type-import-on-demand-declaration>
           [(import <name> period * semicolon)
            (make-object import% $2 null (build-src 2))])
+
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; Requires - extention to support racket modules
+        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (<require-import-declaration>
+          [(require <require-spec-list> semicolon) 
+           (begin (displayln $2)
+                  (make-object require% (reverse $2) (build-src 2))
+                  )])
+
+        (<require-id-list>
+          [(<require-id>)                    (list $1)]
+          [(<require-id-list> <require-id>)  (cons $2 $1)])
+
+        (<require-id>
+          [(racket-id)    (string->symbol $1)]
+          [(identifier)   (string->symbol $1)])
+
+        (<require-spec-list>
+          [(<require-spec>)                     (list $1)]
+          [(<require-spec-list> <require-spec>)  (cons $2 $1)])
+
+        (<require-spec>
+          [(<module-path>) $1]
+          [(l-paren only-in <require-spec> <id-maybe-renamed-list> r-paren)     
+           `(only-in ,$3 ,@(reverse $4))]
+          [(l-paren except-in <require-spec> <require-id-list> r-paren)
+           `(except-in ,$3 ,@(reverse $4))]
+          [(l-paren prefix-in <require-id> <require-spec> r-paren)
+           `(prefix-in ,$3 ,$4)]
+          [(l-paren rename-in <require-spec> <orig-bind-list> r-paren)
+           `(rename-in ,$3 ,@(reverse $4))]
+          [(l-paren combine-in <require-spec-list> r-paren)
+           `(combine-in ,@(reverse $3))]
+          [(l-paren relative-in <module-path> <require-spec-list> r-paren)
+           `(relative-in ,$3 ,@(reverse $4))])
+
+        (<id-maybe-renamed-list>
+          [(<id-maybe-renamed>)      (list $1)]
+          [(<id-maybe-renamed-list> <id-maybe-renamed>) (cons $2 $1)])
+
+        (<id-maybe-renamed>
+          [(<require-id>) $1]
+          [(<orig-bind-id>) $1])
+
+        (<orig-bind-list>
+          [(<orig-bind-id>)                       (list $1)]
+          [(<orig-bind-list> <orig-bind-id>)      (cons $2 $1)])
+
+        (<orig-bind-id>
+          [(l-sbrack <require-id> <require-id> r-sbrack) `(,$2 ,$3)]
+          [(l-paren <require-id> <require-id> r-paren) `(,$2 ,$3)])
+
+        (<module-path>
+          [(<root-module-path>) $1]
+          [(l-paren submod <root-module-path> <submod-path-element-list> r-paren)
+           `(submod ,$4 ,@(reverse $4))])
+
+        (<root-module-path>
+          [(string-lit)     $1]
+          [(<require-id>)   $1]
+          [(l-paren <enclosed-root-module-path> r-paren) $2])
+
+        (<enclosed-root-module-path>
+          [(quote racket-id)    `(quote ,(string->symbol $2))]
+          [(lib string-lit)     `(lib ,$2)]
+          [(file string-lit)    `(file ,$2)]
+          [(<planet>)           $1])
+
+        (<planet>
+          [(planet racket-id)    `(planet ,(string->symbol $2))]
+          [(planet string-lit l-paren string-lit string-lit <vers> r-paren)
+           `(planet ,$2 (,$4 ,$5 ,@$6))])
+
+
+         (<submod-path-element-list>
+           [(<submod-path-element>) (list $1)]
+           [(<submod-path-element-list> <submod-path-element>) (cons $2 $1)])
+
+         (<submod-path-element>
+           [(<require-id>) $1]
+           [(string-lit) $1])
+
+        (<vers>
+          [(int-lit)                `(,$1)]
+          [(int-lit <minor-ver>)    `(,$1 ,$2)])
+
+        (<minor-ver>
+          [(int-lit)                $1]
+          [(= int-lit)              `(= ,$2)]
+          [(+ int-lit)              `(+ ,$2)]
+          [(- int-lit)              `(- ,$2)])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Class
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

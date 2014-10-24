@@ -1,7 +1,6 @@
 #lang processing
 
-require "foo.rkt";
-require pict;
+require (rename-in pict [cloud xx] [circle b]);
+require (prefix-in p- pict );
 
-int x = 1;
-foo(x);
+int x = 2;

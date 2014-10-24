@@ -29,7 +29,11 @@
                         class       finally     long          strictfp     volatile
                         const       float       native        super        while
                         ; custom keywords
-                        color       require))
+                        color       require     planet only-in
+                        except-in   prefix-in   combine-in    relative-in
+                        rename-in
+                        only-meta-in for-syntax for-template for-meta
+                        submod  file quote lib))
 
 
 
@@ -47,7 +51,7 @@
                    identifier int-lit long-lit float-lit double-lit 
                    char-lit boolean-lit string-lit token-lit color-lit
                    ; custom token
-                   require-path))
+                   racket-id))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -96,7 +100,12 @@
                         "class"       "finally"     "long"          "strictfp"     "volatile"
                         "const"       "float"       "native"        "super"        "while"
                         ;; custom keywords
-                        "color"       "require"))
+                        "color"       "require"     "planet"        "only-in"
+                        "except-in"   "prefix-in"   "combine-in"    "relative-in"
+                        "rename-in"
+                        "only-meta-in" "for-syntax" "for-template" "for-meta"
+                        "submod"  "file" "quote" "lib"))
+
 
     ;; operator
     (operator   (re:or "="    ">"    "<"    "!"     "~"    "?"     ":"
@@ -113,12 +122,12 @@
     ;; comments
     (line-comment       (re:: "//" (re:* input-charcter) ))
 
-    ;; require path
-    (require-iden       (re:+ (re:or (re:/ "az" "AZ" "09")
-                                     "-" "_")))
-    (require-path       (re:: require-iden (re:* #\/ require-iden )))
+    ;; used for require 
+    (racket-id          (re:+ (re:or (re:/ "az" "AZ" "09")
+                                     (re:~ blank whitespace
+                                       "\"" "(" ")" "#" "|" "\\" "[" "]" "{" 
+                                       "}"  "," "'" "`" ";"))))
     )
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Lexer definition
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,6 +135,7 @@
     (lexer-src-pos
       ;; special rule to ignore #lang processing directives
       ((re:: #\# "lang processing") (return-without-pos (lex input-port)))
+
 
       ;; whitespaces, linefeeds, newline, etc
       ((re:+ whitespace)    (return-without-pos (lex input-port)))
@@ -190,7 +200,7 @@
       (string          (token-string-lit (build-string lexeme)))
 
       ;; webcolor
-      (web-color      (token-color-lit   (build-string lexeme)))
+      (web-color      (token-color-lit  (build-string lexeme)))
 
       ;; null
       ("null"         (token-null-lit))
@@ -201,8 +211,8 @@
       ;; identifiers
       (identifier     (token-identifier lexeme))
 
-      ;; require
-      (require-path   (token-require-path lexeme))
+      ;; used in require
+      (racket-id        (token-racket-id lexeme))
 
       ;; terminator
       ((eof)    (token-EOF))))
