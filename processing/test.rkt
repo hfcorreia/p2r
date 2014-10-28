@@ -3,7 +3,7 @@
   (require rackunit
            rackunit/text-ui
            "compile.rkt"
-           "ast.rkt")
+           "ast/ast.rkt")
 
   (current-directory "examples")
 
