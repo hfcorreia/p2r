@@ -29,11 +29,7 @@
                         class       finally     long          strictfp     volatile
                         const       float       native        super        while
                         ; custom keywords
-                        color       require     planet only-in
-                        except-in   prefix-in   combine-in    relative-in
-                        rename-in
-                        only-meta-in for-syntax for-template for-meta
-                        submod  file quote lib))
+                        color))
 
 
 
@@ -51,7 +47,7 @@
                    identifier int-lit long-lit float-lit double-lit 
                    char-lit boolean-lit string-lit token-lit color-lit
                    ; custom token
-                   racket-id))
+                   require))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Token abbreviations exapanded by the lexer
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,12 +96,7 @@
                         "class"       "finally"     "long"          "strictfp"     "volatile"
                         "const"       "float"       "native"        "super"        "while"
                         ;; custom keywords
-                        "color"       "require"     "planet"        "only-in"
-                        "except-in"   "prefix-in"   "combine-in"    "relative-in"
-                        "rename-in"
-                        "only-meta-in" "for-syntax" "for-template" "for-meta"
-                        "submod"  "file" "quote" "lib"))
-
+                        "color"))
 
     ;; operator
     (operator   (re:or "="    ">"    "<"    "!"     "~"    "?"     ":"
@@ -122,11 +113,6 @@
     ;; comments
     (line-comment       (re:: "//" (re:* input-charcter) ))
 
-    ;; used for require 
-    (racket-id          (re:+ (re:or (re:/ "az" "AZ" "09")
-                                     (re:~ blank whitespace
-                                       "\"" "(" ")" "#" "|" "\\" "[" "]" "{" 
-                                       "}"  "," "'" "`" ";"))))
     )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Lexer definition
@@ -212,7 +198,8 @@
       (identifier     (token-identifier lexeme))
 
       ;; used in require
-      (racket-id        (token-racket-id lexeme))
+      ((re:: "require" (re:* (re:~ ";"))) 
+        (token-require (trim-string lexeme 7 0)))
 
       ;; terminator
       ((eof)    (token-EOF))))

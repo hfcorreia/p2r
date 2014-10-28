@@ -38,7 +38,7 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(require ,@name)))
+                              `(require ,(read (open-input-string name)))))
 
 
            ;; ->xml: ->string?
