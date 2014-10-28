@@ -7,20 +7,30 @@
 
   (current-directory "examples")
 
-  (run-tests
-    (test-suite
-      "Processing Tests"
-      #:before (lambda () (clear-todo))
+  (define test-files
+    (let ((files '()))
       (for ([path (in-directory (current-directory))])
         (when (regexp-match? #rx"[.]pde$" path)
-          (test-case
-            "Compiler checks"
-            (check-pred list? 
-                        (compile-processing (build-ast path))
-                        (format "Error: at ~a" path))
-            (check-false 
-              (begin
-                (compile-processing (build-ast path))
-                todo?)
-              (format "Error: Incomplete AST ~a" path))))))
-    'normal))
+          (set! files (cons path files))))
+      files))
+
+
+
+
+  (run-tests
+    (make-test-suite
+      "Processing Tests"
+      (for/list ([path test-files])
+                (test-suite
+                  "Test for correct compilation"
+                  #:before (lambda () (clear-todo))
+                  (test-case
+                    (check-pred 
+                      list?
+                      (compile-processing (build-ast path))
+                      (format "Erro: at ~a" path))
+                    (check-false 
+                      (begin (compile-processing (build-ast path)) todo?) 
+                      (format "Error: Incomplete AST ~a" path)))))))
+
+  )
