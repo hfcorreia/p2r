@@ -4,7 +4,6 @@
 
   (require racket/class
            "ast.rkt"
-           "ast-utils.rkt"
            "../lib/runtime.rkt")
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
