@@ -3,7 +3,7 @@
 (require (planet aml/rosetta)
          racket/system)
 
-(provide generateTikz)
+(provide generate-tikz)
 
 (define (tikz->tex str out)
   (fprintf out
@@ -15,7 +15,7 @@
     \\end{tikzpicture}
     \\end{document}" str))
 
-(define (generateTikz file-name)
+(define (generate-tikz file-name)
   (define out 
     (open-output-file (string-append file-name ".tex") #:exists 'replace))
   (tikz->tex (display-tikz-to-string) out)

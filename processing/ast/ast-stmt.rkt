@@ -38,7 +38,7 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(require ,(read (open-input-string name)))))
+                              `(p-require ,(read (open-input-string name)))))
 
 
            ;; ->xml: ->string?
@@ -72,16 +72,7 @@
                                     (make-string indent #\space)))
 
            (define import
-             (let ([full-name (and (not (string? name)) 
-                                   (send name get-full-id))])
-               (cond 
-                 [(not full-name) 
-                  `(require ,(p-import name))]
-                 [(memq 'Racket full-name) 
-                  `(require ,(p-import 'Racket full-name))]
-                 [(memq 'PLaneT full-name) 
-                  `(require (planet ,(p-import 'PLaneT full-name version)))]
-                 [else (error "Processing Import's not implemented!")])))
+             (error "Processing Import's not implemented!"))
 
            (super-instantiate ())))
 

@@ -4,7 +4,10 @@
            (all-from-out "operators.rkt"))
 
   (require racket/undefined
-           "operators.rkt")
+           racket/require
+           "operators.rkt"
+           "name-mangling.rkt"
+           (for-syntax "name-mangling.rkt"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Macro transformations
@@ -15,7 +18,6 @@
     (p-call func ...)
     (func ...))
 
-
   ;;; Declaration Operator
   (define-syntax p-declaration
     (syntax-rules ()
@@ -23,7 +25,6 @@
        (define id undefined)]
       [(_ id expr)
        (define id expr)]))
-
 
   ;;; Assigments
   (define-syntax p-assignment 
@@ -36,28 +37,15 @@
        (begin
          (set! id (op id expr))
          id)]))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;; import racket modules
+  ;;; require racket modules
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define-syntax p-import
-    (syntax-rules ()
-      [(_ id) id]
-      [(_ 'Racket full-name)
-       (string->symbol 
-         (build-seperated-string (cdr full-name) #\/))]
-      [(_ 'PLaneT full-name version)
-       (string->symbol 
-         (if (eq? (length (cdr full-name)) 2)
-           ; foo/bar -> foo/bar:2:0
-           (string-append 
-             (build-seperated-string (cdr full-name) #\/)
-             version)
-           ; foo/bar/bazz -> foo/bar:2:0/bazz
-           (let ([vec (list->vector (cdr full-name))])
-             (vector-set! vec 1 (string-append 
-                                  (symbol->string (vector-ref vec 1))
-                                  version))
-             (build-seperated-string (vector->list vec) #\/))))]))
+
+  (define-syntax-rule
+    (p-require require-spec)
+    (require (filtered-in racket->java require-spec)))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Print procedures
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
