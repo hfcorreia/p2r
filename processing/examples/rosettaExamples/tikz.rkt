@@ -1,6 +1,6 @@
 #lang racket
 
-(require (planet aml/rosetta)
+(require (planet aml/rosetta:1:=50)
          racket/system)
 
 (provide generate-tikz)

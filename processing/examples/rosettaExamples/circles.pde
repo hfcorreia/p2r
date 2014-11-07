@@ -1,16 +1,11 @@
 #lang processing
 
-//require (planet aml/rosetta);
+require (planet aml/rosetta:1:=50);
 require "tikz.rkt";
 
-int x = 1 + 1;
-
-generateTikz("circle");
-/*
 backend(tikz);
 
-circle();
+// create a circle at poit 1,2 with radius 2
+circle( xy(1,2), 2);
 generateTikz("circle");
 
-
-*/ 

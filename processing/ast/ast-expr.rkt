@@ -138,7 +138,7 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              (node->racket args)))
+                              (node->racket (reverse args))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node

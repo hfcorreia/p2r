@@ -712,6 +712,7 @@
                         (build-src 1))]
           [(<name> l-paren r-paren) 
            (make-object method-call% $1 null (build-src 1))]
+
           ;; TODO: Solve the name resolution
           [(<primary> period identifier l-paren <args> r-paren)
            (make-object todo-node% (list $1 $5) 'method-call (build-src 1))]

@@ -44,10 +44,9 @@
            ;; ->xml: ->string?
            ;; generates xml representation of the node
            (define/override (->xml indent)
-                            (format "~a<require>~a~%~a</require>"
+                            (format "~a<require>~a</require>"
                                     (make-string indent #\space)
-                                    (send name ->xml (+ indent 2))
-                                    (make-string indent #\space)))
+                                    name))
 
            (super-instantiate ())))
 
