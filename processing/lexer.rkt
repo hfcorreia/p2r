@@ -172,6 +172,8 @@
        (token-long-lit (string->number (trim-string lexeme 0 1)  8)))
 
       ;; floats
+      ((re:: (re:or float-a float-b float-c))
+       (token-float-lit (string->number (trim-string lexeme 0 0) 10)))
       ((re:: (re:or float-a float-b float-c) float-suf)
        (token-float-lit (string->number (trim-string lexeme 0 1) 10)))
       ((re:: (re:or float-a float-b float-c) double-suf)
