@@ -25,6 +25,7 @@
                   "Test for correct compilation"
                   #:before (lambda () (clear-todo))
                   (test-case
+                    "Test"
                     (check-pred 
                       list?
                       (compile-processing (build-ast path))

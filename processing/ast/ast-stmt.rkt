@@ -249,7 +249,7 @@
            (define/override (->racket)
                             (->syntax-object 
                               `(,(node->racket id)
-                                 ,@(node->racket parameters))))
+                                 ,@(node->racket (reverse parameters)))))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node

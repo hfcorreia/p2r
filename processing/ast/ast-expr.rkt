@@ -87,9 +87,7 @@
 
            ;; 
            (define (identifier->symbol)
-             (if (not (symbol? identifier))
-               (string->symbol identifier)
-               identifier))
+             (string->symbol (string-append "" identifier)))
 
            (super-instantiate ())))
 

@@ -1,11 +1,13 @@
 (module runtime racket
 
   (provide (all-defined-out)
-           (all-from-out "operators.rkt"))
+           (all-from-out "operators.rkt")
+           (all-from-out "processing.rkt"))
 
   (require racket/undefined
            racket/require
            "operators.rkt"
+           "processing.rkt"
            "name-mangling.rkt"
            (for-syntax "name-mangling.rkt"))
 
@@ -50,10 +52,10 @@
   ;;; Print procedures
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (define (p-print . args)
+  (define (print . args)
     (display (build-seperated-string (reverse (map arg->string args)) #\space)))
 
-  (define (p-println . args)
+  (define (println . args)
     (displayln (build-seperated-string (reverse (map arg->string args)) #\space)))
 
   ;;; Converts print arguments to be correctly printed
@@ -76,7 +78,5 @@
       [(null? lst) ""]
       [(eq? (length lst) 1) (car lst)]
       [else (format "~a~a~a" (car lst) char (build-seperated-string (cdr lst) char))]))
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   )
