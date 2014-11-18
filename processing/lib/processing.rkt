@@ -14,7 +14,7 @@
 
   (define (generateTikz file-name [scale 1] [pdf-viewer "evince"])
     (define (tikz->tex str out)
-      (let ((scale (* scale 0.028)))
+      (let ((scale (* scale 0.024)))
         (fprintf out
                "\\documentclass[]{article}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}[yscale=-~a,xscale=~a]\n~a\n\\end{tikzpicture}\n\\end{document}"
                scale scale str)))
@@ -30,7 +30,8 @@
     (tikz->tex (display-tikz-to-string) out)
     (close-output-port out)
     (system (string-append "pdflatex " file-name ".tex"))
-    (system (string-append pdf-viewer " " file-name ".pdf")))
+    (system (string-append pdf-viewer " " file-name ".pdf"))
+    (system "rm *.tex *.pdf *.log *.aux -f"))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; 2D Shapes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,7 +55,7 @@
   ;;;   stop    float: angle to stop the arc, specified in radians
   (define (arc a b c d start stop [mode 'OPEN])
     (case mode
-      ['OPEN  (ros-arc (ros-xy a b) c start stop mode)]
+      ['OPEN  (ros-arc (ros-xy a b) c start (- stop start))]
       ['PIE   (error "Not implemented yet!")]
       ['CHORD (error "Not implemented yet!")]))
 
@@ -70,7 +71,9 @@
   ;;;   c       float: width of the ellipse by default
   ;;;   d       float: height of the ellipse by default
   (define (ellipse a b c d)
-    (ros-circle (ros-xy a b) c))
+    (if (= c d)
+      (ros-circle (ros-xy a b) c)
+      (ros-ellipse (ros-xy a b) c d)))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;  line() - Draws a line (a direct path between two points) to the screen. 
@@ -176,9 +179,10 @@
   ;;;   y3     float: y-coordinate of the third point
   (define (triangle x1 y1 x2 y2 x3 y3)
     (ros-polygon 
-      (ros-xy x1 y2)
+      (ros-xy x1 y1)
       (ros-xy x2 y2)
       (ros-xy x3 y3)))
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Curves
