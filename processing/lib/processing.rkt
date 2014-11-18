@@ -1,9 +1,9 @@
 (module runtime/processing racket
+
   (provide (all-defined-out))
-
-  (require (prefix-in ros- (planet aml/rosetta:1:=50))
-           racket/system)
-
+  
+  (require  (prefix-in ros- (planet aml/rosetta:1:=50))
+            racket/system)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Rosetta Configuration
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -12,12 +12,12 @@
   (define (backend backend-id)
     (ros-backend backend-id))
 
-  (define (generateTikz file-name [scale 1] [pdf-viewer "evince"])
+  (define (generateTikz [file-name "tmp"] [scale 1] [pdf-viewer "evince"])
     (define (tikz->tex str out)
       (let ((scale (* scale 0.024)))
         (fprintf out
-               "\\documentclass[]{article}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}[yscale=-~a,xscale=~a]\n~a\n\\end{tikzpicture}\n\\end{document}"
-               scale scale str)))
+                 "\\documentclass[]{article}\n\\usepackage{tikz}\n\\begin{document}\n\\begin{tikzpicture}[yscale=-~a,xscale=~a]\n~a\n\\end{tikzpicture}\n\\end{document}"
+                 scale scale str)))
     (define (display-tikz-to-string)
       (let ([output-port (open-output-string)])
         (parameterize ([current-output-port output-port])
@@ -98,7 +98,7 @@
       [(_ x1 y1 z1 x2 y2 z2)
        (error "No support for 3D")]
       [(_ x1 y1 x2 y2)
-         (ros-line (ros-xy x1 y1) (ros-xy x2 y2))]))
+       (ros-line (ros-xy x1 y1) (ros-xy x2 y2))]))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;  point() - Draws a point, a coordinate in space at the dimension of one pixel. The
@@ -111,8 +111,12 @@
   ;;;   x       float: x-coordinate of the point
   ;;;   y       float: y-coordinate of the point
   ;;;   z       float: z-coordinate of the point
-  (define (point x y [z #f])
-    (ros-xy x y))
+  (define-syntax point
+    (syntax-rules ()
+      [(_ x y)
+       (ros-point (ros-xy x y))]
+      [(_ x y z)
+       (ros-point (ros-xy x y z))]))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; quad() - A quad is a quadrilateral, a four sided polygon. It is similar to a
@@ -411,4 +415,5 @@
   ;;;   mode    int: either CENTER, RADIUS, CORNER, or CORNERS
   (define (ellipseMode mode)
     (error "Not implemented yet!"))
+
   )

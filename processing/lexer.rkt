@@ -1,4 +1,4 @@
-(module lexer racket 
+(module lexer racket/base
 
   (provide (all-defined-out))
 
