@@ -40,7 +40,7 @@
            (define/public (->syntax-object datum)
                           (datum->syntax #'test
                                          datum
-                                         src-info
+                                         (and (not (null? src-info)) src-info)
                                          (read-syntax #f 
                                                       (open-input-string "orig")) 
                                          ))
@@ -57,6 +57,23 @@
 
            (super-instantiate ())))
 
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; Wrap processing code a class
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define root-node%
+    (class ast-node%
+           (init-field code)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object
+                              (if (null? code)
+                                `(p-applet)
+                                `(p-applet ,@(node->racket code)))))
+
+           (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Debug stuff

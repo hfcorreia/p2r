@@ -9,7 +9,8 @@
            "ast/ast.rkt"
            "ast/ast-type.rkt"
            "ast/ast-expr.rkt"
-           "ast/ast-stmt.rkt")
+           "ast/ast-stmt.rkt"
+           "ast/ast-class.rkt")
 
   (define (parse-processing src input-port)
     ;; turns on line and column location for input-port
@@ -33,6 +34,18 @@
             (datum->syntax stx 
                            (string->symbol (format "$~a-end-pos" 
                                                    (syntax-e #'src-arg))))]
+          [src  (datum->syntax stx (string->symbol "src"))])
+         #'(srcinfo->list src start-pos end-pos))]
+    [(_ start-arg end-arg)
+       (with-syntax 
+         ([start-pos 
+            (datum->syntax stx 
+                           (string->symbol (format "$~a-start-pos" 
+                                                   (syntax-e #'start-arg))))] 
+          [end-pos 
+            (datum->syntax stx 
+                           (string->symbol (format "$~a-end-pos" 
+                                                   (syntax-e #'end-arg))))]
           [src  (datum->syntax stx (string->symbol "src"))])
          #'(srcinfo->list src start-pos end-pos))]))
 
@@ -180,10 +193,11 @@
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<compilation-unit>
-          [() null]
-          [(<import-declarations> <global-declarations>) (append (reverse $1)
-                                                                 (reverse $2))]
-          [(<global-declarations>) (reverse $1)])
+          [() (make-object root-node% null null)]
+          [(<import-declarations> <global-declarations>) 
+           (make-object root-node% (append (reverse $1) (reverse $2)) (build-src 1 2))]
+          [(<global-declarations>) 
+           (make-object root-node% (reverse $1) (build-src 1))])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Global 
@@ -193,8 +207,7 @@
           [(<global-declarations> <global-declaration>) (cons $2 $1)])
 
         (<global-declaration>
-          [(<class-declaration>)          
-           (make-object todo-node% $1 'class-decl (build-src 1))]
+          [(<class-declaration>) $1]
           [(<global-member-declaration>) 
            (make-object global-decl% $1 (build-src 1))]
           [(<global-stmt>)  
@@ -277,7 +290,7 @@
           [(class identifier <interfaces> <class-body>)
            (make-object todo-node% (list $3 $4) 'class-decl (build-src 1))]
           [(class identifier <class-body>)
-           (make-object todo-node% $3 'class-decl (build-src 1))])
+           (make-object class-node% (make-object identifier% null $2 (build-src 2)) $3 (build-src 1))])
 
         (<super>
           [(extends <class-type>)
@@ -728,14 +741,17 @@
            (make-object todo-node% $1 'method-call (build-src 1))])
 
         (<class-instance-creation-expr>
+          [(new <class-or-interface-type> l-paren r-paren)
+           (make-object new-node% $2 (build-src 1))]
+
+          ;; TODO
           [(new <class-or-interface-type> l-paren <args> r-paren <class-body>)
            (make-object todo-node% (list $2 $4 $6) 'new (build-src 1))]
           [(new <class-or-interface-type> l-paren r-paren <class-body>)
            (make-object todo-node% (list $2 $5) 'new (build-src 1))]
           [(new <class-or-interface-type> l-paren <args> r-paren)
            (make-object todo-node% (list $2 $4) 'new (build-src 1))]
-          [(new <class-or-interface-type> l-paren r-paren)
-           (make-object todo-node% $2 'new (build-src 1))]
+
 
           [(<primary> period new identifier l-paren <args> r-paren <class-body>)
            (make-object todo-node% (list $1 $6 $8) 'new (build-src 1))]

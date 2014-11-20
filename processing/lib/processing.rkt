@@ -1,7 +1,7 @@
 (module runtime/processing racket
 
   (provide (all-defined-out))
-  
+#|  
   (require  (prefix-in ros- (planet aml/rosetta:1:=50))
             racket/system)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -415,5 +415,5 @@
   ;;;   mode    int: either CENTER, RADIUS, CORNER, or CORNERS
   (define (ellipseMode mode)
     (error "Not implemented yet!"))
-
+|#
   )

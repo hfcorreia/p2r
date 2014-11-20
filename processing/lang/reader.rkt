@@ -12,8 +12,7 @@ processing/lang/processing
   (map syntax->datum (processing-read-syntax #f input-port)))
 
 (define (processing-read-syntax src input-port)
-  (map strip-context 
-       (compile-processing (build-ast src #:input-port input-port))))
+  (map strip-context (compile-processing (build-ast src #:input-port input-port))))
 
 
 

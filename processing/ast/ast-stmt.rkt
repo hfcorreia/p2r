@@ -88,7 +88,7 @@
            ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(void ,(node->racket stmt))))
+                              (node->racket stmt)))
 
            ;; ->xml: ->string?
            ;; generates xml representation of the node
@@ -132,7 +132,9 @@
            ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              `(begin ,@(node->racket vars))))
+                              (if (= (length vars) 1)
+                                (car (node->racket vars))
+                                (error "Mulitple definitions not supported"))))
 
            ;; ->xml: ->string?
            ;; Generates xml representation of the node

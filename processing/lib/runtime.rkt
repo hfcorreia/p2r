@@ -15,6 +15,18 @@
   ;;; Macro transformations
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;; embeded applet behavior
+  (define-syntax (p-applet stx)
+   (syntax-case stx ()
+     [(_) '()]
+     [(_ code ...) 
+      (with-syntax
+        ([(applet code ...) 
+          #'(class object%
+                   (define/public (draw) code ... (void))
+                   (super-instantiate ()))])
+        #'(send (make-object (applet code ...)) draw))]))
+
   ;;;
   (define-syntax-rule
     (p-call func ...)
@@ -40,6 +52,14 @@
          (set! id (op id expr))
          id)]))
 
+  ;;; Class
+  (define-syntax p-class
+    (syntax-rules ()
+      [(_ id body ...) 
+       (define id 
+         (class object% 
+                body ...
+                (super-instantiate())))]))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; require racket modules
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
