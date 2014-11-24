@@ -16,16 +16,16 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;; embeded applet behavior
-  (define-syntax (p-applet stx)
-   (syntax-case stx ()
-     [(_) '()]
-     [(_ code ...) 
-      (with-syntax
-        ([(applet code ...) 
-          #'(class object%
-                   (define/public (draw) code ... (void))
-                   (super-instantiate ()))])
-        #'(send (make-object (applet code ...)) draw))]))
+  ;define-syntax (p-applet stx)
+  ;(syntax-case stx ()
+  ;  [(_) '()]
+  ;  [(_ code ...) 
+  ;   (with-syntax
+  ;     ([(applet code ...) 
+  ;       #'(class object%
+  ;                (define/public (draw) code ... (void))
+  ;                (super-instantiate ()))])
+  ;     #'(send (make-object (applet code ...)) draw))]))
 
   ;;;
   (define-syntax-rule
@@ -33,12 +33,22 @@
     (func ...))
 
   ;;; Declaration Operator
-  (define-syntax p-declaration
-    (syntax-rules ()
-      [(_ id) 
-       (define id undefined)]
-      [(_ id expr)
-       (define id expr)]))
+  (define-syntax (p-declaration stx)
+    (syntax-case stx ()
+      [(_ elem ...)
+       (with-syntax 
+         ([(ids ...)
+           (datum->syntax 
+             stx
+             (map (lambda (x)
+                    (car (syntax-e x)))
+                  (syntax->list #'(elem ...))))]
+          [(vals ...) 
+           (datum->syntax 
+             stx
+             (map (lambda (x) (cadr (syntax-e x))) 
+                  (syntax->list #'(elem ...))))])
+         #'(define-values (ids ...) (values vals ...)))]))
 
   ;;; Assigments
   (define-syntax p-assignment 
@@ -52,7 +62,10 @@
          (set! id (op id expr))
          id)]))
 
-  ;;; Class
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; Class macros
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
   (define-syntax p-class
     (syntax-rules ()
       [(_ id body ...) 
@@ -60,6 +73,11 @@
          (class object% 
                 body ...
                 (super-instantiate())))]))
+
+  (define-syntax-rule 
+    (p-class-field [id val] ...)
+    (field [id val] ...))
+    
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; require racket modules
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

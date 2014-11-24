@@ -29,4 +29,5 @@
 
   ;;;
   (define (compile-processing ast)
-    (list (send ast ->racket))))
+    (map (lambda (node) (send node ->racket)) ast))
+  )

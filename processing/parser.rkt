@@ -5,6 +5,7 @@
   (require parser-tools/yacc
            parser-tools/lex
            syntax/readerr
+           "mode.rkt"
            "lexer.rkt"
            "ast/ast.rkt"
            "ast/ast-type.rkt"
@@ -36,7 +37,7 @@
                                                    (syntax-e #'src-arg))))]
           [src  (datum->syntax stx (string->symbol "src"))])
          #'(srcinfo->list src start-pos end-pos))]
-    [(_ start-arg end-arg)
+      [(_ start-arg end-arg)
        (with-syntax 
          ([start-pos 
             (datum->syntax stx 
@@ -193,12 +194,11 @@
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<compilation-unit>
-          [() (make-object root-node% null null)]
+          [() null]
           [(<import-declarations> <global-declarations>) 
-           (make-object root-node% (append (reverse $1) (reverse $2)) (build-src 1 2))]
+           (append (reverse $1) (reverse $2))]
           [(<global-declarations>) 
-           (make-object root-node% (reverse $1) (build-src 1))])
-
+           (reverse $1)])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Global 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -217,7 +217,8 @@
           [(<stmt>) $1])
 
         (<global-member-declaration>
-          [(<class-member-declaration>) $1])
+          [(<global-field-declaration>) $1]
+          [(<method-declaration>) (begin (active-mode) $1)])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Imports
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -232,11 +233,11 @@
 
         (<single-type-import-declaration>
           [(import <name> semicolon)
-           (make-object import% $2 null (build-src 2))])
+           (make-object todo-node% null 'import (build-src 2))])
 
         (<type-import-on-demand-declaration>
           [(import <name> period * semicolon)
-           (make-object import% $2 null (build-src 2))])
+           (make-object todo-node% null 'import (build-src 2))])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Requires - extention to support racket modules
@@ -253,26 +254,16 @@
           [(<modifiers> <modifier>)  (cons $2 $1)])
 
         (<modifier>
-          [(public)        
-           (make-object todo-node% null 'public (build-src 1))]
-          [(protected)     
-           (make-object todo-node% null 'protected (build-src 1))]
-          [(private)       
-           (make-object todo-node% null 'private (build-src 1))]
-          [(static)        
-           (make-object todo-node% null 'static (build-src 1))]
-          [(abstract)      
-           (make-object todo-node% null 'abstract (build-src 1))]
-          [(final)         
-           (make-object todo-node% null 'final (build-src 1))]
-          [(native)        
-           (make-object todo-node% null 'native (build-src 1))]
-          [(synchronized)  
-           (make-object todo-node% null 'synchronized (build-src 1))]
-          [(transient)     
-           (make-object todo-node% null 'transient (build-src 1))]
-          [(volatile)     
-           (make-object todo-node% null 'volatile (build-src 1))])
+          [(public)         'public]
+          [(protected)      'protected]
+          [(private)        'private]
+          [(abstract)       'abstract]
+          [(final)          'final]
+          [(native)         'native]
+          [(static)         'static]
+          [(synchronized)   'synchronized]
+          [(transient)      'transient]
+          [(volatile)       'volatile])
 
         (<class-declaration>
           [(<modifiers> class identifier <super> <interfaces> <class-body>)
@@ -315,7 +306,6 @@
         (<class-body-declaration>
           [(<class-member-declaration>) $1]
           [(<constructor-declaration>) $1])
-
 
         (<class-member-declaration>
           [(<field-declaration>) $1]
@@ -380,12 +370,6 @@
         (<method-body>
           [(<block>)   $1]
           [(semicolon) null])
-
-        (<static-initializer>
-          [(static <block>) 
-           (make-object todo-node% $2 'static-init (build-src 2))]
-          [(<block>)        
-           (make-object todo-node% $1 'static-init (build-src 1))])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Constructors 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -445,11 +429,17 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Fields
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (<global-field-declaration>
+          [(<modifiers> <type> <var-declarators> semicolon)
+           (make-object global-field% $1 $2 (reverse $3)  (build-src 1 4))]
+          [(<type> <var-declarators> semicolon)
+           (make-object global-field% null $1 (reverse $2)  (build-src 1 3))])
+
         (<field-declaration>
           [(<modifiers> <type> <var-declarators> semicolon)
-           (make-object vars-decl% $1 $2 (reverse $3)  (build-src 1))]
+           (make-object class-field% $1 $2 (reverse $3)  (build-src 1 4))]
           [(<type> <var-declarators> semicolon)
-           (make-object vars-decl% null $1 (reverse $2)  (build-src 1))])
+           (make-object class-field% null $1 (reverse $2)  (build-src 1 3))])
 
         (<var-declarators>
           [(<var-declarator>) (list $1)]
@@ -457,9 +447,9 @@
 
         (<var-declarator>
           [(<var-decl-id>) 
-           (make-object var-decl% $1 null (build-src 1))]
-          [(<var-decl-id> = <var-initializer>)
-           (make-object var-decl% $1 $3 (build-src 1))])
+           (make-object var-decl-id% $1 (make-object undefined% null) (build-src 1))]
+          [(<var-decl-id> = <var-initializer>) 
+           (make-object var-decl-id% $1 $3 (build-src 1 3))])
 
         (<var-decl-id> 
           [(identifier)
@@ -492,9 +482,9 @@
 
         (<local-var-decl>
           [(<modifiers> <type> <var-declarators>) 
-           (make-object vars-decl% $1 $2 (reverse $3)  (build-src 1))]
+           (make-object local-variable% $1 $2 (reverse $3)  (build-src 1 3))]
           [(<type> <var-declarators>) 
-           (make-object vars-decl% null $1 (reverse $2)  (build-src 1))])
+           (make-object local-variable% null $1 (reverse $2)  (build-src 1 2))])
 
         (<stmt>
           [(<stmt-no-trailing-substmt>) $1]

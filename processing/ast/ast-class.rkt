@@ -5,47 +5,62 @@
   (require racket/class
            "ast.rkt"
            "../lib/runtime.rkt")
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST class nodes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define class-node%
+  (define class-stmt%
     (class ast-node%
+           (inherit read-error)
+
+           (define/override (->racket)
+                            (read-error (format "Invalid use of ->racket ~a" this)))
+
+           (super-instantiate ())))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (define class-node%
+    (class class-stmt%
            (init-field name body)
 
-           (inherit read-error)
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
                               `(p-class ,(node->racket name) ,@(node->racket body))))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (read-error (format "Invalid use of ->racket ~a" this)))
-
            (super-instantiate ())))
 
   (define new-node%
-    (class ast-node%
+    (class class-stmt%
            (init-field name)
 
-           (inherit read-error)
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
                               `(make-object ,(node->racket name))))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (read-error (format "Invalid use of ->racket ~a" this)))
-
            (super-instantiate ())))
-  )
+
+  (define class-field%
+    (class class-stmt%
+           (init-field modifiers type vars)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object
+                              `(p-class-field ,@(node->racket vars))))
+
+         ;[(public)         'public]
+         ;[(protected)      'protected]
+         ;[(private)        'private]
+         ;[(abstract)       'abstract]
+         ;[(final)          'final]
+         ;[(native)         'native]
+         ;[(static)         'static]
+         ;[(synchronized)   'synchronized]
+         ;[(transient)      'transient]
+         ;[(volatile)       'volatile]
+
+        (super-instantiate ())))
+    )

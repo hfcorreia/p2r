@@ -2,6 +2,7 @@
 
 class Foo {
     int y = 20;
+    int x;
 
     void Foo() {
         println("Building Foo");
@@ -17,7 +18,7 @@ class Foo {
 }
 
 
-new Foo();
+Foo foo = new Foo(), foo2 = new Foo();
 //foo.setY(10);
 //foo.printValue();
 

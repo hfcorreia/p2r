@@ -3,6 +3,7 @@
   (provide (all-defined-out))
 
   (require racket/class
+           racket/undefined
            "ast.rkt"
            "../lib/runtime.rkt")
 
@@ -13,69 +14,24 @@
     (class ast-node%
            (inherit read-error)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (read-error (format "Invalid use of ->racket ~a" this)))
-
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
                             (read-error (format "Invalid use of ->racket ~a" this)))
 
            (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;;; require extention
   (define require% 
     (class stmt%
            (init-field name)
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (->syntax-object
-                              `(p-require ,(read (open-input-string name)))))
-
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~a<require>~a</require>"
-                                    (make-string indent #\space)
-                                    name))
+                            (->syntax-object `(p-require ,(read (open-input-string name)))))
 
            (super-instantiate ())))
 
-  ;;; imports 
-  (define import%
-    (class stmt%
-           (init-field name version)
-
-           (inherit ->syntax-object)
-
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
-           (define/override (->racket)
-                            (->syntax-object import))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~a<import>~a~%~a</import>~%"
-                                    (make-string indent #\space)
-                                    (send name ->xml (+ indent 2))
-                                    (make-string indent #\space)))
-
-           (define import
-             (error "Processing Import's not implemented!"))
-
-           (super-instantiate ())))
-
-  ;;; global stmt
   (define global-stmt%
     (class stmt%
            (init-field stmt)
@@ -84,101 +40,42 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
-                            (->syntax-object
-                              (node->racket stmt)))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~a<global-stmt>~a~%~a</global-stmt>~%"
-                                    (make-string indent #\space)
-                                    (send stmt ->xml (+ indent 2))
-                                    (make-string indent #\space)))
+                            (->syntax-object (node->racket stmt)))
 
            (super-instantiate ())))
 
-  ;;; global declaration
   (define global-decl%
     (class stmt%
            (init-field decl)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (node->racket decl))
 
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~a<global-decl>~a~%~a</global-decl>~%"
-                                    (make-string indent #\space)
-                                    (send decl ->xml (+ indent 2))
-                                    (make-string indent #\space)))
-
            (super-instantiate ())))
 
-  ;;; variable declaration
-  (define vars-decl%
+  (define global-field%
     (class stmt%
-           ;; TODO: types and modifiers
            (init-field modifiers type vars)
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              (if (= (length vars) 1)
-                                (car (node->racket vars))
-                                (error "Mulitple definitions not supported"))))
+                              `(p-declaration ,@(node->racket vars))))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<vars-decl>~a~a~%~a~%~a</vars-decl>"
-                                    (make-string indent #\space)
-                                    (if (null? modifiers)
-                                      ""
-                                      (send modifiers ->xml (+ indent 2)))
-                                    (send type ->xml (+ indent 2))
-                                    (string-append*
-                                      (map (lambda (var)
-                                             (send var ->xml (+ indent 2)))
-                                           vars))
-                                    (make-string indent #\space)))
            (super-instantiate ())))
 
-  ;;; variable declaration
-  (define var-decl%
+  (define local-variable%
     (class stmt%
-           ;; TODO: types and modifiers
-           (init-field var value)
+           (init-field modifiers type vars)
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
-                              (if (null? value)
-                                `(p-declaration ,(node->racket var))
-                                `(p-declaration ,(node->racket var)
-                                                ,(node->racket value)))))
+                              `(p-declaration ,@(node->racket vars))))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<var-decl>~a~a~%~a</var-decl>"
-                                    (make-string indent #\space)
-                                    (send var ->xml (+ indent 2))
-                                    (if (not (null? value))
-                                      (send value ->xml (+ indent 2))
-                                      "") 
-                                    (make-string indent #\space)))
            (super-instantiate ())))
 
   (define block%
@@ -187,8 +84,6 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object
                               (if (null? stmts) 
@@ -196,18 +91,6 @@
                                 `(let ()
                                    ,@(node->racket stmts)
                                    (void)))))
-
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<block>~a~%~a</block>~%"
-                                    (make-string indent #\space)
-                                    (string-append*
-                                      (map (lambda (stmt)
-                                             (send stmt ->xml (+ indent 2)))
-                                           stmts))
-                                    (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -217,22 +100,11 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(define ,(node->racket header)
                                  (call/ec (lambda (return)
                                             ,(node->racket body))))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<method-decl>~a~%~a~%~a</method-decl>"
-                                    (make-string indent #\space)
-                                    (send header ->xml (+ indent 2))
-                                    (send body ->xml (+ indent 2))
-                                    (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -242,37 +114,13 @@
 
            (inherit ->syntax-object)
 
-           ;; Getters
            (define/public (get-id) id)
            (define/public (get-parameters) parameters)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(,(node->racket id)
                                  ,@(node->racket (reverse parameters)))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<method-decl>~a~%~a~%~a~%~a~%~a~%~a</method-decl>"
-                                    (make-string indent #\space)
-                                    (if (null? modifiers)
-                                      ""
-                                      (send modifiers ->xml (+ indent 2)))
-                                    (send type ->xml (+ indent 2))
-                                    (send id ->xml (+ indent 2))
-                                    (if (null? parameters)
-                                      ""
-                                      (string-append*
-                                        (map (lambda (var)
-                                               (send var ->xml (+ indent 2)))
-                                             parameters)))
-                                    (if (null? throws)
-                                      ""
-                                      (send throws ->xml (+ indent 2)))
-                                    (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -282,22 +130,9 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               (node->racket id)))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<formal-parameter>~a~%~a~%~a~%~a<formal-parameter/>"
-                              (make-string indent #\space)
-                              final
-                              (send type ->xml (+ indent 2))
-                              (send id ->xml (+ indent 2))
-                              (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -307,25 +142,13 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(if ,(node->racket test)
                                  ,(node->racket then)
-                                 ,(if (null? else) (void) (node->racket
-                                                            else)))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<if>~a~%~a~%~a~%~a<if/>"
-                              (make-string indent #\space)
-                              (send test ->xml)
-                              (send then ->xml)
-                              (if (null? else) "" (send else ->xml))
-                              (make-string indent #\space)))
+                                 ,(if (null? else) 
+                                    (void) 
+                                    (node->racket else)))))
 
            (super-instantiate ())))
 
@@ -335,25 +158,13 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                             `(call/ec (lambda (break)
-                                         (let loop ()
-                                           (call/ec (lambda (continue)
-                                                      ,(node->racket body)))
-                                           (when ,(node->racket test)
-                                             (loop)))))))
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<do-while>~a~%~a~%~a<do-while/>"
-                              (make-string indent #\space)
-                              (send test ->xml)
-                              (send body ->xml)
-                              (make-string indent #\space)))
+                              `(let/ec break
+                                       (let loop ()
+                                         (let/ec continue ,(node->racket body))
+                                         (when ,(node->racket test)
+                                           (loop))))))
 
            (super-instantiate ())))
 
@@ -363,28 +174,13 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(call/ec 
-                                 (lambda (break)
-                                   (letrec ([loop (lambda ()
-                                                    (when ,(node->racket test)
-                                                      (call/ec (lambda (continue)
-                                                                 ,(node->racket body)))
-                                                      (loop)))])
-                                     (loop))))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<while>~a~%~a~%~a<while/>"
-                              (make-string indent #\space)
-                              (send test ->xml)
-                              (send body ->xml)
-                              (make-string indent #\space)))
+                              `(let/ec break
+                                       (let loop ()
+                                         (when ,(node->racket test)
+                                           (let/ec continue ,(node->racket body))
+                                           (loop))))))
 
            (super-instantiate ())))
 
@@ -395,30 +191,15 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
-                              `(call/ec 
-                                 (lambda (break)
-                                   ,(node->racket initialization)
-                                   (letrec ([loop (lambda ()
-                                                    (when ,(node->racket test)
-                                                      (call/ec (lambda (continue)
-                                                                 ,(node->racket body)))
-                                                      ,(node->racket increment)
-                                                      (loop)))])
-                                     (loop))))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<for>~a~%~a~%~a<for/>"
-                              (make-string indent #\space)
-                              (send test ->xml)
-                              (send body ->xml)
-                              (make-string indent #\space)))
+                              `(let/ec break
+                                       ,(node->racket initialization)
+                                       (let loop ()
+                                         (when ,(node->racket test)
+                                           (let/ec continue ,(node->racket body))
+                                           ,(node->racket increment)
+                                           (loop))))))
 
            (super-instantiate ())))
 
@@ -428,18 +209,9 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(begin ,@(node->racket exprs))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<break />"
-                              (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -449,24 +221,11 @@
 
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               (if(null? expr)
                                 `(return (void))
                                 `(return ,(node->racket expr)))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<return>~%~a~%~a<return/>"
-                              (make-string indent #\space)
-                              (if (null? expr)
-                                ""
-                                (send expr ->xml (+ indent 2)))
-                              (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -474,18 +233,9 @@
     (class stmt%
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(break (void))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<break />"
-                              (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -493,18 +243,9 @@
     (class stmt%
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (->syntax-object 
                               `(continue (void))))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<break />"
-                              (make-string indent #\space)))
 
            (super-instantiate ())))
 
@@ -512,18 +253,29 @@
     (class stmt%
            (inherit ->syntax-object)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
-           (define/override (->racket)
-                              (void))
-
-           ;; ->xml: ->string?
-           ;; generates xml representation of the node
-           (define/override (->xml indent)
-                            (format
-                              "~%~a<break />"
-                              (make-string indent #\space)))
+           (define/override (->racket) (void))
 
            (super-instantiate ())))
 
+  (define undefined%
+    (class stmt%
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object undefined))
+
+           (super-instantiate ())))
+
+  (define var-decl-id%
+    (class stmt%
+           (init-field id value)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket) 
+                            (->syntax-object
+                              `(,(node->racket id) 
+                                ,(node->racket value))))
+
+           (super-instantiate ())))
   )

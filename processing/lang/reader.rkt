@@ -14,5 +14,8 @@ processing/lang/processing
 (define (processing-read-syntax src input-port)
   (map strip-context (compile-processing (build-ast src #:input-port input-port))))
 
-
-
+(define (processing-read-syntax-repl src input-port)
+  (let ([code (processing-read-syntax src input-port)])
+    (if (null? code)
+      eof
+      #`(begin #,@code))))

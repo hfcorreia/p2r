@@ -23,10 +23,8 @@
   ;;; All nodes inherit from ast-node%
   (define ast-node%
     (class object%
-           ;; inits
            (init-field src-info)
 
-           ;; getters
            (define/public (get-src-info) src-info)
 
            ;; read-err: string? -> exn:fail:read
@@ -50,29 +48,6 @@
            (define/public (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/public (->xml indent)
-                          (read-error (format "Invalid use of ->racket ~a" this)))
-
-           (super-instantiate ())))
-
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;; Wrap processing code a class
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (define root-node%
-    (class ast-node%
-           (init-field code)
-
-           (inherit ->syntax-object)
-
-           (define/override (->racket)
-                            (->syntax-object
-                              (if (null? code)
-                                `(p-applet)
-                                `(p-applet ,@(node->racket code)))))
-
            (super-instantiate ())))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,17 +67,6 @@
                             (clear-todo)
                             (->syntax-object
                               (aux child)))
-
-           (define/override (->xml indent)
-                            (if (null? child)
-                              (format "~%~a<todo msg=\"~a\" />"
-                                      (make-string indent #\space)
-                                      msg)
-                              (format "~%~a<todo msg=\"~a\">~a~%~a</todo>"
-                                      (make-string indent #\space)
-                                      msg
-                                      (generate child (+ indent 2))
-                                      (make-string indent #\space))))
 
            ;; aux funtion
            (define (aux child)

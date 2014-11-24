@@ -15,15 +15,8 @@
 
            (inherit read-error)
 
-           ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
            (define/override (->racket)
                             (read-error (format "Invalid use of ->racket ~a" this)))
-
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (read-error (format "Invalid use of ->xml ~a" this)))
 
            (super-instantiate ())))
 
@@ -34,16 +27,8 @@
     (class type%
            (inherit-field type)
 
-           ;; ->racket: -> syntax-object?
-           ;; Generates the syntax object relative to the node
            (define/override (->racket)
                             (send type ->racket))
 
-           ;; ->xml: ->string?
-           ;; Generates xml representation of the node
-           (define/override (->xml indent)
-                            (format "~%~a<primitive-type type=\"~a\" />"
-                                    (make-string indent #\space)
-                                    type))
            (super-instantiate ())))
   )
