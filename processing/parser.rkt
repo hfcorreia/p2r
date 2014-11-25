@@ -217,8 +217,8 @@
           [(<stmt>) $1])
 
         (<global-member-declaration>
-          [(<global-field-declaration>) $1]
-          [(<method-declaration>) (begin (active-mode) $1)])
+          [(<global-field-declaration>)  $1]
+          [(<global-method-declaration>) $1])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Imports
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -314,9 +314,17 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Methods
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (<global-method-declaration>
+          [(<method-header> <method-body>) 
+           (begin 
+             (active-mode)
+             (make-object global-method-decl% $1 $2 (build-src 1 2)))])
+
         (<method-declaration>
           [(<method-header> <method-body>) 
-           (make-object method-decl% $1 $2 (build-src 1))])
+           (begin 
+             (active-mode)
+             (make-object method-decl% $1 $2 (build-src 1 2)))])
 
         (<method-header>
           [(<modifiers> <type> <method-declarator> <throws>) 

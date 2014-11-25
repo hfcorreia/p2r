@@ -51,16 +51,19 @@
                             (->syntax-object
                               `(p-class-field ,@(node->racket vars))))
 
-         ;[(public)         'public]
-         ;[(protected)      'protected]
-         ;[(private)        'private]
-         ;[(abstract)       'abstract]
-         ;[(final)          'final]
-         ;[(native)         'native]
-         ;[(static)         'static]
-         ;[(synchronized)   'synchronized]
-         ;[(transient)      'transient]
-         ;[(volatile)       'volatile]
+           (super-instantiate ())))
 
-        (super-instantiate ())))
-    )
+  (define method-decl% 
+    (class class-stmt%
+           (init-field header body)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(define/public ,(node->racket header)
+                                              (call/ec (lambda (return)
+                                                         ,(node->racket body))))))
+
+           (super-instantiate ())))
+  )

@@ -94,7 +94,7 @@
 
            (super-instantiate ())))
 
-  (define method-decl% 
+  (define global-method-decl% 
     (class stmt%
            (init-field header body)
 

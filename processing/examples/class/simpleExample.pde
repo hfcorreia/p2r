@@ -8,8 +8,8 @@ class Foo {
         println("Building Foo");
     }
 
-    void setY(int value) {
-        y = value;
+    void setY(int z) {
+        y = z;
     }
 
     void printValue(){
@@ -19,6 +19,6 @@ class Foo {
 
 
 Foo foo = new Foo(), foo2 = new Foo();
-//foo.setY(10);
-//foo.printValue();
+foo.setY(10);
+foo.printValue();
 
