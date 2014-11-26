@@ -220,8 +220,8 @@
           [(<stmt>) $1])
 
         (<global-member-declaration>
-          [(<global-field-declaration>)  $1]
-          [(<global-method-declaration>) $1])
+          [(<global-var-declaration>)  $1]
+          [(<global-function-declaration>) $1])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Imports
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -317,15 +317,17 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Methods
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (<global-method-declaration>
+        (<global-function-declaration>
           [(<method-header> <method-body>) 
            (begin 
+             ; Changes from static mode to active mode: see mode.rkt
              (active-mode)
-             (make-object global-method-decl% $1 $2 (build-src 1 2)))])
+             (make-object function-decl% $1 $2 (build-src 1 2)))])
 
         (<method-declaration>
           [(<method-header> <method-body>) 
            (begin 
+             ; Changes from static mode to active mode: see mode.rkt
              (active-mode)
              (make-object method-decl% $1 $2 (build-src 1 2)))])
 
@@ -440,11 +442,11 @@
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Fields
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (<global-field-declaration>
+        (<global-var-declaration>
           [(<modifiers> <type> <var-declarators> semicolon)
-           (make-object global-field% $1 $2 (reverse $3)  (build-src 1 4))]
+           (make-object global-var% $1 $2 (reverse $3)  (build-src 1 4))]
           [(<type> <var-declarators> semicolon)
-           (make-object global-field% null $1 (reverse $2)  (build-src 1 3))])
+           (make-object global-var% null $1 (reverse $2)  (build-src 1 3))])
 
         (<field-declaration>
           [(<modifiers> <type> <var-declarators> semicolon)
@@ -493,9 +495,9 @@
 
         (<local-var-decl>
           [(<modifiers> <type> <var-declarators>) 
-           (make-object local-variable% $1 $2 (reverse $3)  (build-src 1 3))]
+           (make-object local-var% $1 $2 (reverse $3)  (build-src 1 3))]
           [(<type> <var-declarators>) 
-           (make-object local-variable% null $1 (reverse $2)  (build-src 1 2))])
+           (make-object local-var% null $1 (reverse $2)  (build-src 1 2))])
 
         (<stmt>
           [(<stmt-no-trailing-substmt>) $1]

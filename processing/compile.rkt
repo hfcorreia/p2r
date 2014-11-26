@@ -6,7 +6,8 @@
 
   (require racket/file
            "ast/ast.rkt"
-           "parser.rkt") 
+           "parser.rkt"
+           "mode.rkt")
   ;;;
   (define (ast->xml ast #:file [path #f])
     (if (path-string? path)

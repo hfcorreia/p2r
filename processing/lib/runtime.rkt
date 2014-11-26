@@ -6,8 +6,10 @@
 
   (require racket/undefined
            racket/require
+           syntax/readerr
            "operators.rkt"
            "processing.rkt"
+           "../mode.rkt"
            "name-mangling.rkt"
            (for-syntax "name-mangling.rkt"))
 
@@ -72,6 +74,15 @@
        (begin
          (set! id (op id expr))
          id)]))
+
+  ;;; Global Stmt
+  ;;;   If in active mode, global stmts are not allowed
+  (define-syntax-rule
+    (p-global-stmt node src-loc)
+    (if (active-mode?)
+      (apply raise-read-error (cons "Mixing Static and Active Mode" src-loc))
+      (void node)))
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Class macros

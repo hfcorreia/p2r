@@ -36,12 +36,16 @@
     (class stmt%
            (init-field stmt)
 
-           (inherit-field src-info)
-
            (inherit ->syntax-object)
+           (inherit get-src-info)
 
            (define/override (->racket)
-                            (->syntax-object `(void ,(node->racket stmt))))
+                            (->syntax-object 
+                              (if (or (is-a? stmt empty-stmt%) 
+                                      (is-a? stmt block%))
+                                `(void ,(node->racket stmt))
+                                `(p-global-stmt ,(node->racket stmt)
+                                                (list ,@(get-src-info))))))
 
            (super-instantiate ())))
 
@@ -54,7 +58,7 @@
 
            (super-instantiate ())))
 
-  (define global-field%
+  (define global-var%
     (class stmt%
            (init-field modifiers type vars)
 
@@ -66,7 +70,7 @@
 
            (super-instantiate ())))
 
-  (define local-variable%
+  (define local-var%
     (class stmt%
            (init-field modifiers type vars)
 
@@ -94,7 +98,7 @@
 
            (super-instantiate ())))
 
-  (define global-method-decl% 
+  (define function-decl% 
     (class stmt%
            (init-field header body)
 
@@ -105,34 +109,6 @@
                               `(define ,(node->racket header)
                                  (call/ec (lambda (return)
                                             ,(node->racket body))))))
-
-           (super-instantiate ())))
-
-  (define method-header%
-    (class stmt%
-           (init-field modifiers type id parameters throws)
-
-           (inherit ->syntax-object)
-
-           (define/public (get-id) id)
-           (define/public (get-parameters) parameters)
-
-           (define/override (->racket)
-                            (->syntax-object 
-                              `(,(node->racket id)
-                                 ,@(node->racket (reverse parameters)))))
-
-           (super-instantiate ())))
-
-  (define formal-parameter% 
-    (class stmt%
-           (init-field final type id)
-
-           (inherit ->syntax-object)
-
-           (define/override (->racket)
-                            (->syntax-object 
-                              (node->racket id)))
 
            (super-instantiate ())))
 

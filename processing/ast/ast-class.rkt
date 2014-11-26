@@ -67,6 +67,34 @@
 
            (super-instantiate ())))
 
+  (define method-header%
+    (class class-stmt%
+           (init-field modifiers type id parameters throws)
+
+           (inherit ->syntax-object)
+
+           (define/public (get-id) id)
+           (define/public (get-parameters) parameters)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(,(node->racket id)
+                                 ,@(node->racket (reverse parameters)))))
+
+           (super-instantiate ())))
+
+  (define formal-parameter% 
+    (class class-stmt%
+           (init-field final type id)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              (node->racket id)))
+
+           (super-instantiate ())))
+
   (define this-node%
     (class class-stmt%
            (inherit ->syntax-object)
