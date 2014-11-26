@@ -66,4 +66,15 @@
                                                          ,(node->racket body))))))
 
            (super-instantiate ())))
+
+  (define this-node%
+    (class class-stmt%
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              this))
+
+
+           (super-instantiate ())))
   )

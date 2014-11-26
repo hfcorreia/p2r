@@ -28,11 +28,20 @@
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (->syntax-object
-                              (if (null? args)
-                                `(p-call ,(node->racket name))
-                                `(p-call ,(node->racket name)
-                                         ,@(node->racket args)))))
+                            (let ((full-name (send name get-full-id)))
+                              (->syntax-object
+                                (cond 
+                                  [(and (not full-name) (null? args))
+                                   `(p-call ,(node->racket name))]
+                                  [(and (not full-name) (not (null? args)))
+                                   `(p-call ,(node->racket name) ,@(node->racket args))]
+                                  [(and full-name (null? args))
+                                   `(p-send  ,full-name 
+                                            ,(node->racket name))]
+                                  [else 
+                                    `(p-send ,full-name 
+                                             ,(node->racket name)
+                                             ,@(node->racket args))]))))
 
            (super-instantiate ())))
 
@@ -43,17 +52,25 @@
            (inherit ->syntax-object)
 
            (define/public (get-id)   (string->symbol identifier))
-           (define/public (get-list) id-list)
+           (define/public (get-list) (reverse id-list))
 
            (define/public (get-full-id) 
-                          (append (reverse id-list)
-                                  (list identifier)))
+                          (if (null? id-list)
+                            #f
+                            (string->symbol 
+                              (build-full-id (reverse id-list)))))
 
            (define/override (->racket)
                             (->syntax-object (identifier->symbol)))
 
            (define (identifier->symbol)
              (string->symbol (string-append "" identifier)))
+
+           (define (build-full-id lst)
+             (cond 
+               [(null? lst) ""]
+               [(eq? (length lst) 1) (format "~a" (car lst))]
+               [else (format "~a-~a" (car lst) (build-full-id (cdr lst)))]))          
 
            (super-instantiate ())))
 

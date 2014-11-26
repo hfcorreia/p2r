@@ -189,7 +189,10 @@
 
         (<qualified-name>
           [(<name> period identifier) 
-           (make-object identifier%  (append (list (send $1 get-id)) (send $1 get-list)) $3 (build-src 1))])
+           (make-object identifier%  
+                        (append (list (send $1 get-id)) (send $1 get-list))
+                        $3 
+                        (build-src 1 3))])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -688,17 +691,16 @@
         (<primary-no-new-array>
           [(<literal>) $1]
           [(this) 
-           (make-object todo-node% null 'this (build-src 1))]
-          [(l-paren <expr> r-paren) $2]
+           (make-object this-node% (build-src 1))]
+          [(l-paren <expr> r-paren) 
+           (error "Not Implemented")]
           [(<class-instance-creation-expr>) $1]
           [(<field-access>) $1]
           [(<method-call>) $1]
-          [(<array-access>) $1]
-          [(<primitive-type> period class) $1]
-          [(<name> period class) $1]
-          [(void period class) 
-           (make-object todo-node% null 'void (build-src 1))]
-          [(<name> period this) $1])
+          [(<array-access>) 
+           (error "Not Implemented")]
+          [(<name> period this) 
+           (error "Not Implemented")])
 
         (<field-access>
           [(<primary> period identifier)    
@@ -720,9 +722,9 @@
            (make-object method-call% 
                         $1 
                         (make-object arguments% $3 (build-src 3))
-                        (build-src 1))]
+                        (build-src 1 4))]
           [(<name> l-paren r-paren) 
-           (make-object method-call% $1 null (build-src 1))]
+           (make-object method-call% $1 null (build-src 1 3))]
 
           ;; TODO: Solve the name resolution
           [(<primary> period identifier l-paren <args> r-paren)

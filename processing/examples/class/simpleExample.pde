@@ -5,11 +5,12 @@ class Foo {
     int x;
 
     void Foo() {
-        println("Building Foo");
+       println("Building Foo");
     }
 
-    void setY(int z) {
+    void setY(int z,int w) {
         y = z;
+        x = w;
     }
 
     void printValue(){
@@ -19,6 +20,11 @@ class Foo {
 
 
 Foo foo = new Foo(), foo2 = new Foo();
-foo.setY(10);
+//println();
+//println(2);
+//foo.setY(10);
 foo.printValue();
+
+
+
 

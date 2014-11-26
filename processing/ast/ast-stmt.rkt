@@ -41,7 +41,7 @@
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (->syntax-object (node->racket stmt)))
+                            (->syntax-object `(void ,(node->racket stmt))))
 
            (super-instantiate ())))
 

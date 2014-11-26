@@ -27,10 +27,21 @@
   ;                (super-instantiate ()))])
   ;     #'(send (make-object (applet code ...)) draw))]))
 
-  ;;;
-  (define-syntax-rule
-    (p-call func ...)
-    (func ...))
+  ;;; Call a global method
+  (define-syntax p-call
+    (syntax-rules ()
+      [(_ method-name) 
+       (method-name)]
+      [(_ method-name args ...) 
+       (method-name args ...)]))
+
+  ;;; Call a method from an object
+  (define-syntax p-send
+    (syntax-rules ()
+      [(_ full-name method-name) 
+       (send full-name method-name)]
+      [(_ full-name method-name args ...) 
+       (send full-name method-name args ...)]))
 
   ;;; Declaration Operator
   (define-syntax (p-declaration stx)
