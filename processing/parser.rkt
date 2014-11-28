@@ -118,6 +118,7 @@
 
         (<primitive-type>
           [(<numeric-type>) $1]
+          [(color) 'color]
           [(boolean) 'bool])
 
         (<numeric-type>
@@ -541,9 +542,9 @@
           [(<post-inc-expr>) $1]
           [(<post-dec-expr>) $1]
           [(<method-call>) $1]
-          ;; TODO: check if color in processing is a stmt-expr
           [(<color-instance-creation>) $1]
           [(<class-instance-creation-expr>) $1])
+
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Loop stmts
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -698,6 +699,7 @@
           [(<class-instance-creation-expr>) $1]
           [(<field-access>) $1]
           [(<method-call>) $1]
+          [(<color-instance-creation>) $1]
           [(<array-access>) 
            (error "Not Implemented")]
           [(<name> period this) 
@@ -774,7 +776,10 @@
 
         (<color-instance-creation>
           [(color l-paren <args> r-paren) 
-           (make-object todo-node% $3 'color (build-src 1))])
+           (make-object method-call% 
+                        (make-object identifier% null "color" (build-src 1))
+                        (make-object arguments% $3 (build-src 3))
+                        (build-src 1 4))])
 
         (<array-creation-expr>
           [(new <primitive-type> <dim-exprs> <dims>) 
