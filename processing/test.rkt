@@ -22,7 +22,7 @@
       "Processing Tests"
       (for/list ([path test-files])
                 (test-suite
-                  "Test for correct compilation"
+                  (path->string path)
                   #:before (lambda () (clear-todo))
                   (test-case
                     "Test"
@@ -32,6 +32,7 @@
                       (format "Erro: at ~a" path))
                     (check-false 
                       (begin (compile-processing (build-ast path)) todo?) 
-                      (format "Error: Incomplete AST ~a" path)))))))
+                      (format "Error: Incomplete AST ~a" path))))))
+    'normal)
 
   )

@@ -694,8 +694,7 @@
           [(<literal>) $1]
           [(this) 
            (make-object this-node% (build-src 1))]
-          [(l-paren <expr> r-paren) 
-           (error "Not Implemented")]
+          [(l-paren <expr> r-paren) $2]
           [(<class-instance-creation-expr>) $1]
           [(<field-access>) $1]
           [(<method-call>) $1]
