@@ -50,6 +50,23 @@
 
            (super-instantiate ())))
 
+
+  (define initializer%
+    (class ast-node%
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object
+                              `(begin 
+                                 (if (identifier-binding #'setup 0) 
+                                   (setup)
+                                   (void))
+                                 (if (identifier-binding #'draw 0) 
+                                   (draw)
+                                   (void)))))
+
+           (super-instantiate ())))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Debug stuff
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

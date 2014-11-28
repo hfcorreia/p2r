@@ -16,7 +16,12 @@
                             #:mode 'text)
       (parse-processing file input-port)))
 
+
   ;;;
   (define (compile-processing ast)
-    (map (lambda (node) (send node ->racket)) ast))
+    (if (active-mode?)
+        (append 
+          (map (lambda (node) (send node ->racket)) ast)
+          (list (send (make-object initializer% null) ->racket)))
+        (map (lambda (node) (send node ->racket)) ast)))
   )
