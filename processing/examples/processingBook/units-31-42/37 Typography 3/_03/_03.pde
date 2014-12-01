@@ -1,3 +1,4 @@
+#lang processing
 // The horizontal position of the mouse determines the
 // rotation angle. The angle accumulates with each letter
 // drawn to make the typography curve.

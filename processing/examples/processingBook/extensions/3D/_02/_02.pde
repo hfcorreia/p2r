@@ -1,3 +1,4 @@
+#lang processing
 // Draw a sphere on top of a box and moves the coordinates with the mouse
 // Press a mouse button to turn on the lights
 void setup() {

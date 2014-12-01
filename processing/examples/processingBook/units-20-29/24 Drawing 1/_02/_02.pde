@@ -1,3 +1,4 @@
+#lang processing
 // Draw from the previous mouse location to the current
 // mouse location to create a continuous line
 void setup() {

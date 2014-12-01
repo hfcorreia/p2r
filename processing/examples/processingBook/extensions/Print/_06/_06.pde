@@ -1,3 +1,4 @@
+#lang processing
 // Draws an image larger than the screen by tiling it into small sections.
 // The scaleValue variable sets amount of scaling: 1 is 100%, 2 is 200%, etc.
 int scaleValue = 3; // Multiplication factor

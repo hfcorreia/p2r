@@ -1,3 +1,4 @@
+#lang processing
 Particle p;
 
 void setup() {

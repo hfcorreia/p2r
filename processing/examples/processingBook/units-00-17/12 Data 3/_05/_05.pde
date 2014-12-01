@@ -1,3 +1,4 @@
+#lang processing
 int i = 2;
 int j = 3;
 float f1 = i/j; // Assign 0.0 to f1

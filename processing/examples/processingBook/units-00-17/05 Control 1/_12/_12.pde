@@ -1,3 +1,4 @@
+#lang processing
 boolean b = true; // Assign true to b
 println(b); // Prints "true"
 println(!b); // Prints "false"

@@ -1,3 +1,4 @@
+#lang processing
 class Button {
   int x, y; // x-coordinate, y-coordinate of the rectangle
   int size; // Dimension (width and height) of the rectangle

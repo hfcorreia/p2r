@@ -1,3 +1,4 @@
+#lang processing
 float inc = 0.0;
 
 void setup() {

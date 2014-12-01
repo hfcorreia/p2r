@@ -1,3 +1,4 @@
+#lang processing
 // Quantify the amount of movement in the video frame using frame-differencing
 import processing.video.*;
 

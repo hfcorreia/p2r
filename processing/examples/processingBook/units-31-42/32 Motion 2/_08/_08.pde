@@ -1,3 +1,4 @@
+#lang processing
 float inc1 = 0.1;
 float n1 = 0.0;
 float inc2 = 0.09;

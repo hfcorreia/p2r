@@ -1,3 +1,4 @@
+#lang processing
 size(120, 100);
 int front = int(random(1, 10)); // Select the front card
 int back = int(random(1, 10)); // Select the back card

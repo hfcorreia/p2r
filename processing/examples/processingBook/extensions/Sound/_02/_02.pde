@@ -1,3 +1,4 @@
+#lang processing
 /**
 Sound is generated at setup with a triangle waveform and a simple envelope
 generator. Insert your own array of notes as 'rawSequence' and let it roll.

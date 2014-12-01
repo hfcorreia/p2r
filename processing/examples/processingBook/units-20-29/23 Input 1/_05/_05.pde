@@ -1,3 +1,4 @@
+#lang processing
 // Invert cursor position to create a secondary response
 void setup() {
   size(100, 100);

@@ -1,3 +1,4 @@
+#lang processing
 // Set the square to black when the left mouse button
 // is pressed, white when the right button is pressed,
 // and gray when a button is not pressed

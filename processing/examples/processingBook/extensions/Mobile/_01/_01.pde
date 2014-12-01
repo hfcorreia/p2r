@@ -1,3 +1,4 @@
+#lang processing
 // The image file, named sprite.png in this example, must be located in the
 // sketch data folder. From the Sketch menu, choose "Add File" to copy files into
 // the sketch data folder.

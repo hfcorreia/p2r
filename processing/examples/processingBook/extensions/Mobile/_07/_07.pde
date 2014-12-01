@@ -1,3 +1,4 @@
+#lang processing
 import processing.sound.*;
 background(255);
 fill(0);

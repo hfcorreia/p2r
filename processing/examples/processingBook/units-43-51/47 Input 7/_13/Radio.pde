@@ -1,3 +1,4 @@
+#lang processing
 class Radio {
   int x, y; // The x- and y-coordinates of the rect
   int size, dotSize; // Dimension of circle, inner circle

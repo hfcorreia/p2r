@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 33-14 (p. 307)
 
@@ -70,6 +71,3 @@ void draw() {
 void mousePressed() {
   record = true;
 }
-
-
-

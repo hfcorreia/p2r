@@ -1,3 +1,4 @@
+#lang processing
 // Because x is 100, only the line draws
 int x = 100;
 if (x > 100) {              // If x is greater than 100,

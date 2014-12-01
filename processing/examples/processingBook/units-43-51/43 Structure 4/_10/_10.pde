@@ -1,3 +1,4 @@
+#lang processing
 int numSpots = 6;
 // Declare and create the array
 Spot[] spots = new Spot[numSpots];

@@ -1,3 +1,4 @@
+#lang processing
 // Calculates the size of each letter based on the
 // position of the cursor so the letters are larger
 // when the cursor is closer

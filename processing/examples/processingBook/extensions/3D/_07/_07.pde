@@ -1,3 +1,4 @@
+#lang processing
 // Vary the specular reflection component of a material
 // with vertical position of the mouse
 void setup() {

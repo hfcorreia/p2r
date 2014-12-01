@@ -1,3 +1,4 @@
+#lang processing
 strokeWeight(2);
 arc(50, 55, 50, 50, 0, HALF_PI);
 arc(50, 55, 60, 60, HALF_PI, PI);

@@ -1,3 +1,4 @@
+#lang processing
 class Particle {
   float x, y; // The x- and y-coordinates
   float vx, vy; // The x- and y-velocities

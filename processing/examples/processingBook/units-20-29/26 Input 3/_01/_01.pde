@@ -1,3 +1,4 @@
+#lang processing
 float gray = 0;
 
 void setup() {

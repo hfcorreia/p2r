@@ -1,3 +1,4 @@
+#lang processing
 // Load an image and draw it onto a cylinder and a quad
 int tubeRes = 32;
 float[] tubeX = new float[tubeRes];

@@ -1,3 +1,4 @@
+#lang processing
 int x = 0;
 void setup() {
   size(100, 100);

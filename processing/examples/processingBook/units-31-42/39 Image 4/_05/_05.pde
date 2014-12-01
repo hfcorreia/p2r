@@ -1,3 +1,4 @@
+#lang processing
 background(0);
 stroke(153);
 strokeWeight(24);

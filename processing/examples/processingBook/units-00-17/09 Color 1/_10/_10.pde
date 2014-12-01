@@ -1,3 +1,4 @@
+#lang processing
 background(255);
 noStroke();
 smooth();

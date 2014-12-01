@@ -1,3 +1,4 @@
+#lang processing
 pushMatrix();
 translate(20, 0);
 rect(0, 10, 70, 20); // Draws at (20, 30)

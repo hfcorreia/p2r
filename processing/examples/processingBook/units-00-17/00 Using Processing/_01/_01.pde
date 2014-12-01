@@ -1,3 +1,4 @@
+#lang processing
 line(10, 80, 30, 40);  // Left line
 line(20, 80, 40, 40);
 line(30, 80, 50, 40);  // Middle line

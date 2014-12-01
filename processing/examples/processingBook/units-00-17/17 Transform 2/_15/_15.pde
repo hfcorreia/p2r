@@ -1,3 +1,4 @@
+#lang processing
 // Shift the origin (0,0) to the center
 size(100, 100);
 translate(width/2, height/2);

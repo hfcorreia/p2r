@@ -1,3 +1,4 @@
+#lang processing
 for (int i = 0; i < 55; i++) {
   for (int j = 0; j < 55; j++) {
     color c = color((i + j) * 1.8);

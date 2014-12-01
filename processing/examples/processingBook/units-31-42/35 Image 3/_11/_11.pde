@@ -1,3 +1,4 @@
+#lang processing
 PImage trees;
 
 void setup() {

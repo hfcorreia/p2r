@@ -1,3 +1,4 @@
+#lang processing
 int num = 400;
 float[] x = new float[num];
 float[] y = new float[num];

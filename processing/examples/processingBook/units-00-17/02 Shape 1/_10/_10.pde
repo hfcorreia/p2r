@@ -1,3 +1,4 @@
+#lang processing
 // When the x-coordinates for a line are the
 // same, the line is vertical
 line(40, 10, 40, 90);

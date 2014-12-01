@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 8-08 (p. 83)
 
@@ -23,6 +24,3 @@ for (float e = 2; e < 36; e += 1.0) {
     ay = y;
   }
 }
-
-
-

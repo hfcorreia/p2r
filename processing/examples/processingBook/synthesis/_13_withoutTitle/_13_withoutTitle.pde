@@ -1,3 +1,4 @@
+#lang processing
 /** 
  * Synthesis 4: Structure and Interface
  * WithoutTitle by Lia (http://lia.sil.at)
@@ -74,5 +75,3 @@ void mouseMoved() {
 void keyPressed() {
   // saveFrame("withouttitle-####.tif"); 
 }
-
-

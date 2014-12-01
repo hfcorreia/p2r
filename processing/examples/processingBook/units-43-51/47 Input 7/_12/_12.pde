@@ -1,3 +1,4 @@
+#lang processing
 Radio[] buttons = new Radio[2];
 
 void setup() {

@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 4: Structure and Interface
  * Pond by William Ngan (www.metaphorical.net)

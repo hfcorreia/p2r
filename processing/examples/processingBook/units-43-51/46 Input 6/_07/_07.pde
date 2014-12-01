@@ -1,3 +1,4 @@
+#lang processing
 String[] lines = loadStrings("2895.txt");
 int totalCount = 0; // Total word count for entire book
 boolean started = false; // Ignore lines until the *** START line

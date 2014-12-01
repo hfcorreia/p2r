@@ -1,3 +1,4 @@
+#lang processing
 int[] data; // Declare
 data = new int[5]; // Create
 data[0] = 19; // Assign

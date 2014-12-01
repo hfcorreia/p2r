@@ -1,3 +1,4 @@
+#lang processing
 /**
 Loads a sound file off disk and plays it in multiple voices at multiple sampling
 increments (demonstrating voice allocation), panning it back and forth between

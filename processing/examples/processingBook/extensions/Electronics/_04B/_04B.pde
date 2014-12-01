@@ -1,3 +1,4 @@
+#lang processing
 // Write data to the serial port according to the mouseX value
 import processing.serial.*;
 

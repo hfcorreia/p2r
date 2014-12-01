@@ -1,3 +1,4 @@
+#lang processing
 int res = 16; // Number of data elements
 float[] x = new float[res]; // Create x-coordinate array
 float[] y = new float[res]; // Create y-coordinate array

@@ -1,3 +1,4 @@
+#lang processing
 // Starting with the third vertex, connects each
 // subsequent vertex to the previous two
 beginShape(TRIANGLE_STRIP);

@@ -1,3 +1,4 @@
+#lang processing
 float speed = 0.0;
 float easing = 0.05; // Numbers 0.0 to 1.0
 

@@ -1,3 +1,4 @@
+#lang processing
 int lastSecond = 0;
 
 void setup() {

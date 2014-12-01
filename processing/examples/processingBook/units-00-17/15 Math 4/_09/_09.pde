@@ -1,3 +1,4 @@
+#lang processing
 float xnoise = 0.0;
 float ynoise = 0.0;
 float inc = 0.04;

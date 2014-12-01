@@ -1,3 +1,4 @@
+#lang processing
 PFont font; // Declare the variable
 font = loadFont("Ziggurat-32.vlw"); // Load the font
 textFont(font); // Set the current text font

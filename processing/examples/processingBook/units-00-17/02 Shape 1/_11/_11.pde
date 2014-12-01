@@ -1,3 +1,4 @@
+#lang processing
 // When all four parameters are different,
 // the lines are diagonal
 line(25, 90, 80, 60);

@@ -1,3 +1,4 @@
+#lang processing
 int[] data; // Declare
 
 void setup() {

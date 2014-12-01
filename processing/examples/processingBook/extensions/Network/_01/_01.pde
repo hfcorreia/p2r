@@ -1,3 +1,4 @@
+#lang processing
 // A simple Web client using HTTP
 import processing.net.*;
 
@@ -9,8 +10,11 @@ void setup() {
   background(50);
   fill(200);
   c = new Client(this, "www.processing.org", 80); // Connect to server on port 80
-  c.write("GET / HTTP/1.0\n"); // Use the HTTP "GET" command to ask for a Web page
-  c.write("Host: my_domain_name.com\n\n"); // Be polite and say who we are
+  c.write("GET / HTTP/1.0
+"); // Use the HTTP "GET" command to ask for a Web page
+  c.write("Host: my_domain_name.com
+
+"); // Be polite and say who we are
 }
 
 void draw() {

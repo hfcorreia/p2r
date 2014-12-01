@@ -1,3 +1,4 @@
+#lang processing
 float f = 65.0;
 byte b = byte(f); // Assign 65 to b
 char c = 'E';

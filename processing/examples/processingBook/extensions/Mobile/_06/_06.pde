@@ -1,3 +1,4 @@
+#lang processing
 import processing.sound.*;
 Sound s;
 

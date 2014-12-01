@@ -1,3 +1,4 @@
+#lang processing
 int numFrames = 12; // The number of animation frames
 int topFrame = 0; // The top frame to display
 int bottomFrame = 0; // The bottom frame to display

@@ -1,3 +1,4 @@
+#lang processing
 PGraphics big; // Declare a PGraphics variable
 
 void setup() {

@@ -1,3 +1,4 @@
+#lang processing
 Record[] records;
 int recordCount;
 
@@ -5,7 +6,7 @@ void setup() {
   String[] lines = loadStrings("cars2.tsv");
   records = new Record[lines.length];
   for (int i = 0; i < lines.length; i++) {
-    String[] pieces = split(lines[i], '\t'); // Load data into array
+    String[] pieces = split(lines[i], '	'); // Load data into array
     if (pieces.length == 9) {
       records[recordCount] = new Record(pieces);
       recordCount++;

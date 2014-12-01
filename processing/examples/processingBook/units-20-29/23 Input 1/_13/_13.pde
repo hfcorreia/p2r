@@ -1,3 +1,4 @@
+#lang processing
 // Cursor position selects a quadrant of
 // the display window
 void setup() {

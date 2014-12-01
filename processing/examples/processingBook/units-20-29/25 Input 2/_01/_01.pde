@@ -1,3 +1,4 @@
+#lang processing
 // Draw a rectangle when any key is pressed
 void setup() {
   size(100, 100);

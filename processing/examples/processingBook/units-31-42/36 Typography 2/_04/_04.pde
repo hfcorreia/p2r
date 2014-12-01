@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 int opacity = 0;
 int direction = 1;

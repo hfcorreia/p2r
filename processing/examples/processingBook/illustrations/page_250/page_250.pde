@@ -1,3 +1,4 @@
+#lang processing
 
 size(442, 500);
 //size(442, 500, PDF, "page_250.pdf");
@@ -32,9 +33,3 @@ text(s1, 0, 250);
 text(s2, 0, 290);
 text(s3, 0, 320);
 text(s4, 0, 370);
-
-
-
-
-
-

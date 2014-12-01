@@ -1,3 +1,4 @@
+#lang processing
 // Draws a line between each pair of vertices
 beginShape(LINES);
 vertex(30, 20);

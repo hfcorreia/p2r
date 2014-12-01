@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 26-04 (p. 231)
 
@@ -42,4 +43,3 @@ void mouseDragged() {  // Move black circle
 void keyReleased() {
   record = true; 
 }
-

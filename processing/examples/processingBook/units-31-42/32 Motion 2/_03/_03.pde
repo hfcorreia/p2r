@@ -1,3 +1,4 @@
+#lang processing
 float angle = 0.0;
 float speed = 0.1;
 

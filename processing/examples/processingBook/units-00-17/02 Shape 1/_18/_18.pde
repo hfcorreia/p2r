@@ -1,3 +1,4 @@
+#lang processing
 rect(0, 0, 90, 50);
 rect(5, 50, 75, 4);
 rect(24, 54, 6, 6);

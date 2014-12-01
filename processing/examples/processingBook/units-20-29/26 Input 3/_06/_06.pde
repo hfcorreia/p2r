@@ -1,3 +1,4 @@
+#lang processing
 boolean drawT = false;
 
 void setup() {

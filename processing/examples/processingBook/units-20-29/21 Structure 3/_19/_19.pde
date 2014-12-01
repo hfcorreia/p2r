@@ -1,3 +1,4 @@
+#lang processing
 void setup() {
   size(100, 100);
   float f = average(12.0, 6.0); // Assign 9.0 to f

@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 
 void setup() {

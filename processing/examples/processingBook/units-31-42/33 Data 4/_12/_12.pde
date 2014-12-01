@@ -1,3 +1,4 @@
+#lang processing
 float[] sineWave = new float[width];
 
 for (int i = 0; i < width; i++) {

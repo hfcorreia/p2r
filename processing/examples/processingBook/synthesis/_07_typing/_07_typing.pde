@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 2: Input and Response
  * Typing by Casey Reas (www.processing.org)

@@ -1,3 +1,4 @@
+#lang processing
 size(600, 100);
 float v = 0.0;
 float inc = 0.1;

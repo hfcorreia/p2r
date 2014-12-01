@@ -1,3 +1,4 @@
+#lang processing
 // Export a DXF file when the R key is pressed
 import processing.dxf.*;
 boolean record = false;

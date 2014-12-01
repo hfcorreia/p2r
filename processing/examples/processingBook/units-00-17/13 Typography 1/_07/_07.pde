@@ -1,3 +1,4 @@
+#lang processing
 // Reducing a font created at 32 pixels
 PFont font;
 font = loadFont("Ziggurat-32.vlw");

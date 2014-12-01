@@ -1,3 +1,4 @@
+#lang processing
 String[] trees = { "ash", "oak" };
 append(trees, "maple"); // INCORRECT! Does not change the array
 print(trees); // Prints "ash oak"

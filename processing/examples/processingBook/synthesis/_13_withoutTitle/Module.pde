@@ -1,3 +1,4 @@
+#lang processing
 
 class Module {
   int i;

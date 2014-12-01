@@ -1,3 +1,4 @@
+#lang processing
 class LimitedParticle extends Particle {
   float friction = 0.99;
   LimitedParticle(int ix, int iy, float ivx, float ivy, float ir) {

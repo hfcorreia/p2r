@@ -1,3 +1,4 @@
+#lang processing
 int currentFrame = 0;
 PImage[] frames = new PImage[12];
 int lastTime = 0;

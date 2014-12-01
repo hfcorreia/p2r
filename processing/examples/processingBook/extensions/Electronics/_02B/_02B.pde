@@ -1,3 +1,4 @@
+#lang processing
 // Read data from the serial port and assign it to a variable. Set the fill a
 // rectangle on the screen using the value read from a light sensor connected
 // to the Wiring or Arduino board

@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 String[] words = { "Three", "strikes", "and", "you're", "out...", " " };
 int whichWord = 0;

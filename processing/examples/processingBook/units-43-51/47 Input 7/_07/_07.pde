@@ -1,3 +1,4 @@
+#lang processing
 // Requires the Button class
 Button button1, button2, button3;
 int mode = 1;

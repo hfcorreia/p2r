@@ -1,3 +1,4 @@
+#lang processing
 import processing.sound.*;
 // Notes range from 0 to 127 as in the MIDI specification
 int[] notes = { 60, 62, 64, 65, 67, 69, 71, 72, 74 };

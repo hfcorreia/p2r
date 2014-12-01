@@ -1,3 +1,4 @@
+#lang processing
 // The word "tickle" jitters when the cursor hovers over
 PFont f;
 float x = 33; // X-coordinate of text

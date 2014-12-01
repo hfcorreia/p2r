@@ -1,3 +1,4 @@
+#lang processing
 float fuzzy = 0.0;
 
 void setup() {

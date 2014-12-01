@@ -1,3 +1,4 @@
+#lang processing
 noFill();
 translate(10, 20);
 rect(0, 0, 20, 10);

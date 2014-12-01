@@ -1,3 +1,4 @@
+#lang processing
 PImage img = loadImage("topanga.jpg");
 background(0);
 stroke(255);

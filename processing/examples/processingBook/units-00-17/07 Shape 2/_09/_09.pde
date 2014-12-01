@@ -1,3 +1,4 @@
+#lang processing
 // Connects each grouping of three vertices as a triangle
 beginShape(TRIANGLES);
 vertex(75, 30);

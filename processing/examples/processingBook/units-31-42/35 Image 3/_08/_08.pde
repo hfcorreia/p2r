@@ -1,3 +1,4 @@
+#lang processing
 PImage trees;
 trees = loadImage("topanga.jpg");
 stroke(255);

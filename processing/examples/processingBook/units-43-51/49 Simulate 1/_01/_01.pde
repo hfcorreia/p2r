@@ -1,3 +1,4 @@
+#lang processing
 int[] rules = { 0, 0, 0, 1, 1, 1, 1, 0 };
 int gen = 1; // Generation
 color on = color(255);

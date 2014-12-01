@@ -1,3 +1,4 @@
+#lang processing
 // The size of each letter grows and shrinks from
 // left to right
 PFont font;

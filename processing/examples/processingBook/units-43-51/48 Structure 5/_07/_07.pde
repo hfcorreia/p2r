@@ -1,3 +1,4 @@
+#lang processing
 SpinSpots spots;
 SpinArm arm;
 

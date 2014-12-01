@@ -1,3 +1,4 @@
+#lang processing
 int neighbors(int x, int y) {
   int north = (y + height - 1) % height;
   int south = (y + 1) % height;

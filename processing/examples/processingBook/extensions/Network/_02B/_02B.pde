@@ -1,3 +1,4 @@
+#lang processing
 import processing.net.*;
 
 Client c;
@@ -19,12 +20,14 @@ void draw() {
     stroke(255);
     line(pmouseX, pmouseY, mouseX, mouseY);
 // Send mouse coords to other person
-    c.write(pmouseX + " " + pmouseY + " " + mouseX + " " + mouseY + "\n");
+    c.write(pmouseX + " " + pmouseY + " " + mouseX + " " + mouseY + "
+");
   }
 // Receive data from server
   if (c.available() > 0) {
     input = c.readString();
-    input = input.substring(0, input.indexOf("\n")); // Only up to the newline
+    input = input.substring(0, input.indexOf("
+")); // Only up to the newline
     data = int(split(input, ' ')); // Split values into an array
 // Draw line using received coords
     stroke(0);

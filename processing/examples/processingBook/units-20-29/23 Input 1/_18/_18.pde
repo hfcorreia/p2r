@@ -1,3 +1,4 @@
+#lang processing
 // Draw an ellipse to show the position of the hidden cursor
 void setup() {
   size(100, 100);

@@ -1,3 +1,4 @@
+#lang processing
 // Draw lines with different gray values when a mouse
 // button is pressed or not pressed
 void setup() {

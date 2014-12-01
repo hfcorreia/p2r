@@ -1,3 +1,4 @@
+#lang processing
 class OverCircle {
   int x, y; // The x- and y-coordinates
   int diameter; // Diameter of the circle

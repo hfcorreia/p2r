@@ -1,3 +1,4 @@
+#lang processing
 class Scrollbar {
   int x, y; // The x- and y-coordinates
   float sw, sh; // Width and height of scrollbar

@@ -1,3 +1,4 @@
+#lang processing
 translate(10, 60);
 rect(0, 0, 70, 20);
 rotate(-PI/12);

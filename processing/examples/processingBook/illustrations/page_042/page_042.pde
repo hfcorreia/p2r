@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 4-02 (p. 44) and code 6-01 (p. 63)
 
@@ -32,4 +33,3 @@ for(int i = 0; i <= 50; i++) {
   x4 += 5.375;
   
 }
-

@@ -1,3 +1,4 @@
+#lang processing
 
 class Control {
   int x,y,w,h;

@@ -1,3 +1,4 @@
+#lang processing
 PImage img;
 img = loadImage("arch.jpg");
 tint(0, 153, 204); // Tint blue

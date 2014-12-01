@@ -1,3 +1,4 @@
+#lang processing
 FixedSpring s;
 float gravity = 0.5;
 

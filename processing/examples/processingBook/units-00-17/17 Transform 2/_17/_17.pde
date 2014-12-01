@@ -1,3 +1,4 @@
+#lang processing
 // Shift the origin (0,0) to the lower-left corner
 size(100, 100);
 translate(0, height);

@@ -1,3 +1,4 @@
+#lang processing
 //  Because x is 90, only the rectangle draws
 int x = 90;
 if (x > 100) {              // If x is greater than 100,

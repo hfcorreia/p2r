@@ -1,3 +1,4 @@
+#lang processing
 int num = 320;
 ArrowParticle[] p = new ArrowParticle[num];
 float radius = 1.2;

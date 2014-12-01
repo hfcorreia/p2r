@@ -1,3 +1,4 @@
+#lang processing
 int numFrames = 12; // The number of animation frames
 int frame = 0; // The frame to display
 PImage[] images = new PImage[numFrames]; // Image array

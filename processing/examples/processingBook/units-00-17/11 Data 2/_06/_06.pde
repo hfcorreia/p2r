@@ -1,3 +1,4 @@
+#lang processing
 // The String data type can contain long and short text elements
 String s1 = "Rakete bee bee?";
 String s2 = "Rrrrrrrrrrrrrrrrummmmmpffff tillffff tooooooo?";

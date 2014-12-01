@@ -1,3 +1,4 @@
+#lang processing
 int x = 1;
 println(x); // Prints "1" to the console
 x += 5; // Equivalent to x = x + 5

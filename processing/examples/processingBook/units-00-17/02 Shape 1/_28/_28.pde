@@ -1,3 +1,4 @@
+#lang processing
 rect(10, 10, 50, 50);
 fill(204); // Light gray
 rect(20, 20, 50, 50);

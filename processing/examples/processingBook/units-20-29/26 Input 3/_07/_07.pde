@@ -1,3 +1,4 @@
+#lang processing
 // An extremely minimal text editor, it can only insert
 // and remove characters from a single line
 PFont font;

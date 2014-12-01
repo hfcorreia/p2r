@@ -1,3 +1,4 @@
+#lang processing
 Diagonals da, db;
 
 void setup() {

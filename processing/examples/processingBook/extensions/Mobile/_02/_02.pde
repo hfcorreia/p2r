@@ -1,3 +1,4 @@
+#lang processing
 String s;
 void setup() {
   softkey("Input"); // Create a softkey called Input

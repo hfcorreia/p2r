@@ -1,3 +1,4 @@
+#lang processing
 float d = 20.0;
 float speed = 1.0;
 int direction = 1;

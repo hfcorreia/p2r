@@ -1,3 +1,4 @@
+#lang processing
 float y = 50.0;
 float radius = 15.0;
 float velocity = 8.0;

@@ -1,3 +1,4 @@
+#lang processing
 background(0);
 smooth();
 stroke(255, 120);

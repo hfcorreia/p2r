@@ -1,3 +1,4 @@
+#lang processing
 noStroke();
 smooth();
 int radius = 38;

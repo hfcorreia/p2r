@@ -1,3 +1,4 @@
+#lang processing
 PImage img;
 float opacity = 0; // Set opacity to the minimum
 

@@ -1,3 +1,4 @@
+#lang processing
 float[][] kernel = { {-1, 0, 1},
                      {-2, 0, 2},
                      {-1, 0, 1} };
@@ -28,4 +29,3 @@ for (int y = 1; y < img.height - 1; y++) { // Skip top and bottom edges
 // State that there are changes to edgeImg.pixels[]
 edgeImg.updatePixels();
 image(edgeImg, 0, 0); // Draw the new image
-

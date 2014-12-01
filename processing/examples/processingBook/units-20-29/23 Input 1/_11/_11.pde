@@ -1,3 +1,4 @@
+#lang processing
 // Cursor position selects the left or right half
 // of the display window
 void setup() {

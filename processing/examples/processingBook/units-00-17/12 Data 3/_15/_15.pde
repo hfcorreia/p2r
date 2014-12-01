@@ -1,3 +1,4 @@
+#lang processing
 String s1 = "Bianco";
 String s2 = "Bianco";
 String s3 = "Nero";

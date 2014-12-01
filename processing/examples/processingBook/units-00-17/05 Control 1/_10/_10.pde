@@ -1,3 +1,4 @@
+#lang processing
 int a = 10;
 int b = 20;
 // The expression "a > 5" must be true OR "b < 30"

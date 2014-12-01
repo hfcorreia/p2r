@@ -1,3 +1,4 @@
+#lang processing
 EggRing er1, er2;
 
 void setup() {

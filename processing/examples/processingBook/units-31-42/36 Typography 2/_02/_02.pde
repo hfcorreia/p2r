@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 float x1 = 0;
 float x2 = 100;

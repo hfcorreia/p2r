@@ -1,3 +1,4 @@
+#lang processing
 background(0);
 stroke(255, 60);
 for (int i = 0; i < 100; i++) {

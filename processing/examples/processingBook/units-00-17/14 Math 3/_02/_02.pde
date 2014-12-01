@@ -1,3 +1,4 @@
+#lang processing
 float r1 = radians(90);
 float r2 = radians(180);
 println(r1); // Prints "1.5707964"

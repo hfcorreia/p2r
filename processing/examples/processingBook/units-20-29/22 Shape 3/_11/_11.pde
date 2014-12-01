@@ -1,3 +1,4 @@
+#lang processing
 int x = 63; // X-coordinate
 int y = 50; // Y-coordinate
 int r = 80; // Starting radius

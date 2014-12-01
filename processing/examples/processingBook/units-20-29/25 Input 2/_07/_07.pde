@@ -1,3 +1,4 @@
+#lang processing
 color y = 35;
 
 void setup() {

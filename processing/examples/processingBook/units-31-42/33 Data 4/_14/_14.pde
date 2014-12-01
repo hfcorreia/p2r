@@ -1,3 +1,4 @@
+#lang processing
 int[] y;
 
 void setup() {

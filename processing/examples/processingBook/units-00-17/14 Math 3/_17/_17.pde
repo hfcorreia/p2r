@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 float radius = 0.15;
 float cx = 33; // Center x- and y-coordinates

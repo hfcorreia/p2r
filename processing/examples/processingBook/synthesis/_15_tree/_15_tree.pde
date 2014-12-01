@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 4: Structure and Interface
  * Swingtree by Andreas Schlegel (www.sojamo.de) at ART+COM (www.artcom.de)
@@ -99,4 +100,3 @@ void parseTree() {
   s[rootId].adjustDepth(1);
   
 }
-

@@ -1,3 +1,4 @@
+#lang processing
 // Convert the red values of pixels to line lengths
 PImage arch;
 

@@ -1,3 +1,4 @@
+#lang processing
 int SOUTH = 0; // Direction numbers with names
 int EAST = 1; // so that the code self-documents
 int NORTH = 2;

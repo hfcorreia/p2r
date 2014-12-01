@@ -1,3 +1,4 @@
+#lang processing
 // Multiplying and dividing creates scaling offsets
 void setup() {
   size(100, 100);

@@ -1,3 +1,4 @@
+#lang processing
 // Convert the blue values from one row of the image
 // to the coordinates for a series of lines
 PImage arch;

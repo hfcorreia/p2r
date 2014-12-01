@@ -1,3 +1,4 @@
+#lang processing
 // Code to read an analog value and write it to the serial port
 int val;
 int inputPin = 0; // Set the input to analog in pin 0

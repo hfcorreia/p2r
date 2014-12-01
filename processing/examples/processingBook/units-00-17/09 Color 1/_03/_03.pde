@@ -1,3 +1,4 @@
+#lang processing
 background(129, 130, 87);
 noStroke();
 fill(174, 221, 60);

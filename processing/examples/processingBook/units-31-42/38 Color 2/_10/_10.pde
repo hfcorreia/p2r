@@ -1,3 +1,4 @@
+#lang processing
 color olive, gray;
 
 void setup() {

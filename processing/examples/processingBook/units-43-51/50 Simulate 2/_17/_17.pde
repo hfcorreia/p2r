@@ -1,3 +1,4 @@
+#lang processing
 int numSprings = 30;
 Spring2D[] s = new Spring2D[numSprings];
 float gravity = 5.0;

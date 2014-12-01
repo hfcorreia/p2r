@@ -1,3 +1,4 @@
+#lang processing
 // A negative number used as a parameter to translate()
 // moves the coordinates in the opposite direction
 rect(0, 5, 70, 30);

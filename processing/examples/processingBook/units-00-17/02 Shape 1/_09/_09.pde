@@ -1,3 +1,4 @@
+#lang processing
 // When the y-coordinates for a line are the
 // same, the line is horizontal
 line(10, 30, 90, 30);

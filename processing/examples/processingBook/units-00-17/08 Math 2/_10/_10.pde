@@ -1,3 +1,4 @@
+#lang processing
 // Draw circles at points along the curve y = x^4
 noFill();
 smooth();

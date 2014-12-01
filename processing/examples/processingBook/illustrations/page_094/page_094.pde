@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 10-07 (p. 98) and code 35-03 (p. 322)
 
@@ -16,6 +17,3 @@ for(int i = 0; i < width; i += 50) {
 }
 
 //saveFrame("page_094.tif");
-
-
-

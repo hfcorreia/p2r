@@ -1,3 +1,4 @@
+#lang processing
 // The distance between the center of the display
 // window and the cursor sets the diameter of the circle
 void setup() {

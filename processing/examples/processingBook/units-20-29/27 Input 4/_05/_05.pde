@@ -1,3 +1,4 @@
+#lang processing
 // Draw a grid of circles and calculate the
 // distance to each to set the size
 float maxDistance;

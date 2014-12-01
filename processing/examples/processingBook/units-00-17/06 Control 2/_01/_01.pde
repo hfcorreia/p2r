@@ -1,3 +1,4 @@
+#lang processing
 // The init is "int i = 20", the test is "i < 80",
 // and the update is "i += 5". Notice the semicolon
 // terminating the first two elements

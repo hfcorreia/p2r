@@ -1,3 +1,4 @@
+#lang processing
 size(700, 100);
 float offset = 50;
 float scaleVal = 30.0;

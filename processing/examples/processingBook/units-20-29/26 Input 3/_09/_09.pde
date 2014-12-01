@@ -1,3 +1,4 @@
+#lang processing
 int frame = 0;
 
 void setup() {

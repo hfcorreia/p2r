@@ -1,3 +1,4 @@
+#lang processing
 // Write data to the serial port according to the status of a button controlled
 // by the mouse
 import processing.serial.*;

@@ -1,3 +1,4 @@
+#lang processing
 float y1, y2;
 float velocity1, velocity2;
 float mass1 = 1.0;

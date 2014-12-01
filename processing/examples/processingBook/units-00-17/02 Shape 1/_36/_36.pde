@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 ellipse(30, 48, 36, 36);
 noSmooth();

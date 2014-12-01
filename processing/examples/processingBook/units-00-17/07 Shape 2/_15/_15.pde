@@ -1,3 +1,4 @@
+#lang processing
 noFill();
 beginShape();
 vertex(32, 20); // V1 (see p.76)

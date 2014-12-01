@@ -1,3 +1,4 @@
+#lang processing
 
 class Button extends Control {
   boolean selected = false;

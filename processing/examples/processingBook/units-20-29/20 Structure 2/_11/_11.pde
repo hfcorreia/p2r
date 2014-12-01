@@ -1,3 +1,4 @@
+#lang processing
 void draw() {
   int d = 80; // This variable can be used everywhere in draw()
   if (d > 50) {

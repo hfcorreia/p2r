@@ -1,3 +1,4 @@
+#lang processing
 // Loads a PNG image with 8-bit transparency
 PImage img;
 img = loadImage("arch.png");

@@ -1,3 +1,4 @@
+#lang processing
 // Rotate the triangles so they always point
 // to the cursor
 float x = 50;

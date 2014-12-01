@@ -1,3 +1,4 @@
+#lang processing
 colorMode(HSB, 360, 100, 100); // Set color mode to HSB
 color c = color(210, 100, 40); // Create a new color
 float h = hue(c); // Assign 210.0 to h

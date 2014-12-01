@@ -1,3 +1,4 @@
+#lang processing
 fill(255); // White
 rect(10, 10, 50, 50);
 rect(20, 20, 50, 50);

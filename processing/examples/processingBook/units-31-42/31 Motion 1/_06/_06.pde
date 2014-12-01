@@ -1,3 +1,4 @@
+#lang processing
 float x = 20.0; // Initial x-coordinate
 float y = 10.0; // Initial y-coordinate
 float targetX = 70.0; // Destination x-coordinate

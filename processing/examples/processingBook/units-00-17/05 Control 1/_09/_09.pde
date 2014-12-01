@@ -1,3 +1,4 @@
+#lang processing
 // If x is less than or equal to 100, then draw
 // the rectangle. Otherwise, if x is greater than
 // or equal to 300, draw the line. If x is between

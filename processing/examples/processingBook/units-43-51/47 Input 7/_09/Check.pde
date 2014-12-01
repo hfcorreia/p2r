@@ -1,3 +1,4 @@
+#lang processing
 class Check {
   int x, y; // The x- and y-coordinates
   int size; // Dimension (width and height)

@@ -1,3 +1,4 @@
+#lang processing
 /** 
  * Synthesis 1: Form and Code
  * Wilson Grids by Casey Reas (www.processing.org)
@@ -33,4 +34,3 @@ for(float y=0; y<numSquares; y=y+1) {
   } 
   
 }
-

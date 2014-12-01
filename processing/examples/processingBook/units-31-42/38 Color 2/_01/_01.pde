@@ -1,3 +1,4 @@
+#lang processing
 color c1 = color(0, 126, 255); // Create a new color
 float r = red(c1); // Assign 0.0 to r
 float g = green(c1); // Assign 126.0 to g

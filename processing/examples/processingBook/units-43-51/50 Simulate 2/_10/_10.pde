@@ -1,3 +1,4 @@
+#lang processing
 int num = 80;
 LimitedParticle[] p = new LimitedParticle[num];
 float radius = 1.2;

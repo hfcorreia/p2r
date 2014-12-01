@@ -1,3 +1,4 @@
+#lang processing
 background(0);
 rect(10, 10, 50, 50);
 stroke(102); // Dark gray

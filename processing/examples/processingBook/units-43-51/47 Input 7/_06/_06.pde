@@ -1,3 +1,4 @@
+#lang processing
 Button button;
 
 void setup() {

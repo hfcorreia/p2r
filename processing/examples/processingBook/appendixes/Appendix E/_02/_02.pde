@@ -1,3 +1,4 @@
+#lang processing
 int a = 255;
 int r = 102;
 int g = 51;

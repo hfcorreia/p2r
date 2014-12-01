@@ -1,3 +1,4 @@
+#lang processing
 // Import and display an OBJ model
 // requires OBJ loader from: http://users.design.ucla.edu/%7Etatsuyas/tools/objloader/index.htm
 import saito.objloader.*;

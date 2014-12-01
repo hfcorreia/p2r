@@ -1,3 +1,4 @@
+#lang processing
 float r = random(100);
 if (r < 50.0) {
   line(0, 0, 100, 100);

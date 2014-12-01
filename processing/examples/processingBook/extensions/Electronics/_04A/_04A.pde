@@ -1,3 +1,4 @@
+#lang processing
 // Read data from the serial port and set the position of a servomotor
 // according to the value
 Servo myservo = new Servo(); // Create servo object to control a servo

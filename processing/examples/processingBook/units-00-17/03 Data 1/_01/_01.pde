@@ -1,3 +1,4 @@
+#lang processing
 int x; // Declare the variable x of type int
 float y; // Declare the variable y of type float
 boolean b; // Declare the variable b of type boolean

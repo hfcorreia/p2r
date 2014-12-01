@@ -1,3 +1,4 @@
+#lang processing
 // Avoids (x,y) coordinates
 int wh = width*height;
 loadPixels();

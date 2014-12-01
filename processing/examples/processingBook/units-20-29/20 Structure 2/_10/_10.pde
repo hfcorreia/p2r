@@ -1,3 +1,4 @@
+#lang processing
 int d = 51; // Variable d can be used everywhere
 
 void setup() {

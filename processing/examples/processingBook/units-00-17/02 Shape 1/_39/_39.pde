@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 strokeWeight(12);
 strokeJoin(BEVEL);

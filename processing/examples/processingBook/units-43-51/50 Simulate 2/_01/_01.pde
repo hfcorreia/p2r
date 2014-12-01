@@ -1,3 +1,4 @@
+#lang processing
 // Gradually increases the velocity
 float y = 50.0;
 float radius = 15.0;

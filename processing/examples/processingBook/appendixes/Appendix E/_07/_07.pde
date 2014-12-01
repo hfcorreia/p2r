@@ -1,3 +1,4 @@
+#lang processing
 // Avoid the calculation y*height+width
 int index = 0;
 loadPixels();

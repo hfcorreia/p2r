@@ -1,3 +1,4 @@
+#lang processing
 PrintWriter output;
 
 void setup() {
@@ -11,8 +12,8 @@ void draw() {
   if (mousePressed) {
     point(mouseX, mouseY);
     // Write the coordinate to a file with a
-    // "\t" (TAB character) between each entry
-    output.println(mouseX + "\t" + mouseY);
+    // "	" (TAB character) between each entry
+    output.println(mouseX + "	" + mouseY);
   }
 }
 

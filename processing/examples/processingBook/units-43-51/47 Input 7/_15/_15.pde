@@ -1,3 +1,4 @@
+#lang processing
 Scrollbar bar1, bar2;
 PFont font;
 

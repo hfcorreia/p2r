@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 3: Motion and Arrays
  * Chronodraw by Andreas Gysin (www.ertdfgcvb.ch)
@@ -231,6 +232,3 @@ void drawthickline(int x1, int y1, int x2, int y2, int thickness) {
   drawline(xPoints[2], yPoints[2], xPoints[3], yPoints[3]);
   drawline(xPoints[3], yPoints[3], xPoints[0], yPoints[0]);
 }
-
-
-

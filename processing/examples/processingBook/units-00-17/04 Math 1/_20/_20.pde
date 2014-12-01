@@ -1,3 +1,4 @@
+#lang processing
 int x = 4;
 println(x); // Prints "4" to the console
 x *= 2; // Equivalent to x = x * 2

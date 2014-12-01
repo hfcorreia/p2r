@@ -1,3 +1,4 @@
+#lang processing
 void setup() {
   size(100, 100);
   float c = fahrenheitToCelsius(451.0); // Assign 232.77779 to c

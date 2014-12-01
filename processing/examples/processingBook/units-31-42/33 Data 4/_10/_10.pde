@@ -1,3 +1,4 @@
+#lang processing
 int[] data1 = { 19, 40, 75, 76, 90 };
 int[] data2 = { 19, 40 };
 int[] data3 = new int[127];

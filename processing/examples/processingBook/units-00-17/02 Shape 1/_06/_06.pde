@@ -1,3 +1,4 @@
+#lang processing
 // Points with the same X parameter have the
 // same distance from the left and right
 // edge of the frame

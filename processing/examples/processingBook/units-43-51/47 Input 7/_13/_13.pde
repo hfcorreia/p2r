@@ -1,3 +1,4 @@
+#lang processing
 int numButtons = 7;
 Radio[] buttons = new Radio[numButtons];
 

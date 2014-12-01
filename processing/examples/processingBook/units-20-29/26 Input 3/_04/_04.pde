@@ -1,3 +1,4 @@
+#lang processing
 int dragX, dragY, moveX, moveY;
 
 void setup() {

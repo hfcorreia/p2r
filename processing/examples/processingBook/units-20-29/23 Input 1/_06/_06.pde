@@ -1,3 +1,4 @@
+#lang processing
 // Exponential functions can create nonlinear relations
 // between the mouse and shapes affected by the mouse
 void setup() {

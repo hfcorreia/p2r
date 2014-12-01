@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 2: Input and Response
  * Cursor by Peter Cho (www.typotopo.com)
@@ -300,5 +301,3 @@ void draw()
     rect(0, gy/2, gx, gy/2);
   }
 }
-
-

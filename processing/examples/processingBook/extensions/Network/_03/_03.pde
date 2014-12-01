@@ -1,3 +1,4 @@
+#lang processing
 // Download the Yahoo! Search SDK from http://developer.yahoo.com/download
 // Inside the download, find the yahoo_search-2.X.X.jar file somewhere inside
 // the "Java" subdirectory. Drag the jar file to your sketch and it will be

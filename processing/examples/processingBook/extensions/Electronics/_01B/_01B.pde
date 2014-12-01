@@ -1,3 +1,4 @@
+#lang processing
 // Read data from the serial port and change the color of a rectangle
 // when a switch connected to the board is pressed and released
 import processing.serial.*;

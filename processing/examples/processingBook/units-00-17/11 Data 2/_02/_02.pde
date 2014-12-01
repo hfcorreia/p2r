@@ -1,3 +1,4 @@
+#lang processing
 char letter;
 letter = 'A'; // Assign 'A' to variable letter
 println(letter); // Prints "A" to the console

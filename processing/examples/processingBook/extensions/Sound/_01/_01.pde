@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Sound is generated in real time by summing together harmonically related
  * sine tones. Overall pitch and harmonic detuning is controlled by the mouse.

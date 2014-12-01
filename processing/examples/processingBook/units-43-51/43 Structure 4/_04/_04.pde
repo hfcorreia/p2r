@@ -1,3 +1,4 @@
+#lang processing
 Spot sp; // Declare the object
 
 void setup() {

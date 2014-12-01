@@ -1,3 +1,4 @@
+#lang processing
 // Read data from the serial and turn ON or OFF a light depending on the value
 char val; // Data received from the serial port
 int ledPin = 0; // Set the pin to digital I/O 0

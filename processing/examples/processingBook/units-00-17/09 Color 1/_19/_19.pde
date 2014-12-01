@@ -1,3 +1,4 @@
+#lang processing
 // Shift from blue to green in RGB mode
 colorMode(RGB);
 for (int i = 0; i < 100; i++) {

@@ -1,3 +1,4 @@
+#lang processing
 // Uses millis() to start a line in motion three seconds
 // after the program starts
 int x = 0;

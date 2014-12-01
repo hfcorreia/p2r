@@ -1,3 +1,4 @@
+#lang processing
 int numLines = 500;
 MovingLine[] lines = new MovingLine[numLines];
 int currentLine = 0;

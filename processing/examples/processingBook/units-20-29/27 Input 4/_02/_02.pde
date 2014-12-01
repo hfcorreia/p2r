@@ -1,3 +1,4 @@
+#lang processing
 // Constrains the position of the ellipse to a region
 void setup() {
   size(100, 100);

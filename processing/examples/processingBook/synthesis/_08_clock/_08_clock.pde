@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 2: Input and Response
  * Banded Clock by Golan Levin (www.flong.com)
@@ -186,5 +187,3 @@ void mouseDragged() {
 void keyPressed() {
   saveFrame("clock--" + hour() + "-" + minute() + "-" +  second() +  ".tif"); 
 }
-
-

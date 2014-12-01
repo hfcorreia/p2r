@@ -1,3 +1,4 @@
+#lang processing
 // Shift the origin (0,0) to the center
 // and resizes the coordinate system
 size(100, 100);

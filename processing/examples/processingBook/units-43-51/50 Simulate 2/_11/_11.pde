@@ -1,3 +1,4 @@
+#lang processing
 class ArrowParticle extends Particle {
   float angle = 0.0;
   float shaftLength = 20.0;

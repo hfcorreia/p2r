@@ -1,3 +1,4 @@
+#lang processing
 // Simulates one pixel of a flat-panel display
 PImage wall;
 

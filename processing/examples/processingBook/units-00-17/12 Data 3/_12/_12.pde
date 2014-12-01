@@ -1,3 +1,4 @@
+#lang processing
 String s = "Azzurro";
 char[] c = s.toCharArray();
 println(c[0]); // Prints "A"

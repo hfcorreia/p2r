@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 strokeWeight(8);
 line(0, 0, width, height);

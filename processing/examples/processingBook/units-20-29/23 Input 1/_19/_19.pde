@@ -1,3 +1,4 @@
+#lang processing
 // Hides the cursor until a mouse button is pressed
 void setup() {
   size(100, 100);

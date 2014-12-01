@@ -1,3 +1,4 @@
+#lang processing
 PImage img;
 img = loadImage("arch.jpg");
 background(255);

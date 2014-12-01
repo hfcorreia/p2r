@@ -1,3 +1,4 @@
+#lang processing
 // To print text to the screen, place the desired output in quotes
 println("Processing..."); // Prints "Processing..." to the console
 

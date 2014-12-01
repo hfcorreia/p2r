@@ -1,3 +1,4 @@
+#lang processing
 DragButton icon;
 
 void setup() {

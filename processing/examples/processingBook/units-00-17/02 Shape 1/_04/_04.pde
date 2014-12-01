@@ -1,3 +1,4 @@
+#lang processing
 // Points with the same X and Y parameters
 // form a diagonal line from the
 // upper-left corner to the lower-right corner

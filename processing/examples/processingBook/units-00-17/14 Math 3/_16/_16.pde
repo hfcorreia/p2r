@@ -1,3 +1,4 @@
+#lang processing
 noStroke();
 smooth();
 float radius = 1.0;

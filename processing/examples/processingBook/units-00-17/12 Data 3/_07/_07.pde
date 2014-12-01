@@ -1,3 +1,4 @@
+#lang processing
 int i = 3;
 String s = str(i); // Assign "3" to s
 float f = -12.6;

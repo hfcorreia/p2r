@@ -1,3 +1,4 @@
+#lang processing
 background(0); // Sets the black background
 stroke(255); // Sets line value to white
 strokeWeight(5); // Sets line width to 5 pixels

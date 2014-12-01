@@ -1,3 +1,4 @@
+#lang processing
 // Requires the Check class
 int numChecks = 25;
 Check[] checks = new Check[numChecks];

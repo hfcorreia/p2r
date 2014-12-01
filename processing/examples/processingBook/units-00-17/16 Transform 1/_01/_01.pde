@@ -1,3 +1,4 @@
+#lang processing
 // The same rectangle is drawn, but only the second is
 // affected by translate() because it is drawn after
 rect(0, 5, 70, 30);

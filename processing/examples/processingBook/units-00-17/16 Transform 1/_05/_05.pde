@@ -1,3 +1,4 @@
+#lang processing
 pushMatrix();
 translate(33, 0); // Shift 33 pixels right
 rect(0, 20, 66, 30);

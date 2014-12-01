@@ -1,3 +1,4 @@
+#lang processing
 // Cursor position selects the left, middle,
 // or right third of the display window
 void setup() {

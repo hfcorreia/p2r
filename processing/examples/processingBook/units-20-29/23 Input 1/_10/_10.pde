@@ -1,3 +1,4 @@
+#lang processing
 // Use rotate() to move a shape
 void setup() {
   size(100, 100);

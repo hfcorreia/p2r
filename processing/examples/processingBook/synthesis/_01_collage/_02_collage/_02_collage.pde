@@ -1,3 +1,4 @@
+#lang processing
 /** 
  * Synthesis 1: Form and Code, 
  * Collage Engine by Casey Reas (www.processing.org)

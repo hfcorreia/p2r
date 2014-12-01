@@ -1,3 +1,4 @@
+#lang processing
 PImage trees;
 int y = 0;
 

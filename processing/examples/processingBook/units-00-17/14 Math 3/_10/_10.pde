@@ -1,3 +1,4 @@
+#lang processing
 size(700, 100);
 smooth();
 strokeWeight(2);

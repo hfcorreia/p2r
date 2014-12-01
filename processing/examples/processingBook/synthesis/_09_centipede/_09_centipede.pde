@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 3: Motion and Arrays
  * Centipede by Ariel Malka (www.chronotext.org)
@@ -87,4 +88,3 @@ void setTarget(float tx, float ty)
 void keyPressed() {
   // saveFrame("centipede-####.tif"); 
 }
-

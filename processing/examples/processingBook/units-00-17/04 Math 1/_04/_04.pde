@@ -1,3 +1,4 @@
+#lang processing
 int a = 8;
 int b = 10;
 line(a, 0, a, height);

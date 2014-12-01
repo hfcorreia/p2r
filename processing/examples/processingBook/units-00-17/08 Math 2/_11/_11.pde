@@ -1,3 +1,4 @@
+#lang processing
 // Draw a line from the top of the display window to
 // points on a curve y = x^4 from x in range -1.0 to 1.0
 for (int x = 5; x < 100; x += 5) {

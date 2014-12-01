@@ -1,3 +1,4 @@
+#lang processing
 Ring[] rings; // Declare the array
 int numRings = 50;
 int currentRing = 0;

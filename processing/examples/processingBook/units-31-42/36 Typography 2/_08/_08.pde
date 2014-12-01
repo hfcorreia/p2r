@@ -1,3 +1,4 @@
+#lang processing
 // Each letter enters from the bottom in sequence and
 // stops when it reaches its destination
 PFont font;

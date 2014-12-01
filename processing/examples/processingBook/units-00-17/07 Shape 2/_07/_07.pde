@@ -1,3 +1,4 @@
+#lang processing
 // Draws a point at each vertex
 beginShape(POINTS);
 vertex(30, 20);

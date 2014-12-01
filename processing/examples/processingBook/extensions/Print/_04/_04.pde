@@ -1,3 +1,4 @@
+#lang processing
 import processing.pdf.*; // Import PDF code
 
 void setup() {

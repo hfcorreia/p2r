@@ -1,3 +1,4 @@
+#lang processing
 // Add and subtract to create offsets
 void setup() {
 size(100, 100);

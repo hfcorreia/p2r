@@ -1,3 +1,4 @@
+#lang processing
 // Set the square to black when the left mouse button
 // is pressed and white when the right button is pressed
 void setup() {

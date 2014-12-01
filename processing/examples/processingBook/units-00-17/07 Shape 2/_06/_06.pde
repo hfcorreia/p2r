@@ -1,3 +1,4 @@
+#lang processing
 noStroke();
 fill(0);
 beginShape();

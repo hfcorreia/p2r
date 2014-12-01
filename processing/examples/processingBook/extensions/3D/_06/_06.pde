@@ -1,3 +1,4 @@
+#lang processing
 // The camera lifts up while looking at the same point
 void setup() {
   size(400, 400, P3D);

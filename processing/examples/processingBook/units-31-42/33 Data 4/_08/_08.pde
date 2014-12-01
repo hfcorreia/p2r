@@ -1,3 +1,4 @@
+#lang processing
 int[] data = { 19, 40, 75, 76, 90 };
 line(data[0], 0, data[0], 100);
 line(data[1], 0, data[1], 100);

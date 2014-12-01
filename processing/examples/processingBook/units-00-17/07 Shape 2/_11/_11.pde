@@ -1,3 +1,4 @@
+#lang processing
 beginShape(TRIANGLE_FAN);
 vertex(10, 20);
 vertex(75, 30);

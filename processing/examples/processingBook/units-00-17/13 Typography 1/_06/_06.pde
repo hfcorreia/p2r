@@ -1,3 +1,4 @@
+#lang processing
 PFont font1, font2;
 font1 = loadFont("Ziggurat-32.vlw");
 font2 = loadFont("ZigguratItalic-32.vlw");

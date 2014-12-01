@@ -1,3 +1,4 @@
+#lang processing
 // Requires Egg and Ring classes (codes 43-08 and 43-11)
 class EggRing {
   Egg ovoid;

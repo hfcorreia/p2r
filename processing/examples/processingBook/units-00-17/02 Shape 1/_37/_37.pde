@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 line(20, 20, 80, 20); // Default line weight of 1
 strokeWeight(6);

@@ -1,3 +1,4 @@
+#lang processing
 // The angles increase as the mouse moves from the upper-right
 // corner of the screen to the lower-left corner
 

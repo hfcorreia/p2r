@@ -1,3 +1,4 @@
+#lang processing
 float x = 33;
 float y = 5;
 float velocity = 0.0;

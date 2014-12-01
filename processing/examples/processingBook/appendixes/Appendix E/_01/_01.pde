@@ -1,3 +1,4 @@
+#lang processing
 color c = color(204, 153, 102, 255);
 float r = (c >> 16) & 0xFF; // Faster version of red(c)
 float g = (c >> 8) & 0xFF; // Faster version of green(c)

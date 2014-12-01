@@ -1,3 +1,4 @@
+#lang processing
 int i = 0;
 boolean b = boolean(i); // Assign false to b
 int n = 12;

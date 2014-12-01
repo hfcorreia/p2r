@@ -1,3 +1,4 @@
+#lang processing
 String[] lines;
 int index = 0;
 
@@ -8,7 +9,7 @@ void setup() {
 
 void draw() {
   if (index < lines.length) {
-    String[] pieces = split(lines[index], '\t');
+    String[] pieces = split(lines[index], '	');
     if (pieces.length == 2) {
       int x = int(pieces[0]);
       int y = int(pieces[1]);

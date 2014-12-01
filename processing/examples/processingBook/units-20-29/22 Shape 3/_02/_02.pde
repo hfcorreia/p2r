@@ -1,3 +1,4 @@
+#lang processing
 float c = 25.0;
 
 void setup() {

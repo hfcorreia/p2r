@@ -1,3 +1,4 @@
+#lang processing
 Spot sp1, sp2, sp3; // Declare the objects
 
 void setup() {

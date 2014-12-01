@@ -1,3 +1,4 @@
+#lang processing
 // Because b is true, the line draws
 boolean b = true;
 if (b == true) { // If b is true,

@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 34-05 (p. 319)
 
@@ -58,4 +59,3 @@ void draw() {
   save("page_314-5.tif");
 
 }
-

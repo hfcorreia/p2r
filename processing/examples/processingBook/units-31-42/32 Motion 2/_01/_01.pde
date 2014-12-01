@@ -1,3 +1,4 @@
+#lang processing
 float angle = 0.0; // Current angle
 float speed = 0.1; // Speed of motion
 float radius = 40.0; // Range of motion

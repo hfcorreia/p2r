@@ -1,3 +1,4 @@
+#lang processing
 // Draw with an image that has transparency
 PImage alphaImg;
 

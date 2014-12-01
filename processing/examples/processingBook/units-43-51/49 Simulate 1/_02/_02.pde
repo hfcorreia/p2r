@@ -1,3 +1,4 @@
+#lang processing
 int[][] grid, futureGrid;
 
 void setup() {

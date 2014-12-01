@@ -1,3 +1,4 @@
+#lang processing
 // Convert pixel values into a circle's diameter
 PImage arch;
 int index;

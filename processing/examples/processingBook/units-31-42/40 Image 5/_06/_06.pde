@@ -1,3 +1,4 @@
+#lang processing
 PImage arch;
 
 void setup() {

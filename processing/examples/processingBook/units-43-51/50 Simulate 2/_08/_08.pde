@@ -1,3 +1,4 @@
+#lang processing
 int numParticles = 200;
 GenParticle[] p = new GenParticle[numParticles];
 

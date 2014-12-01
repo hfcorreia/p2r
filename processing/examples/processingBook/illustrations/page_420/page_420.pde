@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 45-04 (p. 424)
 
@@ -23,7 +24,3 @@ void mousePressed() {
 void mouseReleased() {
   endRecord(); 
 }
-
-
-
-

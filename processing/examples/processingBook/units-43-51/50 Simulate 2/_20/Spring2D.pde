@@ -1,3 +1,4 @@
+#lang processing
 class Spring2D {
   float vx, vy; // The x- and y-axis velocities
   float x, y; // The x- and y-coordinates

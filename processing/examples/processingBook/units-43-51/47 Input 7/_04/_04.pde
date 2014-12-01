@@ -1,3 +1,4 @@
+#lang processing
 void update(int mx, int my) {
   if (dist(mx, my, x, y) < diameter / 2) {
     if (gray < 250) {

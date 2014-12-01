@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on the Cursor example on page 257
 
@@ -101,8 +102,3 @@ void drawCursor(float x, float y, float myscale, float myrot) {
 void keyPressed() {
   record = true;
 }
-
-
-
-
-

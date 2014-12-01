@@ -1,3 +1,4 @@
+#lang processing
 // Rotate a rectangle around the y-axis and x-axis
 void setup() {
   size(400, 400, P3D);

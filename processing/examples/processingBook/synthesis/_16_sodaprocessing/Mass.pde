@@ -1,3 +1,4 @@
+#lang processing
 
 class Mass {
   static final float diamter = 5;

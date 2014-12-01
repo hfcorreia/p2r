@@ -1,3 +1,4 @@
+#lang processing
 // Loads a GIF image with 1-bit transparency
 PImage img;
 img = loadImage("archTrans.gif");

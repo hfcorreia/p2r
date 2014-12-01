@@ -1,3 +1,4 @@
+#lang processing
 float x = 50.0; // X-coordinate
 float y = 50.0; // Y-coordinate
 float radius = 15.0; // Radius of the circle

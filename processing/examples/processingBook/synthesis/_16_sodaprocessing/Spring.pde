@@ -1,3 +1,4 @@
+#lang processing
 
 class Spring {
   Mass a,b;

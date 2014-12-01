@@ -1,3 +1,4 @@
+#lang processing
 String s = "a, b c ,,d "; // Despite the bad formatting,
 String[] p = splitTokens(s, ", "); // the data is parsed correctly
 println(p[0]); // Prints "a"

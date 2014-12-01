@@ -1,3 +1,4 @@
+#lang processing
 int angle = 0;
 
 void setup() {

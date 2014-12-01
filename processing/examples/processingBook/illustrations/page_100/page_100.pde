@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 11-04 (p. 103) and code 13-01 (p. 113)
 
@@ -38,8 +39,3 @@ for (int i = 20; i < height+40; i += 38) {
   text(a, 250, i-9);
   a++;
 }
-
-
-
-
-

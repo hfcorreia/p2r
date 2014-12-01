@@ -1,3 +1,4 @@
+#lang processing
 float x = 50.0; // X-coordinate
 float y = 80.0; // Y-coordinate
 

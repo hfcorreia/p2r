@@ -1,3 +1,4 @@
+#lang processing
 void draw() {
   int d = day(); // Values from 1 to 31
   int m = month(); // Values from 1 to 12

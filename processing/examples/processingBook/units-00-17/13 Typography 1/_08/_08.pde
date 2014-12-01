@@ -1,3 +1,4 @@
+#lang processing
 // Enlarging a font created at 12 pixels
 PFont font;
 font = loadFont("Ziggurat-12.vlw");

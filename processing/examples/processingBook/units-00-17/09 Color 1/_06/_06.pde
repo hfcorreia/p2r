@@ -1,3 +1,4 @@
+#lang processing
 background(116, 193, 206);
 int x = 0;
 noStroke();

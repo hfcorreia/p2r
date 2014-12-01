@@ -1,3 +1,4 @@
+#lang processing
 // Draw a line between the current and previous positions
 void setup() {
   size(100, 100);

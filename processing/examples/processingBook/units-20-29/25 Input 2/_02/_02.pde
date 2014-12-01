@@ -1,3 +1,4 @@
+#lang processing
 // Move a line while any key is pressed
 int x = 20;
 

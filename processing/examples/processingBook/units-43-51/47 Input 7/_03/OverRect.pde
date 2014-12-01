@@ -1,3 +1,4 @@
+#lang processing
 class OverRect {
   int x, y; // The x- and y-coordinates
   int size; // Dimension (width and height) of the rectangle

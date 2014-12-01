@@ -1,3 +1,4 @@
+#lang processing
 // Code 9-03 rewritten using hex numbers
 background(#818257);
 noStroke();

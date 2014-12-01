@@ -1,3 +1,4 @@
+#lang processing
 // Draw a box with three different kinds of lights
 void setup() {
   size(400, 400, P3D);

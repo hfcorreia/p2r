@@ -1,3 +1,4 @@
+#lang processing
 rect(10, 10, 50, 50);
 noFill(); // Disable the fill
 rect(20, 20, 50, 50);

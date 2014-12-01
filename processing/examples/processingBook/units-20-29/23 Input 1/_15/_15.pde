@@ -1,3 +1,4 @@
+#lang processing
 // Set the square to white when a mouse button is pressed
 void setup() {
   size(100, 100);

@@ -1,3 +1,4 @@
+#lang processing
 // AVOID creating an array inside draw(), it is slow
 void draw() {
   int[] values = new int[200];

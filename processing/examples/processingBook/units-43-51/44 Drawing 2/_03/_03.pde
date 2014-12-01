@@ -1,3 +1,4 @@
+#lang processing
 Blade diagonal;
 
 void setup() {

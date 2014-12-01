@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 rect(10, 60, 70, 20);
 rotate(-PI/16);

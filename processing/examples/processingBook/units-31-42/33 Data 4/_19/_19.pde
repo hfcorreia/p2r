@@ -1,3 +1,4 @@
+#lang processing
 int[] x = new int[100]; // Array to store x-coordinates
 int count; // Store the number of array positions
 

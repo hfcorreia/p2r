@@ -1,3 +1,4 @@
+#lang processing
 size(700, 100);
 noStroke();
 fill(0);

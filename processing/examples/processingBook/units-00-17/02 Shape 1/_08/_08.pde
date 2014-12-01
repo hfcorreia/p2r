@@ -1,3 +1,4 @@
+#lang processing
 // Setting points outside the display
 // area will not cause an error,
 // but the points won't be visible

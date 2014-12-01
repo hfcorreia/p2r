@@ -1,3 +1,4 @@
+#lang processing
 float y = 0.0;
 
 void setup() {

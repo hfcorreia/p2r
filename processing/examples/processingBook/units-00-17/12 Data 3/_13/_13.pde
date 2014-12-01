@@ -1,3 +1,4 @@
+#lang processing
 String s = "Giallo";
 println(s.substring(2)); // Prints "allo"
 println(s.substring(4)); // Prints "lo"

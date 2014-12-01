@@ -1,3 +1,4 @@
+#lang processing
 class Spin {
   float x, y, speed;
   float angle = 0.0;

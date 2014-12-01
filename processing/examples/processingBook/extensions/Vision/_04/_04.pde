@@ -1,3 +1,4 @@
+#lang processing
 // Tracks the brightest pixel in a live video signal
 import processing.video.*;
 

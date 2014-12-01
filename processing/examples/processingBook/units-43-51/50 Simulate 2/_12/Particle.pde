@@ -1,3 +1,4 @@
+#lang processing
 class Particle {
   
   float x, y; // X-coordinate, y-coordinate

@@ -1,3 +1,4 @@
+#lang processing
 // Save 24 frames, from x-1000.tif to x-1023.tif
 void draw() {
   background(204);

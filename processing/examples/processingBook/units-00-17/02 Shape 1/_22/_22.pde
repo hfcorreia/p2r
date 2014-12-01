@@ -1,3 +1,4 @@
+#lang processing
 bezier(85, 20, 40, 10, 60, 90, 15, 80);
 // Draw the control points
 line(85, 20, 40, 10);

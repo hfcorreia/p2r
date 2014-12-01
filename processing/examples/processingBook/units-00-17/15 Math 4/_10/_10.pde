@@ -1,3 +1,4 @@
+#lang processing
 float power = 3; // Turbulence power
 float d = 8; // Turbulence density
 noStroke();

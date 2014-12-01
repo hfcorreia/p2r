@@ -1,3 +1,4 @@
+#lang processing
 float angle = 0.0; // Changing angle
 float speed = 0.05; // Speed of growth
 

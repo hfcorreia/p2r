@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on code 50-12 (p. 486)
 // Requires Particle, ArrowParticle classes
@@ -39,5 +40,3 @@ void draw() {
 void mousePressed() {
   record = true;
 }
-
-

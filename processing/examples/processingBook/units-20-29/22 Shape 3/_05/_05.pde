@@ -1,3 +1,4 @@
+#lang processing
 int x = 40; // X-coordinate
 int y = 30; // Y-coordinate
 int g = 20; // Gap between eyes

@@ -1,3 +1,4 @@
+#lang processing
 class SpinArm extends Spin {
   SpinArm(float x, float y, float s) {
     super(x, y, s);

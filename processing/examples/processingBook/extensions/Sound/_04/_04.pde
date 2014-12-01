@@ -1,3 +1,4 @@
+#lang processing
 /**
 Applies reverb 10 times to a succession of guitar chords.
 Inspired by Alvin Lucier's "I am Sitting in a Room."

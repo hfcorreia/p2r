@@ -1,3 +1,4 @@
+#lang processing
 // The text expressions are "x > 100" and "x < 100"
 // Because x is 150, the code inside the first block
 // runs and the ellipse draws, but the code in the second

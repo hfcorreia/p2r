@@ -1,3 +1,4 @@
+#lang processing
 noStroke();
 rectMode(CORNER);
 fill(126);

@@ -1,3 +1,4 @@
+#lang processing
 import processing.pdf.*; // Import PDF code
 
 size(600, 600);

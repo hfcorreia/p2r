@@ -1,3 +1,4 @@
+#lang processing
 class FixedSpring extends Spring2D {
   float springLength;
 

@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on the code examples on page 66
 
@@ -18,4 +19,3 @@ for (int y = 0; y <= height; y += 5) {
     } 
   }
 }
-

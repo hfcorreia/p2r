@@ -1,3 +1,4 @@
+#lang processing
 PImage arch = loadImage("arch.jpg");
 int count = arch.width * arch.height;
 arch.loadPixels();

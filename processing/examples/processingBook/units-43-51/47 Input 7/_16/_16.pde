@@ -1,3 +1,4 @@
+#lang processing
 // Requires Scrollbar Class
 Scrollbar bar;
 PImage img;

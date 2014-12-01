@@ -1,3 +1,4 @@
+#lang processing
 // The size function has two parameters. The first sets the width   
 // of the display window and the second sets the height 
 size(200, 200); 

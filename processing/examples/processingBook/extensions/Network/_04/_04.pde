@@ -1,3 +1,4 @@
+#lang processing
 // Note: requires Carnivore Library for Processing v2.2 (http://r-s-g.org/carnivore)
 // Windows, first install winpcap (http://winpcap.org)
 // Mac, first open a Terminal and execute this commmand: sudo chmod 777 /dev/bpf*

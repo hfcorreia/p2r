@@ -1,3 +1,4 @@
+#lang processing
 // The word "avoid" stays away from the mouse because its
 // position is set to the inverse of the cursor position
 PFont f;

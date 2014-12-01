@@ -1,3 +1,4 @@
+#lang processing
 class GenParticle extends Particle {
   float originX, originY;
 

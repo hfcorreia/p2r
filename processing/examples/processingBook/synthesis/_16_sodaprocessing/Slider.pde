@@ -1,3 +1,4 @@
+#lang processing
 
 class Slider extends Control {
   float min,max,value;

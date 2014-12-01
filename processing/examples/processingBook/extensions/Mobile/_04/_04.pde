@@ -1,3 +1,4 @@
+#lang processing
 // The PClient object is used to initiate requests to the server
 PClient c;
 // The PRequest object represents an active request from which we receive

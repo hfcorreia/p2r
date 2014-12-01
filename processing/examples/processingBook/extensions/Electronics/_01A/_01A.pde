@@ -1,3 +1,4 @@
+#lang processing
 // Code for sensing a switch status and writing the value to the serial port
 int switchPin = 0; // Switch connected to pin 0
 

@@ -1,3 +1,4 @@
+#lang processing
 class DragButton extends Button {
   int xoff, yoff;
 

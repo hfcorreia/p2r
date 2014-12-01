@@ -1,3 +1,4 @@
+#lang processing
 Spring2D s1, s2;
 float gravity = 5.0;
 float mass = 2.0;

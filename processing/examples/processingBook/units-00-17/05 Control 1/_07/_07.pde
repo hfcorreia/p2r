@@ -1,3 +1,4 @@
+#lang processing
 // Because x is 190, only the ellipse draws
 int x = 290;
 if (x > 100) {              // If x is greater than 100,

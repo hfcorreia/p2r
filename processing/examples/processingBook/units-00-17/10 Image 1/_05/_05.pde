@@ -1,3 +1,4 @@
+#lang processing
 color yellow = color(220, 214, 41);
 color green = color(110, 164, 32);
 color tan = color(180, 17, 132);

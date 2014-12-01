@@ -1,3 +1,4 @@
+#lang processing
 // Read data from the serial and turns a DC motor on or off according to the value
 char val; // Data received from the serial port
 int motorpin = 0; // Wiring: Connect L293D Pin En1 connected to Pin PWM 0

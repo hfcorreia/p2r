@@ -1,3 +1,4 @@
+#lang processing
 float s = 1.8;
 smooth();
 ellipse(32, 32, 30, 30);

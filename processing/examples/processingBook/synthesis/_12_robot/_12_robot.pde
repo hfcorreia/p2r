@@ -1,3 +1,4 @@
+#lang processing
 /** 
  * Synthesis 3: Motion and Arrays
  * Mr. Roboto by Leon Hong

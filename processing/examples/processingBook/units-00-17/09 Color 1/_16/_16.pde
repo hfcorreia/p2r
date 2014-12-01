@@ -1,3 +1,4 @@
+#lang processing
 // Change the saturation, hue and brightness constant
 colorMode(HSB);
 for (int i = 0; i < 100; i++) {

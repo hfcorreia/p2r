@@ -1,3 +1,4 @@
+#lang processing
 int numLines = 12;
 float[] x = new float[numLines];
 float[] speed = new float[numLines];

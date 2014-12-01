@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 String letters = "";
 int back = 102;

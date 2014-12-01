@@ -1,3 +1,4 @@
+#lang processing
 noFill();
 beginShape();
 vertex(30, 20);

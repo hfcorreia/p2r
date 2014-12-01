@@ -1,3 +1,4 @@
+#lang processing
 // Draws the cursor as a hand when a mouse button is pressed
 void setup() {
   size(100, 100);

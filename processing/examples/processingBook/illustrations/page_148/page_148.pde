@@ -1,3 +1,4 @@
+#lang processing
 
 // Based on the Collage Engine code on page 150
 

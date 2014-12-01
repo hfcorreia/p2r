@@ -1,3 +1,4 @@
+#lang processing
 void setup() {
   drawLines(5, 15);
 }

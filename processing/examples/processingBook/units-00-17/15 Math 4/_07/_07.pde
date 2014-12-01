@@ -1,3 +1,4 @@
+#lang processing
 int s = 6; // Seed value
 background(0);
 stroke(255, 60);

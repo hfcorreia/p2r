@@ -1,3 +1,4 @@
+#lang processing
 int x = 0; // Sets the horizontal position of the lines
 int y = 55; // Sets the vertical position of the lines
 

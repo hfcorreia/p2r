@@ -1,3 +1,4 @@
+#lang processing
 int num = 50;
 int[] x = new int[num];
 int[] y = new int[num];

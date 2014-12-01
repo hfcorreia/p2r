@@ -1,3 +1,4 @@
+#lang processing
 int num = 20;
 int[] dx = new int[num]; // Declare and create an array
 int[] dy = new int[num]; // Declare and create an array

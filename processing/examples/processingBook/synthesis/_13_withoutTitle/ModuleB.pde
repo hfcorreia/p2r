@@ -1,3 +1,4 @@
+#lang processing
 
 class ModuleB extends Module {
 

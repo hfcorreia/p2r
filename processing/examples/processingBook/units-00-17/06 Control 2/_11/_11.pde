@@ -1,3 +1,4 @@
+#lang processing
 int x = 50;
 
 if (x > 100) {

@@ -1,3 +1,4 @@
+#lang processing
 // Save the first 50 frames
 float x = 33;
 float numFrames = 50;

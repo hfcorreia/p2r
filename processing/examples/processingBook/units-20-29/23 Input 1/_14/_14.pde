@@ -1,3 +1,4 @@
+#lang processing
 // Cursor position selects a rectangular area to
 // change the fill color
 void setup() {

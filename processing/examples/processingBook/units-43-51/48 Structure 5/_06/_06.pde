@@ -1,3 +1,4 @@
+#lang processing
 class SpinSpots extends Spin {
   float dim;
 

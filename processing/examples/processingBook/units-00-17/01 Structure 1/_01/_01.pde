@@ -1,3 +1,4 @@
+#lang processing
 // Two forward slashes are used to denote a comment.
 // All text on the same line is a part of the comment.
 // There must be no spaces between the slashes. For example,

@@ -1,3 +1,4 @@
+#lang processing
 // If x is greater than 100 and less than 300, draw the
 // ellipse. If x is greater than or equal to 300, draw
 // the line. If x is not greater than 100, draw the

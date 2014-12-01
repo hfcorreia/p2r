@@ -1,3 +1,4 @@
+#lang processing
 Check check;
 
 void setup() {

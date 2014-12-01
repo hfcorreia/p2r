@@ -1,3 +1,4 @@
+#lang processing
 PImage img1, img2;
 
 void setup() {

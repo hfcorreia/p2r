@@ -1,3 +1,4 @@
+#lang processing
 // Requires the OverRect and OverCircle classes
 OverRect r = new OverRect(9, 30, 36);
 OverCircle c = new OverCircle(72, 48, 40);

@@ -1,3 +1,4 @@
+#lang processing
 // Placing a group of points next to one
 // another creates a line
 point(50, 50);

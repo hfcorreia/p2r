@@ -1,3 +1,4 @@
+#lang processing
 fill(0);
 rect(0, 40, 100, 20);
 fill(255, 51); // Low opacity

@@ -1,3 +1,4 @@
+#lang processing
 // Sets the stroke color of the lines to the
 // red component of the pixel below their intersection
 

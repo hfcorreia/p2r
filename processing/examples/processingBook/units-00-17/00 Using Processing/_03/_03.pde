@@ -1,3 +1,4 @@
+#lang processing
 int x = 5; // Sets the horizontal position of the lines
 int y = 60; // Sets the vertical position of the lines
 line(x, y, x+20, y-40); // Draws line from [5,60] to [25,20]

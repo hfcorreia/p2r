@@ -1,3 +1,4 @@
+#lang processing
 smooth();
 noStroke();
 ellipseMode(RADIUS);

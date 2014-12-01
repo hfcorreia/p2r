@@ -1,3 +1,4 @@
+#lang processing
 PImage img;
 // Image must be in the sketch's "data" folder to load
 img = loadImage("arch.jpg");

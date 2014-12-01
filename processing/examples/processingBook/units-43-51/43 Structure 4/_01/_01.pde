@@ -1,3 +1,4 @@
+#lang processing
 int x = 33;
 int y = 50;
 int diameter = 30;

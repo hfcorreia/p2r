@@ -1,3 +1,4 @@
+#lang processing
 // Replaces the multiplication y*height with an addition
 int offset = 0;
 loadPixels();

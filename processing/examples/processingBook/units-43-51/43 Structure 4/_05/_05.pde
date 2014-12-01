@@ -1,3 +1,4 @@
+#lang processing
 class Spot {
   float x, y; // X-coordinate, y-coordinate
   float diameter; // Diameter of the circle

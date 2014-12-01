@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 String s = "VERTIGO";
 float angle = 0.0;

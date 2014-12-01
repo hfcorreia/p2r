@@ -1,3 +1,4 @@
+#lang processing
 background(255);
 PImage img = loadImage("airport.jpg");
 PImage maskImg = loadImage("airportmask.jpg");

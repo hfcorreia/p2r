@@ -1,3 +1,4 @@
+#lang processing
 /**
  * Synthesis 3: Motion and Arrays
  * AmoebaAbstract_03 by Marius Watz <http://www.unlekker.net>
@@ -172,4 +173,3 @@ void mouseMoved() {
 void keyPressed() {
   // saveFrame("amoebaAbstract-####.tif"); 
 }
-

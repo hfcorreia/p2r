@@ -1,3 +1,4 @@
+#lang processing
 PFont font;
 font = loadFont("Ziggurat-12.vlw");
 textFont(font);

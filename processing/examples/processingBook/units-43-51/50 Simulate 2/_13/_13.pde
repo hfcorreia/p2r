@@ -1,3 +1,4 @@
+#lang processing
 float stiffness = 0.1;
 float damping = 0.9;
 float velocity = 0.0;

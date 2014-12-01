@@ -1,3 +1,4 @@
+#lang processing
 Egg humpty; // Declare the object
 
 void setup() {

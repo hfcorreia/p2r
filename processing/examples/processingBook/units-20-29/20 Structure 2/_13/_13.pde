@@ -1,3 +1,4 @@
+#lang processing
 int d = 45; // Assign 45 to variable d
 
 void setup() {

@@ -1,3 +1,4 @@
+#lang processing
 int[][] angles = { { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1,-1 },
                    { 0,-1 }, {-1,-1 }, {-1, 0 }, {-1, 1 } };
 int numAngles = angles.length;

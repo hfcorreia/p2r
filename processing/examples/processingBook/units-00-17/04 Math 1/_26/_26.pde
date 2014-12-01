@@ -1,3 +1,4 @@
+#lang processing
 int u = min(5, 9); // Assign 5 to u
 int v = min(-4, -12, -9); // Assign -12 to v
 float w = min(12.3, 230.24); // Assign 12.3 to w

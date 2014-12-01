@@ -1,3 +1,4 @@
+#lang processing
 // Circle follows the cursor
 void setup() {
   size(100, 100);

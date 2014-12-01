@@ -1,3 +1,4 @@
+#lang processing
 size
 (   200,
   200)           ;

@@ -1,3 +1,4 @@
+#lang processing
 int x = 50; // X-coordinate of the center
 int y = 100; // Y-coordinate of the bottom
 int a = 35; // Half the width of the top bar

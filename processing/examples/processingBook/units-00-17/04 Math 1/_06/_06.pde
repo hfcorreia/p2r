@@ -1,3 +1,4 @@
+#lang processing
 int y = 20;
 line(0, y, width, y);
 y = y + 6; // Assign 26 to y

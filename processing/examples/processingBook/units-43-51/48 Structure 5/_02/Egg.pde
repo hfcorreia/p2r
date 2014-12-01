@@ -1,3 +1,4 @@
+#lang processing
 class Egg {
   float x, y; // X-coordinate, y-coordinate
   float tilt; // Left and right angle offset

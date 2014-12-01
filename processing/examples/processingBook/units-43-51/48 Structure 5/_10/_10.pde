@@ -1,3 +1,4 @@
+#lang processing
 class DragImage extends DragButton {
   PImage img;
   

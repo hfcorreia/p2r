@@ -1,3 +1,4 @@
+#lang processing
 beginShape(QUADS);
 vertex(30, 25);
 vertex(85, 30);

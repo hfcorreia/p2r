@@ -1,3 +1,4 @@
+#lang processing
 Spot sp1, sp2;
 
 void setup() {
