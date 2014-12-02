@@ -712,6 +712,11 @@
 
 
         (<method-call>
+          [(<data-conversion> l-paren <args> r-paren)
+           (make-object method-call% 
+                        $1 
+                        (make-object arguments% $3 (build-src 3))
+                        (build-src 1 4))]
           [(<name> l-paren <args> r-paren) 
            (make-object method-call% 
                         $1 
@@ -733,6 +738,11 @@
            (make-object todo-node% (list $1 $7) 'method-call (build-src 1))]
           [(<name> period super period identifier l-paren r-paren)
            (make-object todo-node% $1 'method-call (build-src 1))])
+
+        (<data-conversion> 
+          [(int)     (make-object identifier% null "int"     (build-src 1))]
+          [(boolean) (make-object identifier% null "boolean" (build-src 1))]
+          [(float)   (make-object identifier% null "float"   (build-src 1))])
 
         (<class-instance-creation-expr>
           [(new <class-or-interface-type> l-paren r-paren)

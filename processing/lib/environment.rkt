@@ -19,7 +19,7 @@
     (define (display-tikz-to-string)
       (let ([output-port (open-output-string)])
         (parameterize ([current-output-port output-port])
-          (ros-display-tikz))
+          (display-tikz))
         (get-output-string output-port)))
 
     (define out 
@@ -63,10 +63,12 @@
   ;;; running sketch. The initial value is 10 fps and is updated with each frame.
   ;;; The value is averaged over several frames, and so will only be accurate after
   ;;; the draw function has run 5-10 times. 
-  (define frameCount 10)
+  (define frameRateVar 10)
 
-  (define (frameRate [fps 60])
-    (error "frameRate: Not implemented!"))
+  (define-syntax frameRate
+    (syntax-rules ()
+      [(_) frameRateVar]
+      [(_ fps) (error "frameRate: Not implemented!")]))
 
   (define-syntax size 
     (syntax-rules ()
@@ -83,7 +85,7 @@
       [(_ img) (error "cursor: Not implemented")]
       [(_ img x y) (error "cursor: Not implemented")]))
 
-  (define (cursor)
-    (error "noCursor: Not implemented!")
+  (define (noCursor)
+    (error "noCursor: Not implemented!"))
 
   )

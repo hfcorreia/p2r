@@ -1,7 +1,9 @@
 (module runtime racket
 
   (provide (all-defined-out)
+           (all-from-out "environment.rkt")
            (all-from-out "operators.rkt")
+           (all-from-out "data.rkt")
            (all-from-out "shapes.rkt")
            (all-from-out "color.rkt")
            (all-from-out "output.rkt"))
@@ -9,13 +11,18 @@
   (require racket/undefined
            racket/require
            syntax/readerr
-           "operators.rkt"
-           "shapes.rkt"
-           "color.rkt"
-           "output.rkt"
            "../mode.rkt"
            "../name-mangling.rkt"
-           (for-syntax "../name-mangling.rkt"))
+           (for-syntax "../name-mangling.rkt")
+
+           ;; Processing API
+           "environment.rkt"
+           "operators.rkt"
+           "data.rkt"
+           "shapes.rkt"
+           "color.rkt"
+           "output.rkt")
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Macro transformations
