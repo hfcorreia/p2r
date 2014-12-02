@@ -179,18 +179,77 @@
 
            (define assignment-operator
              (case operator
-               ['*= 'p-mul]
-               ['/= 'p-div]
-               ['%= 'p-mod]
-               ['+= 'p-add]
-               ['-= 'p-sub]
-               ['&= 'p-bit-and]
-               ['^= 'p-bit-xor]
-               ['<<= 'p-shiftl]
-               ['>>= 'p-shiftr]
+               ['*=   'p-mul]
+               ['/=   'p-div]
+               ['%=   'p-mod]
+               ['+=   'p-add]
+               ['-=   'p-sub]
+               ['&=   'p-bit-and]
+               ['^=   'p-bit-xor]
+               ['<<=  'p-shiftl]
+               ['>>=  'p-shiftr]
                ['>>>= 'p-shiftr-zero]
-               ['or= 'p-bit-or]))
+               ['or=  'p-bit-or]))
 
            (super-instantiate ())))
 
+  (define new-array%
+    (class expression%
+           (init-field type dim-expr dims initializer)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              (if (not (null? initializer)) 
+                                (node->racket initializer)
+                                `(p-vector ,(node->racket dim-expr)
+                                           ,(initial-value)))))
+
+           (define (initial-value)
+             (case type
+               ['int        0]
+               ['float      0.0]
+               ['boolean    #f]
+               ['char       #\space]
+               [else        null]))
+
+           (super-instantiate ())))
+
+  (define array-dim%
+    (class expression%
+           (init-field expr)
+
+           (inherit ->syntax-object)
+           
+           (define/override (->racket)
+                            (->syntax-object
+                              (node->racket expr)))
+
+           (super-instantiate ())))
+
+  (define array-acces%
+    (class expression%
+           (init-field id expr)
+
+           (inherit ->syntax-object)
+           
+           (define/override (->racket)
+                            (->syntax-object
+                              `(vector-ref ,(node->racket id) 
+                                           ,(node->racket expr))))
+
+           (super-instantiate ())))
+
+  (define array-initializer% 
+    (class expression%
+           (init-field initializers)
+
+           (inherit ->syntax-object)
+           
+           (define/override (->racket)
+                            (->syntax-object
+                              `(vector ,@(node->racket initializers))))
+
+           (super-instantiate ())))
   )

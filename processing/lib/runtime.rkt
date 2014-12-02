@@ -21,6 +21,14 @@
   ;;; Macro transformations
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  ;;; Checks if a function id is bound and calls it
+  (define-syntax (p-initialize stx)
+    (syntax-case stx ()
+      [(_ id)
+       (if (identifier-binding #'id 0)
+         #'(id)
+         #'(void))]))
+
   ;;; Call a global method
   (define-syntax p-call
     (syntax-rules ()
@@ -75,6 +83,19 @@
       (apply raise-read-error (cons "Mixing Static and Active Mode" src-loc))
       (void node)))
 
+
+  ;;; Arrays
+  (define-syntax-rule 
+    (p-vector (dim ...) init-val)
+    (make-n-vector (list dim ...) init-val))
+
+  ;;; Builds a n-dimentional vector give a list of values and a initial value
+  (define (make-n-vector list val)
+    (define (aux list)
+      (if (null? list)
+        val
+        (make-vector (car list) (aux (cdr list)))))
+    (aux list))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Class macros
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

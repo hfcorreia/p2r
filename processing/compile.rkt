@@ -22,6 +22,8 @@
     (if (active-mode?)
         (append 
           (map (lambda (node) (send node ->racket)) ast)
-          (list (send (make-object initializer% null) ->racket)))
+          (list
+            (send (make-object initializer% 'setup null) ->racket) 
+            (send (make-object initializer% 'draw null) ->racket)))
         (map (lambda (node) (send node ->racket)) ast)))
   )

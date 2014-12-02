@@ -166,20 +166,17 @@
           [(<args> comma <expr>)  (cons $3 $1)])
 
         (<dim-exprs>
-          [(<dim-expr>) 
-           (list $1)]
-          [(<dim-exprs> <dim-expr>) 
-           (cons $2 $1)])
+          [(<dim-expr>)             (list $1)]
+          [(<dim-exprs> <dim-expr>) (cons $2 $1)])
 
         (<dim-expr>
           [(l-sbrack <expr> r-sbrack) 
-           (make-object todo-node% $2 'enclosing-sbrack (build-src 2))])
+           (make-object array-dim% $2 (build-src 2))])
 
         (<dims>
-          [(l-sbrack r-sbrack) 
-           (make-object todo-node% null 'empty-sbrack (build-src 1))]
-          [(<dims> l-sbrack r-sbrack) 
-           (make-object todo-node% $1 'empty-sbrack (build-src 1))])
+          ;; returns a number corresponding to the dimension of the array
+          [(l-sbrack r-sbrack)                1]
+          [(<dims> l-sbrack r-sbrack) (add1 $1)])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Name
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -426,14 +423,10 @@
         ;; Array init
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<array-initializer>
-          [(l-sbrack <var-initializers> comma r-sbrack)   
-           (make-object todo-node% $2 'array-init (build-src 2))]
-          [(l-sbrack <var-initializers> r-sbrack)         
-           (make-object todo-node% $2 'array-init (build-src 2))]
-          [(l-sbrack comma r-sbrack)                    
-           (make-object todo-node% null 'array-init (build-src 1))]
-          [(l-sbrack r-sbrack)     
-           (make-object todo-node% null 'array-init (build-src 1))])
+          [(l-cbrack <var-initializers> r-cbrack)         
+           (make-object array-initializer% (reverse $2) (build-src 1 3))]
+          [(l-cbrack r-cbrack)     
+           (make-object array-initializer% null (build-src 1 2))])
 
         (<var-initializers>
           [(<var-initializer>)       
@@ -693,17 +686,15 @@
 
         (<primary-no-new-array>
           [(<literal>) $1]
-          [(this) 
-           (make-object this-node% (build-src 1))]
+          [(this) (make-object this-node% (build-src 1))]
           [(l-paren <expr> r-paren) $2]
           [(<class-instance-creation-expr>) $1]
           [(<field-access>) $1]
           [(<method-call>) $1]
           [(<color-instance-creation>) $1]
-          [(<array-access>) 
-           (error "Not Implemented")]
+          [(<array-access>)  $1]
           [(<name> period this) 
-           (error "Not Implemented")])
+           (error "parser: Not Implemented")])
 
         (<field-access>
           [(<primary> period identifier)    
@@ -715,9 +706,9 @@
 
         (<array-access>
           [(<name> l-sbrack <expr> r-sbrack)
-           (make-object todo-node% (list $1 $3) 'array-access (build-src 1))]
+           (make-object array-acces% $1 $3 (build-src 1 4))]
           [(<primary-no-new-array> l-sbrack <expr> r-sbrack)
-           (make-object todo-node% (list $1 $3) 'array-access (build-src 1))])
+           (make-object array-acces% $1 $3 (build-src 1 4))])
 
 
         (<method-call>
@@ -782,18 +773,18 @@
                         (build-src 1 4))])
 
         (<array-creation-expr>
-          [(new <primitive-type> <dim-exprs> <dims>) 
-           (make-object todo-node% (list $2 $3 $4) 'new-array (build-src 1))]
           [(new <primitive-type> <dim-exprs>) 
-           (make-object todo-node% (list $2 $3) 'new-array (build-src 1))]
+           (make-object new-array% $2 (reverse $3) null null (build-src 1 3))]
+          [(new <primitive-type> <dim-exprs> <dims>) 
+           (make-object new-array% $2 (reverse $3) $4 null (build-src 1 4))]
           [(new <primitive-type> <dims> <array-initializer>) 
-           (make-object todo-node% (list $2 $3 $4) 'new-array (build-src 1))]
-          [(new <class-or-interface-type> <dim-exprs> <dims>) 
-           (make-object todo-node% (list $2 $3 $4) 'new-array (build-src 1))]
+           (make-object new-array% $2 null $3 $4 (build-src 1 4))]
           [(new <class-or-interface-type> <dim-exprs>) 
-           (make-object todo-node% (list $2 $3) 'new-array (build-src 1))]
+           (make-object new-array% $2 $3 null null (build-src 1 3))]
+          [(new <class-or-interface-type> <dim-exprs> <dims>) 
+           (make-object new-array% $2 $3 $4 null (build-src 1 4))]
           [(new <class-or-interface-type> <dims> <array-initializer>) 
-           (make-object todo-node% (list $2 $3 $4) 'new-array (build-src 1))])
+           (make-object new-array% $2 null $3 $4 (build-src 1 4))])
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Expressions and Assignments

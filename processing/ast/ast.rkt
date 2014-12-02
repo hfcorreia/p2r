@@ -53,19 +53,20 @@
 
   (define initializer%
     (class ast-node%
+           (init-field id)
+
            (inherit ->syntax-object)
 
            (define/override (->racket)
                             (->syntax-object
-                              `(begin 
-                                 (if (identifier-binding #'setup 0) 
-                                   (setup)
-                                   (void))
-                                 (if (identifier-binding #'draw 0) 
-                                   (draw)
-                                   (void)))))
+                              `(p-initialize ,id)))
+           
+
+           
 
            (super-instantiate ())))
+
+  
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Debug stuff
@@ -93,14 +94,6 @@
                                    child)]
                [(is-a? child ast-node%) (send child ->racket)]
                [else child]))
-
-           (define (generate child indent)
-             (cond
-               [(list? child) (string-append* 
-                                (map (lambda (node)
-                                       (generate node (+ indent 2)))
-                                     child))]
-               [else (send child ->xml (+ indent 2))]))
 
            (super-instantiate ())))
 
