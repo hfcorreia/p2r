@@ -5,6 +5,10 @@
   (require  (planet aml/rosetta:1:=50)
             racket/system)
 
+  (define-syntax-rule 
+    (todo msg)
+    (raise-syntax-error 'todo msg))
+                      
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Rosetta Configuration
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,11 +41,12 @@
 
   ;;; System variable that stores the width of the entire screen display. 
   ;;; This is used to run a full-screen program on any display size. 
-  (define displayWidth (error "displayWidth: not implemented"))
+  (define displayWidth 0)
+  
 
   ;;; System variable that stores the height of the entire screen display. 
   ;;; This is used to run a full-screen program on any display size. 
-  (define displayHeight (error "displayHeight: not implemented"))
+  (define displayHeight 0)
 
   ;;; System variable that stores the width of the display window.
   (define width 100)
@@ -68,7 +73,7 @@
   (define-syntax frameRate
     (syntax-rules ()
       [(_) frameRateVar]
-      [(_ fps) (error "frameRate: Not implemented!")]))
+      [(_ fps) (todo "frameRate: Not implemented!")]))
 
   (define-syntax size 
     (syntax-rules ()
@@ -77,15 +82,15 @@
          (set! width w)
          (set! height h))]
       [(_ w h render)
-       (error "size: Not implemented")]))
+       (todo "size: Not implemented")]))
 
   (define-syntax cursor 
     (syntax-rules ()
-      [(_) (error "cursor: Not implemented")]
-      [(_ img) (error "cursor: Not implemented")]
-      [(_ img x y) (error "cursor: Not implemented")]))
+      [(_)         (todo "cursor: Not implemented")]
+      [(_ img)     (todo "cursor: Not implemented")]
+      [(_ img x y) (todo "cursor: Not implemented")]))
 
   (define (noCursor)
-    (error "noCursor: Not implemented!"))
+    (todo "noCursor: Not implemented!"))
 
   )

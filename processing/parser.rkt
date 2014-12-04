@@ -698,7 +698,10 @@
 
         (<field-access>
           [(<primary> period identifier)    
-           (make-object todo-node% $1 'primary-field-access (build-src 1))]
+           (make-object field-acces% 
+                        $1 
+                        (make-object identifier% null $3 (build-src 3)) 
+                        (build-src 1 3))]
           [(super period identifier)     
            (make-object todo-node% null 'super-field-access (build-src 1))]
           [(<name> period super period identifier)     
@@ -727,7 +730,10 @@
 
           ;; TODO: Solve the name resolution
           [(<primary> period identifier l-paren <args> r-paren)
-           (make-object todo-node% (list $1 $5) 'method-call (build-src 1))]
+           (make-object method-call% 
+                        $1
+                        (make-object arguments% $5 (build-src 5))
+                        (build-src 1 6))]
           [(<primary> period identifier l-paren r-paren)
            (make-object todo-node% $1 (build-src 1))]
           [(super period identifier l-paren <args> r-paren)
@@ -804,11 +810,12 @@
            (make-object assignment% $2 $1 $3 (build-src 1))])
 
         (<left-hand>
-          [(<name>)  $1]
+          [(<name>)  
+           (make-object left-value% $1 'name (build-src 1))]
           [(<field-access>)
-           (make-object todo-node% $1 'left-hand (build-src 1))]
+           (make-object left-value% $1 'field (build-src 1))]
           [(<array-access>) 
-           (make-object todo-node% $1 'left-hand (build-src 1))])
+           (make-object left-value% $1 'array (build-src 1))])
 
         (<postfix-expr>
           [(<primary>) $1]
@@ -818,28 +825,28 @@
 
         (<post-inc-expr>
           [(<postfix-expr> ++) 
-           (make-object todo-node% $1 'post++ (build-src 1))])
+           (make-object unary-op% 'pos++ $1 (build-src 1 2))])
 
         (<post-dec-expr>
           [(<postfix-expr> --) 
-           (make-object todo-node% $1 'post-- (build-src 1))])
+           (make-object  unary-op% 'pos-- $1 (build-src 1 2))])
 
         (<unary-expr>
           [(<pre-inc-expr>) $1]
           [(<pre-dec-expr>) $1]
           [(+ <unary-expr>) 
-           (make-object unary-op% '+ $2  (build-src 2))]
+           (make-object unary-op% '+ $2  (build-src 1 2))]
           [(- <unary-expr>) 
-           (make-object unary-op% '- $2  (build-src 2))]
+           (make-object unary-op% '- $2  (build-src 1 2))]
           [(<unary-expr-not-plus-minus>) $1])
 
         (<pre-inc-expr>
           [(++ <unary-expr>) 
-           (make-object todo-node% $2 'pre++  (build-src 1))])
+           (make-object unary-op% 'pre++ $2  (build-src 1 2))])
 
         (<pre-dec-expr>
           [(-- <unary-expr>) 
-           (make-object todo-node% $2  'pre-- (build-src 1))])
+           (make-object unary-op%'pre-- $2 (build-src 1 2))])
 
         (<unary-expr-not-plus-minus>
           [(<postfix-expr>) $1]

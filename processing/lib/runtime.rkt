@@ -73,14 +73,17 @@
   ;;; Assigments
   (define-syntax p-assignment 
     (syntax-rules ()
-      [(_ id expr)
-       (begin
-         (set! id expr)
-         id)]
-      [(_ op id expr)
-       (begin
-         (set! id (op id expr))
-         id)]))
+      [(_ op left expr) (left op expr)]))
+
+  ;;; Left value
+  (define-syntax p-left-value
+    (syntax-rules ()
+      [(_ arg #:name)
+       (lambda (op expr) (set! arg (op arg expr)) arg)]
+      [(_ arg obj #:field)
+       (lambda (op expr) (set-field! arg obj (op arg expr)) (get-field arg obj))]
+      [(_ arg pos #:array)
+       (lambda (op expr) (vector-set! arg pos (op arg expr)) (vector-ref arg pos))]))
 
   ;;; Global Stmt
   ;;;   If in active mode, global stmts are not allowed

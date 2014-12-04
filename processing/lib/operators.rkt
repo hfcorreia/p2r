@@ -6,6 +6,9 @@
   ;; Processing Operators
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  (define (p-assign left right)
+    right)
+
   (define (p-add left right)
     (+ left right))
 
@@ -79,4 +82,27 @@
   (define (p-instanceof left right)
     (error "instanceof not implemented!"))
 
+  (define-syntax-rule
+    (p-pre-inc arg)
+    (begin
+      (set! arg (+ arg 1))
+      arg))
+
+  (define-syntax-rule
+    (p-pre-dec arg)
+    (begin
+      (set! arg (- arg 1))
+      arg))
+
+  (define-syntax-rule
+    (p-pos-inc arg)
+    (begin
+      (set! arg (+ arg 1))
+      (- arg 1)))
+
+  (define-syntax-rule
+    (p-pos-dec arg)
+    (begin
+      (set! arg (- arg 1))
+      (+ arg 1)))
   )

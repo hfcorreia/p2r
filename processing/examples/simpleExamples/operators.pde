@@ -21,6 +21,24 @@ println(-1);
 println(~1);
 println(!false);
 
+println(";;;;;;;;;;;;");
+int x = 20;
+println(x++); //20
+println(x); //21
+
+x = 20;
+println(x--); //20
+println(x); //19
+
+x = 20;
+println(++x); //21
+println(x); //21
+
+x = 20;
+println(--x); //19
+println(x); //19
+println(";;;;;;;;;;;;");
+
 println("Relational Operations");
 println(1<2);
 println(1>2);

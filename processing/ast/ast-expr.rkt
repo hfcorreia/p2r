@@ -3,6 +3,7 @@
   (provide (all-defined-out))
 
   (require racket/class
+           racket/undefined
            "ast.rkt"
            "../lib/runtime.rkt")
 
@@ -158,7 +159,11 @@
                ['+ 'p-pos]
                ['- 'p-neg]
                ['not 'p-bit-not]
-               ['! 'p-not]))
+               ['! 'p-not]
+               ['pre++ 'p-pre-inc]
+               ['pre-- 'p-pre-dec]
+               ['pos++ 'p-pos-inc]
+               ['pos-- 'p-pos-dec]))
 
            (super-instantiate ())))
 
@@ -170,15 +175,13 @@
 
            (define/override (->racket)
                             (->syntax-object 
-                              (if (equal? operator '=)
-                                `(p-assignment ,(node->racket left-val)
-                                               ,(node->racket right-val))
                                 `(p-assignment ,assignment-operator
                                                ,(node->racket left-val)
-                                               ,(node->racket right-val)))))
+                                               ,(node->racket right-val))))
 
            (define assignment-operator
              (case operator
+               ['=    'p-assign]
                ['*=   'p-mul]
                ['/=   'p-div]
                ['%=   'p-mod]
@@ -190,6 +193,30 @@
                ['>>=  'p-shiftr]
                ['>>>= 'p-shiftr-zero]
                ['or=  'p-bit-or]))
+
+           (super-instantiate ())))
+
+  (define left-value%
+    (class expression%
+           (init-field value type)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(p-left-value ,@generate ,key-type)))
+
+           (define key-type 
+             (case type
+               ['name  '#:name]
+               ['field '#:field]
+               ['array '#:array]))
+
+           (define generate
+             (case type
+               ['name   (list (node->racket value))]
+               ['field  (list (send value get-id) (send value get-primary))]
+               ['array  (list (send value get-id) (send value get-expr))]))
 
            (super-instantiate ())))
 
@@ -212,7 +239,7 @@
                ['float      0.0]
                ['boolean    #f]
                ['char       #\space]
-               [else        null]))
+               [else        undefined]))
 
            (super-instantiate ())))
 
@@ -231,6 +258,9 @@
   (define array-acces%
     (class expression%
            (init-field id expr)
+
+           (define/public (get-id) (node->racket id))
+           (define/public (get-expr) (node->racket expr))
 
            (inherit ->syntax-object)
            

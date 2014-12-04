@@ -105,4 +105,20 @@
 
 
            (super-instantiate ())))
+
+  (define field-acces%
+    (class class-stmt%
+           (init-field primary id)
+
+           (define/public (get-id)      (node->racket id))
+           (define/public (get-primary) (node->racket primary))
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              `(get-field ,(node->racket id)
+                                          ,(node->racket primary))))
+
+           (super-instantiate ())))
   )
