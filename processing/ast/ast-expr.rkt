@@ -24,26 +24,35 @@
 
   (define method-call% 
     (class expression%
-           (init-field name args)
+           (init-field primary args)
 
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (let ((full-name (send name get-full-id)))
                               (->syntax-object
-                                (cond 
-                                  [(and (not full-name) (null? args))
-                                   `(p-call ,(node->racket name))]
-                                  [(and (not full-name) (not (null? args)))
-                                   `(p-call ,(node->racket name) ,@(node->racket args))]
-                                  [(and full-name (null? args))
-                                   `(p-send  ,full-name 
-                                            ,(node->racket name))]
-                                  [else 
-                                    `(p-send ,full-name 
-                                             ,(node->racket name)
-                                             ,@(node->racket args))]))))
+                                (if (not (null? args))
+                                  `(p-call ,@(node->racket primary) ,@(node->racket args))
+                                  `(p-call ,@(node->racket primary)))))
 
+           (super-instantiate ())))
+
+  (define primary%
+    (class expression%
+           (init-field primary id)
+
+           (inherit ->syntax-object)
+
+           (define/public (is-method?) (null? (send id get-list)))
+
+           (define/override (->racket) 
+                              (if (null? primary)
+                                  (if (is-method?)
+                                    `(#:call ,(node->racket id))
+                                    `(#:send ,(send id get-full-id) ,(node->racket id)))
+                                `(#:send ,(node->racket primary) 
+                                  ,(node->racket id))))
+
+                                               
            (super-instantiate ())))
 
   (define identifier%
@@ -56,16 +65,15 @@
            (define/public (get-list) (reverse id-list))
 
            (define/public (get-full-id) 
-                          (if (null? id-list)
-                            #f
                             (string->symbol 
-                              (build-full-id (reverse id-list)))))
+                              (build-full-id (reverse id-list))))
+
+           (define/public (identifier->symbol)
+             (string->symbol (string-append "" identifier)))
 
            (define/override (->racket)
                             (->syntax-object (identifier->symbol)))
 
-           (define (identifier->symbol)
-             (string->symbol (string-append "" identifier)))
 
            (define (build-full-id lst)
              (cond 
@@ -74,6 +82,22 @@
                [else (format "~a-~a" (car lst) (build-full-id (cdr lst)))]))          
 
            (super-instantiate ())))
+
+  (define name%
+    (class expression% 
+           (init-field name)
+
+           (inherit ->syntax-object)
+
+           (define/override (->racket)
+                            (->syntax-object 
+                              (if (null? (send name get-list))
+                                (node->racket name)
+                                `(get-field ,(node->racket name)
+                                            ,(send name get-full-id)))))
+
+           (super-instantiate ())))
+
 
   (define literal%
     (class expression%
@@ -206,17 +230,32 @@
                             (->syntax-object 
                               `(p-left-value ,@generate ,key-type)))
 
+           (define (check-type)
+             (set! type
+               (case type
+                 ['name (if (null? (send value get-list))
+                          'name
+                          'qual-name)]
+                 [else type])))
+
+
            (define key-type 
-             (case type
-               ['name  '#:name]
-               ['field '#:field]
-               ['array '#:array]))
+             (begin 
+               (check-type)
+               (case type
+                 ['qual-name  '#:qual-name]
+                 ['name       '#:name]
+                 ['field      '#:field]
+                 ['array      '#:array])))
 
            (define generate
-             (case type
-               ['name   (list (node->racket value))]
-               ['field  (list (send value get-id) (send value get-primary))]
-               ['array  (list (send value get-id) (send value get-expr))]))
+             (begin 
+               (check-type)
+               (case type
+                 ['name       (list (node->racket value))]
+                 ['qual-name  (list (send value get-id) (send value get-full-id))]
+                 ['field      (list (send value get-id) (send value get-primary))]
+                 ['array      (list (send value get-id) (send value get-expr))])))
 
            (super-instantiate ())))
 
@@ -259,7 +298,7 @@
     (class expression%
            (init-field id expr)
 
-           (define/public (get-id) (node->racket id))
+           (define/public (get-id)   (node->racket id))
            (define/public (get-expr) (node->racket expr))
 
            (inherit ->syntax-object)

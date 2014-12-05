@@ -5,10 +5,6 @@
   (require  (planet aml/rosetta:1:=50)
             racket/system)
 
-  (define-syntax-rule 
-    (todo msg)
-    (raise-syntax-error 'todo msg))
-                      
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Rosetta Configuration
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -73,24 +69,19 @@
   (define-syntax frameRate
     (syntax-rules ()
       [(_) frameRateVar]
-      [(_ fps) (todo "frameRate: Not implemented!")]))
+      [(_ fps) (error "frameRate: Not implemented!")]))
 
-  (define-syntax size 
-    (syntax-rules ()
-      [(_ w h)
-       (begin 
-         (set! width w)
-         (set! height h))]
-      [(_ w h render)
-       (todo "size: Not implemented")]))
+  (define (size w h)
+    (set! width w)
+    (set! height h))
 
   (define-syntax cursor 
     (syntax-rules ()
-      [(_)         (todo "cursor: Not implemented")]
-      [(_ img)     (todo "cursor: Not implemented")]
-      [(_ img x y) (todo "cursor: Not implemented")]))
+      [(_)         (error "cursor: Not implemented")]
+      [(_ img)     (error "cursor: Not implemented")]
+      [(_ img x y) (error "cursor: Not implemented")]))
 
   (define (noCursor)
-    (todo "noCursor: Not implemented!"))
+    (error "noCursor: Not implemented!"))
 
   )

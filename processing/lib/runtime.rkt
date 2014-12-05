@@ -39,17 +39,13 @@
   ;;; Call a global method
   (define-syntax p-call
     (syntax-rules ()
-      [(_ method-name) 
+      [(_ #:call method-name) 
        (method-name)]
-      [(_ method-name args ...) 
-       (method-name args ...)]))
-
-  ;;; Call a method from an object
-  (define-syntax p-send
-    (syntax-rules ()
-      [(_ full-name method-name) 
+      [(_ #:call method-name args ...) 
+       (method-name args ...)]
+      [(_ #:send full-name method-name) 
        (send full-name method-name)]
-      [(_ full-name method-name args ...) 
+      [(_ #:send full-name method-name args ...) 
        (send full-name method-name args ...)]))
 
   ;;; Declaration Operator
@@ -80,6 +76,8 @@
     (syntax-rules ()
       [(_ arg #:name)
        (lambda (op expr) (set! arg (op arg expr)) arg)]
+      [(_ arg obj #:qual-name)
+       (lambda (op expr) (set-field! arg obj (op arg expr)) (get-field arg obj))]
       [(_ arg obj #:field)
        (lambda (op expr) (set-field! arg obj (op arg expr)) (get-field arg obj))]
       [(_ arg pos #:array)

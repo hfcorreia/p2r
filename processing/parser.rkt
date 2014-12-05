@@ -282,7 +282,10 @@
           [(class identifier <interfaces> <class-body>)
            (make-object todo-node% (list $3 $4) 'class-decl (build-src 1))]
           [(class identifier <class-body>)
-           (make-object class-node% (make-object identifier% null $2 (build-src 2)) $3 (build-src 1))])
+           (make-object class-node% 
+                        (make-object identifier% null $2 (build-src 2)) 
+                        $3 
+                        (build-src 1 3))])
 
         (<super>
           [(extends <class-type>)
@@ -693,8 +696,7 @@
           [(<method-call>) $1]
           [(<color-instance-creation>) $1]
           [(<array-access>)  $1]
-          [(<name> period this) 
-           (error "parser: Not Implemented")])
+          [(<name> period this) (error "parser: Not Implemented")])
 
         (<field-access>
           [(<primary> period identifier)    
@@ -717,25 +719,36 @@
         (<method-call>
           [(<data-conversion> l-paren <args> r-paren)
            (make-object method-call% 
-                        $1 
+                        (make-object primary% null $1 (build-src 1))
                         (make-object arguments% $3 (build-src 3))
                         (build-src 1 4))]
           [(<name> l-paren <args> r-paren) 
            (make-object method-call% 
-                        $1 
+                        (make-object primary% null $1 (build-src 1))
                         (make-object arguments% $3 (build-src 3))
                         (build-src 1 4))]
           [(<name> l-paren r-paren) 
-           (make-object method-call% $1 null (build-src 1 3))]
-
-          ;; TODO: Solve the name resolution
+           (make-object method-call% 
+                        (make-object primary% null $1 (build-src 1))
+                        null 
+                        (build-src 1 3))]
           [(<primary> period identifier l-paren <args> r-paren)
            (make-object method-call% 
-                        $1
+                        (make-object primary% 
+                                     $1 
+                                     (make-object identifier% null $3 (build-src 3))
+                                     (build-src 1 3))
                         (make-object arguments% $5 (build-src 5))
                         (build-src 1 6))]
           [(<primary> period identifier l-paren r-paren)
-           (make-object todo-node% $1 (build-src 1))]
+           (make-object method-call% 
+                        (make-object primary% 
+                                     $1 
+                                     (make-object identifier% null $3 (build-src 3))
+                                     (build-src 1 3))
+                        null
+                        (build-src 1 5))]
+          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           [(super period identifier l-paren <args> r-paren)
            (make-object todo-node% $5 'super-method-call (build-src 1))]
           [(super period identifier l-paren r-paren)
@@ -784,7 +797,10 @@
         (<color-instance-creation>
           [(color l-paren <args> r-paren) 
            (make-object method-call% 
-                        (make-object identifier% null "color" (build-src 1))
+                        (make-object primary% 
+                                     null 
+                                     (make-object identifier% null "color" (build-src 1)) 
+                                     (build-src 1))
                         (make-object arguments% $3 (build-src 3))
                         (build-src 1 4))])
 
@@ -819,7 +835,7 @@
 
         (<postfix-expr>
           [(<primary>) $1]
-          [(<name>) $1]
+          [(<name>)         (make-object name% $1 (build-src 1))]
           [(<post-inc-expr>) $1]
           [(<post-dec-expr>) $1])
 
