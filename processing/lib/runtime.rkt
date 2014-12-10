@@ -91,11 +91,19 @@
       (apply raise-read-error (cons "Mixing Static and Active Mode" src-loc))
       (void node)))
 
-
   ;;; Arrays
   (define-syntax-rule 
     (p-vector (dim ...) init-val)
     (make-n-vector (list dim ...) init-val))
+
+  ;;; check if a identifier is a vector, if true get the vector's length else
+  ;;; get field length of the identifier
+  (define-syntax-rule 
+    (p-array-length id len)
+    (if (vector? id)
+      (vector-length id)
+      (get-field len id)))
+
 
   ;;; Builds a n-dimentional vector give a list of values and a initial value
   (define (make-n-vector list val)

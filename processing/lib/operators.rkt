@@ -10,7 +10,10 @@
     right)
 
   (define (p-add left right)
-    (+ left right))
+    (if (or (string? left)
+            (string? right))
+      (format "~a~a" left right)
+      (+ left right)))
 
   (define (p-sub left right)
     (- left right))

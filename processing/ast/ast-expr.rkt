@@ -91,10 +91,15 @@
 
            (define/override (->racket)
                             (->syntax-object 
-                              (if (null? (send name get-list))
-                                (node->racket name)
+                             (cond
+                               [(null? (send name get-list)) 
+                                (node->racket name)]
+                               [(eq? 'length (send name get-id)) 
+                                `(p-array-length ,(send name get-full-id)
+                                                 ,(node->racket name))]
+                               [else 
                                 `(get-field ,(node->racket name)
-                                            ,(send name get-full-id)))))
+                                            ,(send name get-full-id))])))
 
            (super-instantiate ())))
 

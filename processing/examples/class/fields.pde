@@ -1,6 +1,5 @@
 #lang processing
 
-
 class Foo {
     int x = 1;
     int y = 2;
@@ -10,16 +9,17 @@ class Foo {
     }
 }
 
+int x;
+
 
 void setup(){
   Foo foo = new Foo();
-
   int x;
   x = 2;
   foo.x = 20;
 
   println(foo.y + foo.x); // this is ok
-  println(x);
+
 
   println(foo.y); // this is ok
 

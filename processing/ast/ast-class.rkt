@@ -4,6 +4,7 @@
 
   (require racket/class
            "ast.rkt"
+           "ast-expr.rkt"
            "../lib/runtime.rkt")
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST class nodes
@@ -116,9 +117,8 @@
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (->syntax-object 
-                              `(get-field ,(node->racket id)
-                                          ,(node->racket primary))))
+                                `(get-field ,(node->racket id)
+                                            ,(node->racket primary)))
 
            (super-instantiate ())))
   )

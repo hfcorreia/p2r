@@ -74,7 +74,7 @@
     (exponent    (re:: (char-set "eE") (re:? (char-set "+-")) digits))
 
     ;; char literals
-    (char        (re:: #\' (re:~ whitespace #\' #\\) #\'))
+    (char        (re:: #\' (re:~ #\' #\\) #\'))
     (escape-seq  (re:or "\\b" "\\t" "\\n" "\\f" "\\r" "\\\"" "\\'" "\\\\"
                         (re:: #\\ (re:? (re:/ "03")) (re:/ "07") (re:/ "07"))
                         (re:: #\\ (re:/ "07"))))
