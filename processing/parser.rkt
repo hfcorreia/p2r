@@ -760,6 +760,8 @@
 
         (<data-conversion> 
           [(int)     (make-object identifier% null "int"     (build-src 1))]
+          [(char)     (make-object identifier% null "char"     (build-src 1))]
+          [(byte)     (make-object identifier% null "byte"     (build-src 1))]
           [(boolean) (make-object identifier% null "boolean" (build-src 1))]
           [(float)   (make-object identifier% null "float"   (build-src 1))])
 

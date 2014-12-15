@@ -34,11 +34,8 @@ void doricColumn(float x, float y, float fuste, float baseFuste, float coxim, fl
   drawAbaco( x - lAbaco/2, y + (fuste + coxim), aAbaco, lAbaco);
 }
 
-backend(tikz);
-for(int i = 0; i < 10 ; i += 3) 
-{
-
- doricColumn(i, 0, 9 + (i * 0.1), 0.5, 0.4 + (i * 0.021) , 0.3 + (i * -0.002), 0.3, 1.0);
+void setup(){
+    backend(tikz);
+    doricColumn(0, 0, 9, 0.5, 0.4, 0.3, 0.3, 1.0);
+    generateTikz("doricColumn");
 }
-
-generateTikz("doricColumn",20);

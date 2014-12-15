@@ -1,7 +1,5 @@
 #lang processing
 
-
-
 void drawTree(float x, float y, float lenght, float angle) {
   if ( lenght > 2 ) {
     float x1 = x + cos(angle * pi/180)*lenght;
@@ -14,6 +12,8 @@ void drawTree(float x, float y, float lenght, float angle) {
   }
 }
 
-backend(tikz);
-drawTree(0,10,100,90);
-generateTikz("tree");
+void setup(){
+    backend(tikz);
+    drawTree(0,10,100,90);
+    generateTikz("tree");
+}

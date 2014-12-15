@@ -77,7 +77,7 @@
     (>= left right))
 
   (define (p-eq left right)
-    (eq? left right))
+    (equal? left right))
 
   (define (p-not-eq left right)
     (not (eq? left right)))

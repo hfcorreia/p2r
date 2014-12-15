@@ -185,7 +185,7 @@
        (token-char-lit (escape->char (trim-string lexeme 1 1))))
 
       ;; strings
-      (string          (token-string-lit (build-string lexeme)))
+      (string         (token-string-lit (build-string lexeme)))
 
       ;; webcolor
       (web-color      (token-color-lit  (build-string lexeme)))

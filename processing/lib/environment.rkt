@@ -1,13 +1,20 @@
 (module processing-api/environment racket
 
-  (provide (all-defined-out))
+  (provide (all-defined-out)
+           tikz
+           autocad
+           rhino
+           opengl)
 
-  (require  (planet aml/rosetta:1:=50)
+  (require  (rename-in (planet aml/rosetta:1:=50) [backend ros-backend])
             racket/system)
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Rosetta Configuration
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (define (backend id)
+    (ros-backend id)) 
 
   ;;; Generates a pdf using the tikz backend
   (define (generateTikz [file-name "tmp"] [scale 1] [pdf-viewer "evince"])
