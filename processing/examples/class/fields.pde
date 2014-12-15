@@ -9,12 +9,14 @@ class Foo {
     }
 }
 
-int x;
+int x = PI;
 
 
 void setup(){
+
   Foo foo = new Foo();
-  int x;
+  int x=TAU;
+  println(x);
   x = 2;
   foo.x = 20;
 

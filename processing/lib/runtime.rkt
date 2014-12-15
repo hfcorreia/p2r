@@ -7,6 +7,7 @@
            (all-from-out "shapes.rkt")
            (all-from-out "color.rkt")
            (all-from-out "math.rkt")
+           (all-from-out "constants.rkt")
            (all-from-out "output.rkt"))
 
   (require racket/undefined
@@ -23,6 +24,7 @@
            "shapes.rkt"
            "color.rkt"
            "math.rkt"
+           "constants.rkt"
            "output.rkt")
 
 
