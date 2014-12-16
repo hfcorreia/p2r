@@ -3,16 +3,17 @@
   (provide print
            println)
   
+  (require "objects.rkt")
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Print procedures
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (define (print . args)
-    (display (build-seperated-string (reverse (map arg->string args))
+    (display (build-seperated-string (map arg->string args)
                                      #\space)))
 
   (define (println . args)
-    (displayln (build-seperated-string (reverse (map arg->string args))
+    (displayln (build-seperated-string (map arg->string args)
                                        #\space)))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,6 +27,7 @@
               [(and (boolean? arg) arg) "true"]
               [(and (boolean? arg) (not arg)) "false"]
               [(void? arg)  ""] 
+              [(is-a? arg PVector) (send arg toString)]
               [(not (null? arg)) arg]
               [else ""])))
 
