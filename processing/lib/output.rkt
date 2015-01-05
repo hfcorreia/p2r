@@ -1,4 +1,4 @@
-(module processing-api/output racket
+(module processing/output racket
 
   (provide print
            println)

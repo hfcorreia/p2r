@@ -1,4 +1,4 @@
-(module processing-api/constants racket
+(module processing/constants racket
 
   (provide (all-defined-out))
 

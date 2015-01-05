@@ -1,4 +1,4 @@
-(module processing-api/data racket
+(module processing/data racket
 
   (provide (all-defined-out))
 

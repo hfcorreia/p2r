@@ -1,4 +1,4 @@
-(module processing-api/shapes racket
+(module processing/shapes racket
 
   (provide (all-defined-out))
   

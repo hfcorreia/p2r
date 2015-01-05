@@ -1,4 +1,4 @@
-(module processingAPI/objects racket
+(module processing/objects racket
 
   (provide (all-defined-out))
 

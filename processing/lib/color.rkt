@@ -1,4 +1,4 @@
-(module processing-api/color racket
+(module processing/color racket
 
   (provide (all-defined-out))
 

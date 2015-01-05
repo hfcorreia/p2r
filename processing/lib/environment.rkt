@@ -1,4 +1,4 @@
-(module processing-api/environment racket
+(module processing/environment racket
 
   (provide (all-defined-out)
            tikz
