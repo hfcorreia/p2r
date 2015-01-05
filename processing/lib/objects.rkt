@@ -10,7 +10,7 @@
                   [y 0]
                   [z 0])
 
-            (define/public (set x [y 0] [z 0])
+            (define/public (set x [y null] [z null])
                            (cond 
                              [(vector? x) 
                               (begin 
@@ -25,36 +25,37 @@
                              [else 
                                (begin 
                                  (set-field! x this x)
-                                 (set-field! y this y)
-                                 (set-field! z this z))]))
+                                 (and (not (null? y)) (set-field! y this y))
+                                 (and (not (null? z)) (set-field! z this z)))]))
 
-            (define/public (random2D [v null])
-                           (fromAngle (* (random) TWO_PI) v))
+           ; (define/public (random2D [v null])
+           ;                (fromAngle (* (random) TWO_PI) v))
 
-            (define/public (random3D [v null])
-                           (let* ([ang (* (random) TWO_PI)]
-                                  [vz  (- (* (random) 2) 1)]
-                                  [mult (sqrt (- 1 (* vz vz)))]
-                                  [vx (* mult (cos ang))]
-                                  [vy (* mult (sin ang))])
-                             (if (null? v)
-                               (make-object PVector vx vy vz)
-                               (begin 
-                                 (set-field! x v vx)
-                                 (set-field! y v vy)
-                                 (set-field! z v vz)
-                                 v))))
+           ; (define/public (random3D [v null])
+           ;                (let* ([ang (* (random) TWO_PI)]
+           ;                       [vz  (- (* (random) 2) 1)]
+           ;                       [mult (sqrt (- 1 (* vz vz)))]
+           ;                       [vx (* mult (cos ang))]
+           ;                       [vy (* mult (sin ang))])
+           ;                  (if (null? v)
+           ;                    (make-object PVector vx vy vz)
+           ;                    (begin 
+           ;                      (set-field! x v vx)
+           ;                      (set-field! y v vy)
+           ;                      (set-field! z v vz)
+           ;                      v))))
 
 
-           (define/public (fromAngle ang [v null])
-                          (let ([x-val (cos ang)] 
-                                [y-val (sin ang)])
-                            (if (null? v)
-                              (make-object PVector x-val y-val)
-                              (begin 
-                                (set-field! x v x-val)
-                                (set-field! y v y-val)
-                                v))))
+           ; (define/public (fromAngle ang [v null])
+           ;                (let ([x-val (cos ang)] 
+           ;                      [y-val (sin ang)])
+           ;                  (if (null? v)
+           ;                    (make-object PVector x-val y-val)
+           ;                    (begin 
+           ;                      (set-field! x v x-val)
+           ;                      (set-field! y v y-val)
+           ;                      v))))
+           
             (define/public (get)
                            (make-object PVector x y z))
 
@@ -67,18 +68,18 @@
                               (* y y)
                               (* z z)))
 
-          ; (define/public (setMag v [len null])
-          ;                (if (null? len)
-          ;                  ))
                              
 
             (define/public (add x [y null] [z null])
                            (cond
                              [(and (is-a? x PVector) (null? y))
                               (begin
-                                (set-field! x this (+ x (get-field x x)))
-                                (set-field! y this (+ y (get-field y x)))
-                                (set-field! z this (+ z (get-field z x))))]
+                                (set-field! x this (+ (get-field x this) 
+                                                      (get-field x x)))
+                                (set-field! y this (+ (get-field y this) 
+                                                      (get-field y x)))
+                                (set-field! z this (+ (get-field z this)
+                                                      (get-field z x))))]
                              [else 
                                (begin 
                                  (set-field! x this (+ x (get-field x this)))
@@ -89,14 +90,17 @@
                            (cond
                              [(and (is-a? x PVector) (null? y))
                               (begin
-                                (set-field! x this (- x (get-field x x)))
-                                (set-field! y this (- y (get-field y x)))
-                                (set-field! z this (- z (get-field z x))))]
-                             [else 
+                                (set-field! x this (- (get-field x this)
+                                                      (get-field x x)))
+                                (set-field! y this (- (get-field y this)
+                                                      (get-field y x)))
+                                (set-field! z this (- (get-field z this)
+                                                      (get-field z x))))]
+                             [(and (not (null? y)) (not (null? z)))
                                (begin 
-                                 (set-field! x this (- x (get-field x this)))
-                                 (set-field! y this (- y (get-field y this)))
-                                 (set-field! z this (- z (get-field z this))))]))
+                                 (set-field! x this (- (get-field x this) x))
+                                 (set-field! y this (- (get-field y this) y))
+                                 (set-field! z this (- (get-field z this) z)))]))
 
             (define/public (mult n)
                            (set-field! x this (* x n))
@@ -131,31 +135,72 @@
                                 (* y (get-field y this))
                                 (* z (get-field z this)))))
 
-            (define/public (cross v)
-                           (let ([v-x (get-field v x)]
-                                 [v-y (get-field v y)]
-                                 [v-z (get-field v y)])
-                           (make-object PVector
+            (define/public (cross v [res null])
+                           (let ([v-x (get-field x v)]
+                                 [v-y (get-field y v)]
+                                 [v-z (get-field z v)])
+                             (cond 
+                               [(null? res)
+                                (make-object PVector
+                                             (- (* y v-z) (* v-y z))
+                                             (- (* z v-x) (* v-z x))
+                                             (- (* x v-y) (* v-x y)))]
+                               [(is-a? res PVector)
+                                (begin
+                                  (send res 
+                                        set 
                                         (- (* y v-z) (* v-y z))
                                         (- (* z v-x) (* v-z x))
-                                        (- (* x v-y) (* v-x y)))))
+                                        (- (* x v-y) (* v-x y)))
+                                  res)])))
 
-            (define/public (normalize)
-                           (let ([m (mag)])
-                             (if (> m 0)
-                               (div m)
-                               (void))))
+            (define/public (normalize [v null])
+                           (let ([m (if (null? v) (mag) (send v mag))])
+                             (cond
+                               [(and (null? v) (not (eq? 0 m)) (not (eq? 1 m)))
+                                (div m)]
+                               [(and (not (null? v)) (> m 0))
+                                (begin (send v div m) v)]
+                               [(and (not (null? v)) (< m 0))
+                                v])))
 
             (define/public (limit high)
-                           (if (> (mag) high)
+                           (if (> (magSq) (* high high))
                              (normalize)
                              (mult high)))
+
+            (define/public (setMag len [target null])
+                           (if (null? target)
+                             (begin 
+                               (normalize)
+                               (mult len))
+                             (begin 
+                               (send len normalize)
+                               (send len mult target)
+                               len)))
 
             (define/public (heading)
                            (- (atan (- y) x)))
 
             (define/public (heading2D)
                            (heading))
+
+            (define/public (lerp x y [z null] [amt null])
+                           (define (lerp-aux x y z amt)
+                             (define (lerp-val start stop amt)
+                               (+ start (* amt (- stop start))))
+                             (set-field! x this (lerp-val (get-field x this) x amt))
+                             (set-field! y this (lerp-val (get-field y this) y amt))
+                             (set-field! z this (lerp-val (get-field z this) z amt)))
+
+                           (if (and (null? z) (null? amt))
+                             (let ([amt y]
+                                   [x (get-field x x)]
+                                   [y (get-field y x)]
+                                   [z (get-field z x)])
+                               (lerp-aux x y z amt))
+                             (lerp-aux x y z amt)))
+
 
             (define/public (toString)
                            (format "[~a, ~a, ~a]" x y z))
