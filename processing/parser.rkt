@@ -760,22 +760,22 @@
 
         (<data-conversion> 
           [(int)     (make-object identifier% null "int"     (build-src 1))]
-          [(char)     (make-object identifier% null "char"     (build-src 1))]
-          [(byte)     (make-object identifier% null "byte"     (build-src 1))]
+          [(char)    (make-object identifier% null "char"    (build-src 1))]
+          [(byte)    (make-object identifier% null "byte"    (build-src 1))]
           [(boolean) (make-object identifier% null "boolean" (build-src 1))]
           [(float)   (make-object identifier% null "float"   (build-src 1))])
 
         (<class-instance-creation-expr>
           [(new <class-or-interface-type> l-paren r-paren)
-           (make-object new-node% $2 (build-src 1))]
+           (make-object new-node% $2 null (build-src 1 4))]
+          [(new <class-or-interface-type> l-paren <args> r-paren)
+           (make-object new-node% $2 $4 (build-src 1 5))]
 
           ;; TODO
           [(new <class-or-interface-type> l-paren <args> r-paren <class-body>)
            (make-object todo-node% (list $2 $4 $6) 'new (build-src 1))]
           [(new <class-or-interface-type> l-paren r-paren <class-body>)
            (make-object todo-node% (list $2 $5) 'new (build-src 1))]
-          [(new <class-or-interface-type> l-paren <args> r-paren)
-           (make-object todo-node% (list $2 $4) 'new (build-src 1))]
 
 
           [(<primary> period new identifier l-paren <args> r-paren <class-body>)

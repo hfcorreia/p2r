@@ -32,13 +32,14 @@
 
   (define new-node%
     (class class-stmt%
-           (init-field name)
+           (init-field name args)
 
            (inherit ->syntax-object)
 
            (define/override (->racket)
                             (->syntax-object
-                              `(make-object ,(node->racket name))))
+                              `(make-object ,(node->racket name) 
+                                            ,@(node->racket (reverse args)))))
 
            (super-instantiate ())))
 

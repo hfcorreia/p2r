@@ -30,9 +30,7 @@
 
            (define/override (->racket)
                               (->syntax-object
-                                (if (not (null? args))
-                                  `(p-call ,@(node->racket primary) ,@(node->racket args))
-                                  `(p-call ,@(node->racket primary)))))
+                                  `(p-call ,@(node->racket primary) ,@(node->racket args))))
 
            (super-instantiate ())))
 
