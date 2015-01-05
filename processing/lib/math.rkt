@@ -94,8 +94,8 @@
       [(_ func lst ...)
        (orig-map func lst ...)]))
   
-  (define (norm value start stop)
-    (/ (- value stop) (- start stop)))
+  (define (norm value low high)
+    (/ (- value low) (- high low)))
   
   (define (atan2 x y)
     (atan x y))
