@@ -7,7 +7,9 @@
            "../lib/runtime.rkt")
 
 
-  ;;; Macro to simplyfy code generation
+  ;;; node->racket : (or/c (listof ast-node%) ast-node%) -> (or/c (listof ast-node%) ast-node%)
+  ;;; Simplyfies code generation by executing ->racket 
+  ;;; over a single or a list of ast-nodes%
   (define-syntax-rule
     (node->racket arg)
     (if (list? arg)
@@ -20,10 +22,12 @@
   ;;; AST struct definitions
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;;; All nodes inherit from ast-node%
+  ;;; Root of the AST. All nodes are a subclass of ast-node%.
+  ;;; Encapsulates source info and all required functions to generate
+  ;;; syntax-objects.
   (define ast-node%
     (class object%
-           (init-field src-info)
+           (init-field [src-info null])
 
            (define/public (get-src-info) src-info)
 
@@ -33,7 +37,7 @@
                           (apply raise-read-error (cons msg src-info)))
 
 
-           ;; ->s : datum? -> syntax-object?
+           ;; ->syntax-object : datum? -> syntax-object?
            ;; converts the datum to a syntax object using stored src-info
            (define/public (->syntax-object datum)
                           (datum->syntax #'test
@@ -44,25 +48,27 @@
                                          ))
 
            ;; ->racket: -> syntax-object?
-           ;; generates the syntax object relative to the node
+           ;; generates the syntax-object relative to the node
            (define/public (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
            (super-instantiate ())))
 
 
+  ;;; Generates initialization code
+  ;;; Receives the whole ast and injects initialization code for
+  ;;; setup and draw functions
   (define initializer%
     (class ast-node%
-           (init-field id)
-
+           (init-field ast)
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (->syntax-object
-                              `(p-initialize ,id)))
-           
-
-           
+                            (append
+                              (node->racket ast)
+                              (list 
+                                (->syntax-object `(p-initialize setup))
+                                (->syntax-object `(p-initialize draw)))))
 
            (super-instantiate ())))
 

@@ -7,7 +7,9 @@
            "ast/ast.rkt"
            "parser.rkt"
            "mode.rkt")
-  ;;;
+
+  ;;; build-ast: file input-port= #f -> (listof ast-node%)
+  ;;; parses the input file and constructs an ast of ast-node%
   (define (build-ast file #:input-port [input-port #f])
     (if (eq? input-port #f)
       (with-input-from-file file
@@ -17,13 +19,10 @@
       (parse-processing file input-port)))
 
 
-  ;;;
+  ;;; compile-processing : ast -> (listof syntax-object?)
+  ;;; generates the list of syntax-objects based on the ast
   (define (compile-processing ast)
     (if (active-mode?)
-        (append 
-          (map (lambda (node) (send node ->racket)) ast)
-          (list
-            (send (make-object initializer% 'setup null) ->racket) 
-            (send (make-object initializer% 'draw null) ->racket)))
-        (map (lambda (node) (send node ->racket)) ast)))
+        (node->racket (make-object initializer% ast))
+        (node->racket ast)))
   )
