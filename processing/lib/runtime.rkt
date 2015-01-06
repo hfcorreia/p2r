@@ -112,12 +112,12 @@
 
 
   ;;; Builds a n-dimentional vector give a list of values and a initial value
-  (define (make-n-vector list val)
-    (define (aux list)
-      (if (null? list)
+  (define (make-n-vector lst val)
+    (define (aux lst)
+      (if (null? lst)
         val
-        (make-vector (car list) (aux (cdr list)))))
-    (aux list))
+        (make-vector (car lst) (aux (cdr lst)))))
+    (aux lst))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; Class macros
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

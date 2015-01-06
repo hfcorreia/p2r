@@ -30,7 +30,8 @@
 
            (define/override (->racket)
                               (->syntax-object
-                                  `(p-call ,@(node->racket primary) ,@(node->racket args))))
+                                  `(p-call ,@(node->racket primary) 
+                                           ,@(node->racket args))))
 
            (super-instantiate ())))
 
@@ -43,14 +44,14 @@
            (define/public (is-method?) (null? (send id get-list)))
 
            (define/override (->racket) 
-                              (if (null? primary)
-                                  (if (is-method?)
-                                    `(#:call ,(node->racket id))
-                                    `(#:send ,(send id get-full-id) ,(node->racket id)))
-                                `(#:send ,(node->racket primary) 
-                                  ,(node->racket id))))
+                            (if (null? primary)
+                              (if (is-method?)
+                                `(#:call ,(node->racket id))
+                                `(#:send ,(send id get-full-id) 
+                                  ,(node->racket id)))
+                              `(#:send ,(node->racket primary) 
+                                ,(node->racket id))))
 
-                                               
            (super-instantiate ())))
 
   (define identifier%
@@ -64,7 +65,7 @@
 
            (define/public (get-full-id) 
                             (string->symbol 
-                              (build-full-id (reverse id-list))))
+                              (build-full-id (get-list))))
 
            (define/public (identifier->symbol)
              (string->symbol (string-append "" identifier)))
@@ -73,6 +74,10 @@
                             (->syntax-object (identifier->symbol)))
 
 
+           ;; build-full-id : (listof string?) -> string?
+           ;; Receives a list of strings corresponding to the full qualified
+           ;; and builds a '-' seperated string
+           ;; so for Foo.Bazz.bar -> Foo-Bazz-bar
            (define (build-full-id lst)
              (cond 
                [(null? lst) ""]

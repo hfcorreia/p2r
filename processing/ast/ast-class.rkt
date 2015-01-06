@@ -26,7 +26,8 @@
 
            (define/override (->racket)
                             (->syntax-object
-                              `(p-class ,(node->racket name) ,@(node->racket body))))
+                              `(p-class ,(node->racket name) 
+                                        ,@(node->racket body))))
 
            (super-instantiate ())))
 

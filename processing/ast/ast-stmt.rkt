@@ -63,6 +63,7 @@
 
            (super-instantiate ())))
 
+  ;;; TODO: Check with local-var% they are too similar to exisit
   (define global-var%
     (class stmt%
            (init-field modifiers type vars)
