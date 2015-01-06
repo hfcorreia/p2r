@@ -10,6 +10,8 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; AST stmt nodes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;;; ast-node abstraction for statments
   (define stmt%
     (class ast-node%
            (inherit read-error)
@@ -21,6 +23,8 @@
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+  ;;; Import of racket modules in processing
   (define require% 
     (class stmt%
            (init-field name)
@@ -28,7 +32,8 @@
            (inherit ->syntax-object)
 
            (define/override (->racket)
-                            (->syntax-object `(p-require ,(read (open-input-string name)))))
+                            (->syntax-object 
+                              `(p-require ,(read (open-input-string name)))))
 
            (super-instantiate ())))
 
@@ -90,11 +95,9 @@
 
            (define/override (->racket)
                             (->syntax-object
-                              (if (null? stmts) 
-                                `(let () (void))
                                 `(let ()
                                    ,@(node->racket stmts)
-                                   (void)))))
+                                   (void))))
 
            (super-instantiate ())))
 
