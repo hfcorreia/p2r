@@ -40,7 +40,7 @@
            ;; ->syntax-object : datum? -> syntax-object?
            ;; converts the datum to a syntax object using stored src-info
            (define/public (->syntax-object datum)
-                          (datum->syntax #'test
+                          (datum->syntax #'here
                                          datum
                                          (and (not (null? src-info)) src-info)
                                          (read-syntax #f 

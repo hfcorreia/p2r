@@ -3,10 +3,15 @@ processing/lang/processing
 
 #:read processing-read
 #:read-syntax processing-read-syntax
+#:language-info '#(processing/lang/language-info get-language-info #f)
 #:whole-body-readers? #t
 
 (require syntax/strip-context
          "../compile.rkt")
+
+(provide processing-read
+         processing-read-syntax
+         processing-read-syntax-repl)
 
 (define (processing-read input-port)
   (map syntax->datum (processing-read-syntax #f input-port)))
@@ -15,7 +20,17 @@ processing/lang/processing
   (map strip-context (compile-processing (build-ast src #:input-port input-port))))
 
 (define (processing-read-syntax-repl src input-port)
-  (let ([code (processing-read-syntax src input-port)])
+  (define (filter-unready-port in)
+    (let loop ([chars (list)])
+      (if (and (char-ready? in)
+               (not (eof-object? (peek-char in))))
+        (loop (cons (read-char in) chars))
+        (open-input-string (apply string (reverse
+                                           chars))))))
+  (let ([code (map strip-context 
+                   (compile-processing-repl 
+                     (build-ast src #:input-port 
+                                (filter-unready-port input-port))))])
     (if (null? code)
       eof
       #`(begin #,@code))))

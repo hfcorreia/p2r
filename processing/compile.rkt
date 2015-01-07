@@ -1,6 +1,7 @@
 (module compile racket
 
   (provide compile-processing
+           compile-processing-repl
            build-ast)
 
   (require racket/file
@@ -25,4 +26,9 @@
     (if (active-mode?)
         (node->racket (make-object initializer% ast))
         (node->racket ast)))
+
+  ;;; compile-processing-repl : ast -> (listof syntax-object?)
+  ;;; generates the list of syntax-objects based on the ast consumed by the repl
+  (define (compile-processing-repl ast)
+        (node->racket ast))
   )

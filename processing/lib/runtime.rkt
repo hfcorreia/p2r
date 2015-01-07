@@ -1,15 +1,15 @@
 (module runtime racket
 
   (provide (all-defined-out)
-           (all-from-out "environment.rkt")
-           (all-from-out "operators.rkt")
-           (all-from-out "data.rkt")
-           (all-from-out "shapes.rkt")
-           (all-from-out "color.rkt")
-           (all-from-out "math.rkt")
-           (all-from-out "constants.rkt")
-           (all-from-out "objects.rkt")
-           (all-from-out "output.rkt"))
+           (all-from-out "environment.rkt"
+                         "operators.rkt"
+                         "data.rkt"
+                         "shapes.rkt"
+                         "color.rkt"
+                         "math.rkt"
+                         "constants.rkt"
+                         "objects.rkt"
+                         "output.rkt"))
 
   (require racket/undefined
            racket/require
