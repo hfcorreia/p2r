@@ -1,21 +1,20 @@
-(module processing/color racket
+#lang racket/base
 
-  (provide (all-defined-out))
+(provide (all-defined-out))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;; Setting
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  (define-syntax background
-    (syntax-rules ()
-      [(_ rgb) 
-       (error "background: Not Implemented")]
-      [(_ rgb alpha) 
-       (error "background: Not Implemented")]
-      [(_ v1 v2 v3) 
-       (error "background: Not Implemented")]
-      [(_ v1 v2 v3 aplha) 
-       (error "background: Not Implemented")]))
+(define-syntax background
+  (syntax-rules ()
+    [(_ rgb) 
+     (error "background: Not Implemented")]
+    [(_ rgb alpha) 
+     (error "background: Not Implemented")]
+    [(_ v1 v2 v3) 
+     (error "background: Not Implemented")]
+    [(_ v1 v2 v3 aplha) 
+     (error "background: Not Implemented")]))
 
-  
-)
+
