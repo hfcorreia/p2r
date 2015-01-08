@@ -50,7 +50,7 @@
                                       (is-a? stmt block%))
                                 `(void ,(node->racket stmt))
                                 `(p-global-stmt ,(node->racket stmt)
-                                                (list ,@(get-src-info))))))
+                                                ',(get-src-info)))))
 
            (super-instantiate ())))
 
