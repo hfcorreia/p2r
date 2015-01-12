@@ -114,7 +114,7 @@
         [(<primitive-type>) 
          (make-object primitive-type% $1 (build-src 1))]
         [(<reference-type>) 
-         (make-object todo-node% $1 'reference-type%  (build-src 1))])
+         (make-object reference-type% $1 (build-src 1))])
 
       (<primitive-type>
         [(<numeric-type>) $1]
@@ -137,27 +137,25 @@
         [(double) 'double])   
 
       (<reference-type>
-        [(<name>)      
-         (make-object todo-node% $1 'name (build-src 1))]
-        [(<array-type>) 
-         (make-object todo-node% $1 'array-type (build-src 1))])
+        [(<name>)      $1]
+        [(<array-type>) $1])
 
       (<array-type>
         [(<primitive-type> <dims>) 
-         (make-object todo-node% (list $1 $2) 'array-type (build-src 1))]
+         (make-object array-type% $1 $2 (build-src 1 2))]
         [(<name> <dims>)           
-         (make-object todo-node% (list $1 $2) 'array-type (build-src 1))])
+         (make-object array-type% $1 $2 (build-src 1 2))])
 
       (<class-or-interface-type>
-        [(<name>) $1])
+        [(<name>) 
+         (make-object reference-type% $1 (build-src 1))])
 
       (<class-type>
-        [(<class-or-interface-type>)
-         (make-object todo-node% $1 'class-type (build-src 1))])
+        [(<class-or-interface-type>) $1])
 
       (<interface-type>
-        [(<class-or-interface-type>) 
-         (make-object todo-node% $1 'iterface-type (build-src 1))])
+        [(<class-or-interface-type>) $1])
+        
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Dims & Args
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

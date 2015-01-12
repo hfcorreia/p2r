@@ -22,9 +22,29 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Type nodes
+;;; Primitive type
 (define primitive-type% 
   (class type%
+         (inherit-field type)
+
+         (define/override (->racket)
+                          (send type ->racket))
+
+         (super-instantiate ())))
+
+;;; Reference type
+(define reference-type%
+  (class type%
+         (inherit-field type)
+
+         (define/override (->racket)
+                          (send type ->racket))
+
+         (super-instantiate ())))
+
+(define array-type% 
+  (class type%
+         (init-field dims)
          (inherit-field type)
 
          (define/override (->racket)
