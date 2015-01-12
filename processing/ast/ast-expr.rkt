@@ -16,6 +16,9 @@
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
+         (define/override (->type-check)
+                           (read-error (format "Invalid use of ->type-check ~a" this)))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -30,6 +33,8 @@
                           (->syntax-object
                             `(p-call ,@(node->racket primary) 
                                      ,@(node->racket args))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -49,6 +54,8 @@
                                 ,(node->racket id)))
                             `(#:send ,(node->racket primary) 
                               ,(node->racket id))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -71,6 +78,7 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
+         (define/override (->type-check) #t)
 
          ;; build-full-id : (listof string?) -> string?
          ;; Receives a list of strings corresponding to the full qualified
@@ -102,6 +110,8 @@
                                 `(get-field ,(node->racket name)
                                             ,(send name get-full-id))])))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 
@@ -121,6 +131,8 @@
          ;    (if (inexact? value) value (exact->inexact value))]
          ;   [(char? int? long? boolean? short? byte?) value]))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define arguments%
@@ -135,6 +147,8 @@
                           (->syntax-object
                             (node->racket (reverse args))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define binary-op%
@@ -148,6 +162,8 @@
                             `(,p-operator ,(node->racket arg1) 
                                           ,(node->racket arg2))))
 
+         (define/override (->type-check) #t)
+         
          (define p-operator
            (case operator
              ['+ 'p-add]
@@ -184,6 +200,8 @@
                           (->syntax-object 
                             `(,p-operator ,(node->racket arg))))
 
+         (define/override (->type-check) #t)
+
          (define p-operator
            (case operator
              ['+ 'p-pos]
@@ -208,6 +226,8 @@
                             `(p-assignment ,assignment-operator
                                            ,(node->racket left-val)
                                            ,(node->racket right-val))))
+
+         (define/override (->type-check) #t)
 
          (define assignment-operator
            (case operator
@@ -235,6 +255,8 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(p-left-value ,@generate ,key-type)))
+
+         (define/override (->type-check) #t)
 
          (define (check-type)
            (set! type
@@ -278,6 +300,8 @@
                               `(p-vector ,(node->racket dim-expr)
                                          ,(initial-value)))))
 
+         (define/override (->type-check) #t)
+
          (define (initial-value)
            (case type
              ['int        0]
@@ -298,6 +322,8 @@
                           (->syntax-object
                             (node->racket expr)))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define array-acces%
@@ -314,6 +340,8 @@
                             `(vector-ref ,(node->racket id) 
                                          ,(node->racket expr))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define array-initializer% 
@@ -325,5 +353,7 @@
          (define/override (->racket)
                           (->syntax-object
                             `(vector ,@(node->racket initializers))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))

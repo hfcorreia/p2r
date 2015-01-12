@@ -7,7 +7,8 @@
          "../lib/runtime.rkt")
 
 
-;;; node->racket : (or/c (listof ast-node%) ast-node%) -> (or/c (listof ast-node%) ast-node%)
+;;; node->racket : (or/c (listof ast-node%) ast-node%) 
+;;;     -> (or/c (listof ast-node%) ast-node%)
 ;;; Simplyfies code generation by executing ->racket 
 ;;; over a single or a list of ast-nodes%
 (define-syntax-rule
@@ -18,6 +19,13 @@
          arg)
     (send arg ->racket)))
 
+(define-syntax-rule
+  (node->type-check arg)
+  (if (list? arg)
+    (andmap (lambda (elem)
+           (send elem ->type-check))
+         arg)
+    (send arg ->type-check)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST struct definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -28,8 +36,10 @@
 (define ast-node%
   (class object%
          (init-field [src-info null])
+         (field [type-info null])
 
          (define/public (get-src-info) src-info)
+         (define/public (get-type-info) type-info)
 
          ;; read-err: string? -> exn:fail:read
          ;; raises an exception with source of the expression
@@ -51,6 +61,12 @@
          ;; generates the syntax-object relative to the node
          (define/public (->racket)
                         (read-error (format "Invalid use of ->racket ~a" this)))
+
+         ;; ->type-check: -> (or/c #t read-error?)
+         ;; type checks the generated ast.
+         (define/public (->type-check)
+                        (read-error (format "Invalid use of ->type-check ~a"
+                                            this)))
 
          (super-instantiate ())))
 
@@ -91,6 +107,8 @@
                           (clear-todo)
                           (->syntax-object
                             (aux child)))
+
+         (define/override (->type-check) #t)
 
          ;; aux funtion
          (define (aux child)

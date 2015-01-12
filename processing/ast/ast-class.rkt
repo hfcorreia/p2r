@@ -15,6 +15,10 @@
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
+         (define/override (->type-check)
+                          (read-error (format "Invalid use of ->type-check ~a"
+                                              this)))
+
          (super-instantiate ())))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define class-node%
@@ -27,6 +31,8 @@
                           (->syntax-object
                             `(p-class ,(node->racket name) 
                                       ,@(node->racket body))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -41,6 +47,8 @@
                             `(make-object ,(node->racket name) 
                                           ,@(node->racket (reverse args)))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define class-field%
@@ -52,6 +60,8 @@
          (define/override (->racket)
                           (->syntax-object
                             `(p-class-field ,@(node->racket vars))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -66,6 +76,8 @@
                             `(define/public ,(node->racket header)
                                             (call/ec (lambda (return)
                                                        ,(node->racket body))))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -83,6 +95,8 @@
                             `(,(node->racket id)
                                ,@(node->racket (reverse parameters)))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define formal-parameter% 
@@ -95,6 +109,8 @@
                           (->syntax-object 
                             (node->racket id)))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define this-node%
@@ -105,6 +121,7 @@
                           (->syntax-object 
                             this))
 
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -120,5 +137,7 @@
          (define/override (->racket)
                           `(get-field ,(node->racket id)
                                       ,(node->racket primary)))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))

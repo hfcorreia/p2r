@@ -18,6 +18,9 @@
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
+         (define/override (->type-check)
+                          (read-error (format "Invalid use of ->type-check ~a" this)))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -30,6 +33,8 @@
          (define/override (->racket)
                           (send type ->racket))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 ;;; Reference type
@@ -40,6 +45,8 @@
          (define/override (->racket)
                           (send type ->racket))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define array-type% 
@@ -49,5 +56,7 @@
 
          (define/override (->racket)
                           (send type ->racket))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))

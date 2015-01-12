@@ -18,6 +18,9 @@
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
 
+         (define/override (->type-check)
+                          (read-error (format "Invalid use of ->type-check ~a" this)))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -33,6 +36,8 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(p-require ,(read (open-input-string name)))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -51,6 +56,9 @@
                               `(p-global-stmt ,(node->racket stmt)
                                               ',(get-src-info)))))
 
+         (define/override (->type-check) 
+                          (node->type-check stmt))
+
          (super-instantiate ())))
 
 (define global-decl%
@@ -59,6 +67,8 @@
 
          (define/override (->racket)
                           (node->racket decl))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -73,6 +83,8 @@
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define local-var%
@@ -84,6 +96,8 @@
          (define/override (->racket)
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -99,6 +113,8 @@
                                ,@(node->racket stmts)
                                (void))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define function-decl% 
@@ -112,6 +128,8 @@
                             `(define ,(node->racket header)
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -129,6 +147,8 @@
                                   (void) 
                                   (node->racket else)))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define do-while%
@@ -145,6 +165,8 @@
                                        (when ,(node->racket test)
                                          (loop))))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define while%
@@ -160,6 +182,8 @@
                                        (when ,(node->racket test)
                                          (let/ec continue ,(node->racket body))
                                          (loop))))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -180,6 +204,8 @@
                                          ,(node->racket increment)
                                          (loop))))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define expr-list%
@@ -191,6 +217,8 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(begin ,@(node->racket exprs))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -206,6 +234,8 @@
                               `(return (void))
                               `(return ,(node->racket expr)))))
 
+         (define/override (->type-check) #t)
+
          (super-instantiate ())))
 
 (define break% 
@@ -215,6 +245,9 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(break (void))))
+
+         (define/override (->type-check) 
+                          #t)
 
          (super-instantiate ())))
 
@@ -226,6 +259,9 @@
                           (->syntax-object 
                             `(continue (void))))
 
+         (define/override (->type-check) 
+                          #t)
+
          (super-instantiate ())))
 
 (define empty-stmt% 
@@ -233,6 +269,8 @@
          (inherit ->syntax-object)
 
          (define/override (->racket) (void))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -242,6 +280,8 @@
 
          (define/override (->racket)
                           (->syntax-object undefined))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 
@@ -255,5 +295,7 @@
                           (->syntax-object
                             `(,(node->racket id) 
                                ,(node->racket value))))
+
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
