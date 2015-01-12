@@ -21,6 +21,10 @@
          (define/override (->type-check)
                           (read-error (format "Invalid use of ->type-check ~a" this)))
 
+         (define/public (type-error from-type)
+                        (read-error (format "Cannot convert from ~a to ~a"
+                                            from-type type)))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -31,9 +35,15 @@
          (inherit-field type)
 
          (define/override (->racket)
-                          (send type ->racket))
+                          (node->racket type))
 
          (define/override (->type-check) #t)
+
+         (inherit type-error)
+         (define/public (check-literal-type? literal-type)
+                          (cond 
+                            [(eq? literal-type type) type]
+                            [else (type-error literal-type)]))
 
          (super-instantiate ())))
 
@@ -43,7 +53,7 @@
          (inherit-field type)
 
          (define/override (->racket)
-                          (send type ->racket))
+                          (node->racket type))
 
          (define/override (->type-check) #t)
 
@@ -55,7 +65,7 @@
          (inherit-field type)
 
          (define/override (->racket)
-                          (send type ->racket))
+                          (node->racket type))
 
          (define/override (->type-check) #t)
 

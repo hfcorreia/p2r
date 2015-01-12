@@ -53,7 +53,7 @@
                             (if (or (is-a? stmt empty-stmt%) 
                                     (is-a? stmt block%))
                               `(void ,(node->racket stmt))
-                              `(p-global-stmt ,(node->racket stmt)
+                              `(p-active-mode? ,(node->racket stmt)
                                               ',(get-src-info)))))
 
          (define/override (->type-check) 
@@ -68,7 +68,8 @@
          (define/override (->racket)
                           (node->racket decl))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check decl))
 
          (super-instantiate ())))
 
@@ -83,7 +84,27 @@
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
 
-         (define/override (->type-check) #t)
+         (inherit set-type-info! get-type-info)
+         (define/override (->type-check) 
+                          (set-type-info! type)
+                          (map (lambda (var)
+                                 (send var ->type-check type)) vars))
+
+         (super-instantiate ())))
+
+(define var-decl-id%
+  (class stmt%
+         (init-field id value)
+
+         (inherit ->syntax-object)
+
+         (define/override (->racket) 
+                          (->syntax-object
+                            `(,(node->racket id) 
+                               ,(node->racket value))))
+
+         (define/override (->type-check type) 
+                          (send value ->type-check type))
 
          (super-instantiate ())))
 
@@ -285,17 +306,3 @@
 
          (super-instantiate ())))
 
-(define var-decl-id%
-  (class stmt%
-         (init-field id value)
-
-         (inherit ->syntax-object)
-
-         (define/override (->racket) 
-                          (->syntax-object
-                            `(,(node->racket id) 
-                               ,(node->racket value))))
-
-         (define/override (->type-check) #t)
-
-         (super-instantiate ())))

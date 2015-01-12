@@ -117,21 +117,16 @@
 
 (define literal%
   (class expression%
-         (init-field value type)
+         (init-field value literal-type)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-type-info!)
 
          (define/override (->racket) 
                           (->syntax-object value))
 
-         ;; TODO: use this to convert the literals 
-         ;(define literal-types 
-         ; (case type
-         ;   [(float? double?)
-         ;    (if (inexact? value) value (exact->inexact value))]
-         ;   [(char? int? long? boolean? short? byte?) value]))
-
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) 
+                          (set-type-info! 
+                            (send type check-literal-type? literal-type)))
 
          (super-instantiate ())))
 

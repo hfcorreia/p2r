@@ -22,7 +22,7 @@
 (define-syntax-rule
   (node->type-check arg)
   (if (list? arg)
-    (andmap (lambda (elem)
+    (map (lambda (elem)
            (send elem ->type-check))
          arg)
     (send arg ->type-check)))
@@ -40,6 +40,8 @@
 
          (define/public (get-src-info) src-info)
          (define/public (get-type-info) type-info)
+
+         (define/public (set-type-info! info) (set! type-info info))
 
          ;; read-err: string? -> exn:fail:read
          ;; raises an exception with source of the expression
@@ -76,15 +78,23 @@
 ;;; setup and draw functions
 (define initializer%
   (class ast-node%
-         (init-field ast)
+         (init-field ast active-mode?)
+
          (inherit ->syntax-object)
 
          (define/override (->racket)
-                          (append
-                            (node->racket ast)
-                            (list 
-                              (->syntax-object `(p-initialize setup))
-                              (->syntax-object `(p-initialize draw)))))
+                          (if active-mode?
+                            (append
+                              (node->racket ast)
+                              (list 
+                                (->syntax-object `(p-initialize setup))
+                                (->syntax-object `(p-initialize draw))))
+                            (node->racket ast)))
+
+         (define/override (->type-check)
+                          (->syntax-object
+                            (node->type-check ast)))
+                             
 
          (super-instantiate ())))
 

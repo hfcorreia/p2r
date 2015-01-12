@@ -21,13 +21,13 @@
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
 (define (compile-processing ast)
-  (node->type-check ast)
-  (if (active-mode?)
-    (node->racket (make-object initializer% ast))
-    (node->racket ast)))
+    (let ([ast (make-object initializer% ast active-mode?)])
+      (node->type-check ast)
+      (node->racket ast)))
 
 ;;; compile-processing-repl : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast consumed by the repl
 (define (compile-processing-repl ast)
-  (node->type-check ast)
-  (node->racket ast))
+    (let ([ast (make-object initializer% ast false)])
+      (node->type-check ast)
+      (node->racket ast)))
