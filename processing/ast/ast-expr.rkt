@@ -63,7 +63,7 @@
   (class expression%
          (init-field id-list identifier)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-type-info!)
 
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
@@ -78,7 +78,8 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) 
+                          (set-type-info! type))
 
          ;; build-full-id : (listof string?) -> string?
          ;; Receives a list of strings corresponding to the full qualified
@@ -119,14 +120,25 @@
   (class expression%
          (init-field value literal-type)
 
-         (inherit ->syntax-object set-type-info!)
+         (inherit ->syntax-object set-type-info! get-type-info type-error)
 
          (define/override (->racket) 
-                          (->syntax-object value))
+                          (->syntax-object (build-literal)))
 
+         ;;; ->type-check: type% -> (or/c void type-error)
          (define/override (->type-check type) 
-                          (set-type-info! 
-                            (send type check-literal-type? literal-type)))
+                          (if (or (send type type=? literal-type) 
+                                  (send type widening-conversion? literal-type))
+                            (set-type-info! type)
+                            (type-error literal-type (send type get-type))))
+
+        (define (build-literal)
+          (let ([type (send (get-type-info) get-type)])
+            (case type
+              [(float double) (exact->inexact value)]
+              [(char int long boolean short) value]
+              [(null) 'null]
+              [else (error "Unknown type in literal ~a" type)])))
 
          (super-instantiate ())))
 

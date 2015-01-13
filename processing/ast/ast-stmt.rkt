@@ -78,17 +78,14 @@
   (class stmt%
          (init-field modifiers type vars)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-type-info!)
 
          (define/override (->racket)
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
 
-         (inherit set-type-info! get-type-info)
          (define/override (->type-check) 
-                          (set-type-info! type)
-                          (map (lambda (var)
-                                 (send var ->type-check type)) vars))
+                          (node->type-check vars type))
 
          (super-instantiate ())))
 
@@ -96,7 +93,7 @@
   (class stmt%
          (init-field id value)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-type-info!)
 
          (define/override (->racket) 
                           (->syntax-object
@@ -104,7 +101,9 @@
                                ,(node->racket value))))
 
          (define/override (->type-check type) 
-                          (send value ->type-check type))
+                          (node->type-check value type)
+                          (node->type-check id    type)
+                          (set-type-info! type))
 
          (super-instantiate ())))
 
@@ -112,13 +111,15 @@
   (class stmt%
          (init-field modifiers type vars)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-type-info!)
 
          (define/override (->racket)
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (set-type-info! type)
+                          (node->type-check vars type))
 
          (super-instantiate ())))
 
@@ -134,23 +135,26 @@
                                ,@(node->racket stmts)
                                (void))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check stmts))
 
          (super-instantiate ())))
 
 (define function-decl% 
   (class stmt%
-         (init-field header body)
+         (init-field signature body)
 
          (inherit ->syntax-object)
 
          (define/override (->racket)
                           (->syntax-object 
-                            `(define ,(node->racket header)
+                            `(define ,(node->racket signature)
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check signature)
+                          (node->type-check body))
 
          (super-instantiate ())))
 

@@ -14,18 +14,19 @@
 (define-syntax-rule
   (node->racket arg)
   (if (list? arg)
-    (map (lambda (elem)
-           (send elem ->racket))
-         arg)
+    (map (lambda (elem) (send elem ->racket)) arg)
     (send arg ->racket)))
 
-(define-syntax-rule
-  (node->type-check arg)
-  (if (list? arg)
-    (map (lambda (elem)
-           (send elem ->type-check))
-         arg)
-    (send arg ->type-check)))
+(define-syntax node->type-check
+  (syntax-rules ()
+    [(_ node)
+     (if (list? node)
+         (map (lambda (x) (send x ->type-check)) node)
+         (send node ->type-check))]
+    [(_ node type)
+     (if (list? node)
+         (map (lambda (x) (send x ->type-check type)) node)
+         (send node ->type-check type))]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST struct definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,11 +66,16 @@
                         (read-error (format "Invalid use of ->racket ~a" this)))
 
          ;; ->type-check: -> (or/c #t read-error?)
-         ;; type checks the generated ast.
+         ;; type checks the generated ast
          (define/public (->type-check)
                         (read-error (format "Invalid use of ->type-check ~a"
                                             this)))
 
+         ;; type-error: symbol? symbol? -> exe:fail:read
+         ;; raises a exception to signal type errors
+         (define/public (type-error from-type to-type)
+                        (read-error (format "Cannot convert from ~a to ~a"
+                                            from-type to-type)))
          (super-instantiate ())))
 
 
