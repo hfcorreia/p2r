@@ -12,6 +12,11 @@
 (define expression%
   (class ast-node%
          (inherit read-error)
+         (field [type-info undefined])
+
+         (define/public (get-type-info) type-info)
+
+         (define/public (set-type-info! info) (set! type-info info))
 
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
@@ -19,6 +24,11 @@
          (define/override (->type-check)
                            (read-error (format "Invalid use of ->type-check ~a" this)))
 
+         ;; type-error: symbol? symbol? -> exe:fail:read
+         ;; raises a exception to signal type errors
+         (define/public (type-error from-type to-type)
+                        (read-error (format "Cannot convert from ~a to ~a"
+                                            from-type to-type)))
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

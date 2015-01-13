@@ -78,7 +78,7 @@
   (class stmt%
          (init-field modifiers type vars)
 
-         (inherit ->syntax-object set-type-info!)
+         (inherit ->syntax-object)
 
          (define/override (->racket)
                           (->syntax-object
@@ -92,8 +92,9 @@
 (define var-decl-id%
   (class stmt%
          (init-field id value)
+         (field [var-type undefined])
 
-         (inherit ->syntax-object set-type-info!)
+         (inherit ->syntax-object)
 
          (define/override (->racket) 
                           (->syntax-object
@@ -101,9 +102,9 @@
                                ,(node->racket value))))
 
          (define/override (->type-check type) 
+                          (set! var-type type)
                           (node->type-check value type)
-                          (node->type-check id    type)
-                          (set-type-info! type))
+                          (node->type-check id    type))
 
          (super-instantiate ())))
 
@@ -111,14 +112,13 @@
   (class stmt%
          (init-field modifiers type vars)
 
-         (inherit ->syntax-object set-type-info!)
+         (inherit ->syntax-object)
 
          (define/override (->racket)
                           (->syntax-object
                             `(p-declaration ,@(node->racket vars))))
 
          (define/override (->type-check) 
-                          (set-type-info! type)
                           (node->type-check vars type))
 
          (super-instantiate ())))

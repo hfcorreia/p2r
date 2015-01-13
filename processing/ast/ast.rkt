@@ -37,12 +37,8 @@
 (define ast-node%
   (class object%
          (init-field [src-info null])
-         (field [type-info null])
 
          (define/public (get-src-info) src-info)
-         (define/public (get-type-info) type-info)
-
-         (define/public (set-type-info! info) (set! type-info info))
 
          ;; read-err: string? -> exn:fail:read
          ;; raises an exception with source of the expression
@@ -71,11 +67,6 @@
                         (read-error (format "Invalid use of ->type-check ~a"
                                             this)))
 
-         ;; type-error: symbol? symbol? -> exe:fail:read
-         ;; raises a exception to signal type errors
-         (define/public (type-error from-type to-type)
-                        (read-error (format "Cannot convert from ~a to ~a"
-                                            from-type to-type)))
          (super-instantiate ())))
 
 
