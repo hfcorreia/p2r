@@ -26,9 +26,11 @@ void foo4(int x){
   }
 }
 
-foo();
-foo2(0);
-foo2(1);
-foo3(0);
-foo4(0);
-foo4(1);
+void setup(){
+  foo();
+  foo2(0);
+  foo2(1);
+  foo3(0);
+  foo4(0);
+  foo4(1);
+}

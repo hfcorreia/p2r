@@ -1,16 +1,23 @@
 #lang processing
 
-void foo() {
-  boolean i = false;
+void setup() {
+  int i = 0;
 
-  while ( i == false) {
-    println("just once");
-    i = true;
+  while ( i < 10) {
+    if ( i == 5 ) {
+      i += 1;
+      continue;
+    }
+    else if ( i == 8)
+      break;
+    else
+      println(i);
+
+    i += 1;
   }
 
-  do { 
-    println("still once");
-  } while( i == false);
-}
+  do {
+   println("once");
+    } while( i == 0 );
 
-foo();
+}

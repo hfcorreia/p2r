@@ -1,9 +1,12 @@
 #lang processing
 
-void foo(int x, int y){
-  println(x);
-  println(y);
-  return;
+
+{
+  int x = 2;  
+  int z = 3;
 }
 
-println(foo(1,2));
+void setup(int x){
+ int y = 2;
+ println(x);
+}
