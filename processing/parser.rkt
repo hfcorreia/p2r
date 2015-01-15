@@ -112,9 +112,9 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<type>
         [(<primitive-type>) 
-         (make-object primitive-type% $1 (build-src 1))]
+         (make-object primitive-type% $1)]
         [(<reference-type>) 
-         (make-object reference-type% $1 (build-src 1))])
+         (make-object reference-type% $1)])
 
       (<primitive-type>
         [(<numeric-type>) $1]
@@ -142,13 +142,13 @@
 
       (<array-type>
         [(<primitive-type> <dims>) 
-         (make-object array-type% $1 $2 (build-src 1 2))]
+         (make-object array-type% $1 $2)]
         [(<name> <dims>)           
-         (make-object array-type% $1 $2 (build-src 1 2))])
+         (make-object array-type% $1 $2)])
 
       (<class-or-interface-type>
         [(<name>) 
-         (make-object reference-type% $1 (build-src 1))])
+         (make-object reference-type% $1)])
 
       (<class-type>
         [(<class-or-interface-type>) $1])

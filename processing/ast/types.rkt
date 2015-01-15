@@ -11,20 +11,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define type% 
-  (class ast-node%
+  (class object%
          (init-field to-type)
-
-         (inherit read-error)
 
          (define/public (get-type) to-type)
          (define/public (promote-type type) (set! to-type type))
-
-         (define/override (->racket)
-                          (read-error (format "Invalid use of ->racket ~a" this)))
-
-         (define/override (->type-check)
-                          (read-error (format "Invalid use of ->type-check ~a" this)))
-
 
          (super-instantiate ())))
 
@@ -34,12 +25,6 @@
 (define primitive-type% 
   (class type%
          (inherit-field to-type)
-
-
-         (define/override (->racket)
-                          (node->racket to-type))
-
-         (define/override (->type-check) #t)
 
          (define/public (type=? from-type)
                         (symbol=? from-type to-type))
@@ -65,10 +50,9 @@
   (class type%
          (inherit-field to-type)
 
-         (define/override (->racket)
-                          (node->racket to-type))
-
-         (define/override (->type-check) #t)
+         (define/public (type=? from-type)
+                        (displayln (send to-type get-list))
+                        (symbol=? from-type to-type))
 
          (super-instantiate ())))
 
@@ -77,9 +61,7 @@
          (init-field dims)
          (inherit-field to-type)
 
-         (define/override (->racket)
-                          (node->racket to-type))
-
-         (define/override (->type-check) #t)
+         (define/public (type=? from-type)
+                        (symbol=? from-type to-type))
 
          (super-instantiate ())))
