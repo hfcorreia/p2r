@@ -17,4 +17,8 @@
     [(_ v1 v2 v3 aplha) 
      (error "background: Not Implemented")]))
 
+(define (noFill)
+  (error "noFill: Not implemended"))
 
+(define (stroke)
+  (error "noFill: Not implemended"))
