@@ -40,14 +40,15 @@
   (class class-stmt%
          (init-field name args)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object get-src-info)
 
          (define/override (->racket)
                           (->syntax-object
-                            `(make-object ,(node->racket name) 
-                                          ,@(node->racket (reverse args)))))
+                            `(p-new-class
+                               ,(node->racket name) 
+                               ,@(node->racket (reverse args)))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))
 

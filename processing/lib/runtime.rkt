@@ -134,6 +134,10 @@
     (p-class-field [id val] ...)
     (field [id val] ...))
     
+  (define-syntax (p-new-class stx)
+    (syntax-case stx ()
+      [(_ id args ...)
+         #'(make-object id args ...)]))
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;; require racket modules
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

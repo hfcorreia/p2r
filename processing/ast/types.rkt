@@ -7,7 +7,7 @@
          "ast.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; AST types nodes
+;;; Type nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define type% 
@@ -17,6 +17,9 @@
          (define/public (get-type) to-type)
          (define/public (promote-type type) (set! to-type type))
 
+         (define/public (type=? from-type)
+                        (symbol=? from-type to-type))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,9 +28,6 @@
 (define primitive-type% 
   (class type%
          (inherit-field to-type)
-
-         (define/public (type=? from-type)
-                        (symbol=? from-type to-type))
 
          (define/public (widening-conversion? from-type)
                         (cond
@@ -50,9 +50,7 @@
   (class type%
          (inherit-field to-type)
 
-         (define/public (type=? from-type)
-                        (displayln (send to-type get-list))
-                        (symbol=? from-type to-type))
+         (define/public (widening-conversion? from-type) #f)
 
          (super-instantiate ())))
 
@@ -60,8 +58,5 @@
   (class type%
          (init-field dims)
          (inherit-field to-type)
-
-         (define/public (type=? from-type)
-                        (symbol=? from-type to-type))
 
          (super-instantiate ())))

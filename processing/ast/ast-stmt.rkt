@@ -45,8 +45,7 @@
   (class stmt%
          (init-field stmt)
 
-         (inherit ->syntax-object)
-         (inherit get-src-info)
+         (inherit ->syntax-object get-src-info)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -306,7 +305,7 @@
          (define/override (->racket)
                           (->syntax-object undefined))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))
 

@@ -44,7 +44,9 @@
                             `(p-call ,@(node->racket primary) 
                                      ,@(node->racket args))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check [type null]) 
+                          (node->type-check primary)
+                          (node->type-check args))
 
          (super-instantiate ())))
 
@@ -121,7 +123,7 @@
                                 `(get-field ,(node->racket name)
                                             ,(send name get-full-id))])))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))
 
@@ -143,12 +145,15 @@
                             (type-error literal-type (send type get-type))))
 
         (define (build-literal)
+          (if (eq? undefined (get-type-info)) ; hack:  remove asap
+            value
           (let ([type (send (get-type-info) get-type)])
             (case type
               [(float double) (exact->inexact value)]
-              [(char int long boolean short) value]
+              [(char int long boolean short byte) value]
+              [(String color) value] ;maybe should not be here
               [(null) 'null]
-              [else (error "Unknown type in literal ~a" type)])))
+              [else (error "Unknown type in literal ~a" type)]))))
 
          (super-instantiate ())))
 
@@ -179,7 +184,7 @@
                             `(,p-operator ,(node->racket arg1) 
                                           ,(node->racket arg2))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
          
          (define p-operator
            (case operator
@@ -217,7 +222,7 @@
                           (->syntax-object 
                             `(,p-operator ,(node->racket arg))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check [type null]) #t)
 
          (define p-operator
            (case operator
@@ -317,7 +322,7 @@
                               `(p-vector ,(node->racket dim-expr)
                                          ,(initial-value)))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (define (initial-value)
            (case type
@@ -339,7 +344,7 @@
                           (->syntax-object
                             (node->racket expr)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))
 
@@ -357,7 +362,7 @@
                             `(vector-ref ,(node->racket id) 
                                          ,(node->racket expr))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))
 
@@ -371,6 +376,6 @@
                           (->syntax-object
                             `(vector ,@(node->racket initializers))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check type) #t)
 
          (super-instantiate ())))

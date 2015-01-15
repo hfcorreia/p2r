@@ -115,7 +115,7 @@
                           (->syntax-object
                             (aux child)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check [type null]) #t)
 
          ;; aux funtion
          (define (aux child)

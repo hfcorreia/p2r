@@ -8,7 +8,7 @@
          "mode.rkt"
          "lexer.rkt"
          "ast/ast.rkt"
-         "ast/ast-type.rkt"
+         "ast/types.rkt"
          "ast/ast-expr.rkt"
          "ast/ast-stmt.rkt"
          "ast/ast-class.rkt")
@@ -99,7 +99,7 @@
         [(boolean-lit)  
          (make-object literal% $1 'boolean (build-src 1))] 
         [(string-lit)   
-         (make-object literal% $1 'string (build-src 1))]
+         (make-object literal% $1 'String (build-src 1))]
         [(char-lit)     
          (make-object literal% $1 'char (build-src 1))] 
         [(null-lit)     
@@ -119,7 +119,7 @@
       (<primitive-type>
         [(<numeric-type>) $1]
         [(color) 'color]
-        [(boolean) 'bool])
+        [(boolean) 'boolean])
 
       (<numeric-type>
         [(<integral-type>) $1]
@@ -136,8 +136,11 @@
         [(float)  'float]
         [(double) 'double])   
 
+      (<void>
+        [(void)     (make-object primitive-type% 'void)])
+
       (<reference-type>
-        [(<name>)      $1]
+        [(<name>)      (send $1 get-id)]
         [(<array-type>) $1])
 
       (<array-type>
@@ -147,8 +150,8 @@
          (make-object array-type% $1 $2)])
 
       (<class-or-interface-type>
-        [(<name>) 
-         (make-object reference-type% $1)])
+        [(<name>) $1])
+         
 
       (<class-type>
         [(<class-or-interface-type>) $1])
@@ -348,8 +351,6 @@
         [(<void> <method-declarator>) 
          (make-object method-header% null $1 (car $2) (cdr $2) null (build-src 2))])
 
-      (<void>
-        [(void)   (make-object primitive-type% 'void (build-src 1))])
 
       (<method-declarator>
         [(identifier l-paren <formal-parameter-list> r-paren) 
