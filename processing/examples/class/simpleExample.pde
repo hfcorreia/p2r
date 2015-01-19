@@ -17,20 +17,12 @@ class Foo {
 }
 
 int x = 2;
-;
-
-{
-
-            }
 
 void setup(){
-Foo foo = new Foo(), foo2 = new Foo();
-foo.setY(10);
-foo.printValue();
+  Foo foo = new Foo(), foo2 = new Foo();
+  foo.setY(10);
+  foo.printValue();
 }
 
-void draw(){
-            
-}
 
 

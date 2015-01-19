@@ -29,5 +29,6 @@
 ;;; generates the list of syntax-objects based on the ast consumed by the repl
 (define (compile-processing-repl ast)
     (let ([ast (make-object initializer% ast false)])
+      (active-mode #f)
       (node->type-check ast)
       (node->racket ast)))

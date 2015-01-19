@@ -2,12 +2,16 @@
 
 (provide (all-defined-out))
 
-(require (rename-in (planet aml/rosetta:1:=50) [backend ros-backend])
+(require (rename-in (planet aml/rosetta:1:=50) 
+                    [backend ros-backend]
+                    [tikz ros-tikz])
          racket/system)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Rosetta Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define tikz ros-tikz)
+
 (define (backend id)
   (ros-backend id)) 
 

@@ -2,8 +2,8 @@
 
 void drawTree(float x, float y, float lenght, float angle) {
   if ( lenght > 2 ) {
-    float x1 = x + cos(angle * pi/180)*lenght;
-    float y1 = y - sin(angle * pi/180)*lenght;
+    float x1 = x + cos(angle * PI/180)*lenght;
+    float y1 = y - sin(angle * PI/180)*lenght;
 
     line(x, y, x1, y1);
     
