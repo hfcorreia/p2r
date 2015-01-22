@@ -4,7 +4,8 @@
 (require racket/class
          racket/undefined
          "ast.rkt"
-         "../lib/runtime.rkt")
+         "../lib/runtime.rkt"
+         "../mode.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -21,10 +22,42 @@
          (define/override (->type-check)
                           (read-error (format "Invalid use of ->type-check ~a" this)))
 
+         (define/override (->bindings scope) 
+                          (read-error (format "Invalid use of ->bindings ~a" this)))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define compilation-unit% 
+  (class ast-node%
+         (init-field ast)
+
+         (inherit ->syntax-object)
+
+         (define/public (->repl)
+                        (set-active-mode! #f)
+                        (node->type-check ast)
+                        (node->racket ast))
+
+         ;; injects call to setup and draw functions if in active-mode
+         (define/override (->racket)
+                          (if active-mode?
+                            (append
+                              (node->racket ast)
+                              (list 
+                                (->syntax-object `(p-initialize setup))
+                                (->syntax-object `(p-initialize draw))))
+                            (node->racket ast)))
+
+         (define/override (->type-check)
+                          (->syntax-object
+                            (node->type-check ast)))
+
+         (define/override (->bindings scope) 
+                          (node->bindings ast scope))
+
+         (super-instantiate ())))
 
 ;;; Import of racket modules in processing
 (define require% 
@@ -38,6 +71,8 @@
                             `(p-require ,(read (open-input-string name)))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -53,10 +88,12 @@
                                     (is-a? stmt block%))
                               `(void ,(node->racket stmt))
                               `(p-active-mode? ,(node->racket stmt)
-                                              ',(get-src-info)))))
+                                               ',(get-src-info)))))
 
          (define/override (->type-check) 
                           (node->type-check stmt))
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -69,6 +106,8 @@
 
          (define/override (->type-check) 
                           (node->type-check decl))
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -85,6 +124,8 @@
 
          (define/override (->type-check) 
                           (node->type-check vars type))
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -105,6 +146,8 @@
                           (node->type-check value type)
                           (node->type-check id    type))
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define local-var%
@@ -119,6 +162,8 @@
 
          (define/override (->type-check) 
                           (node->type-check vars type))
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -136,6 +181,8 @@
 
          (define/override (->type-check) 
                           (node->type-check stmts))
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -155,6 +202,8 @@
                           (node->type-check signature)
                           (node->type-check body))
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define if% 
@@ -172,6 +221,8 @@
                                   (node->racket else)))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -191,6 +242,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define while%
@@ -208,6 +261,8 @@
                                          (loop))))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -244,6 +299,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define return% 
@@ -260,6 +317,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define break% 
@@ -272,6 +331,8 @@
 
          (define/override (->type-check) 
                           #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -296,6 +357,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define undefined%
@@ -306,6 +369,8 @@
                           (->syntax-object undefined))
 
          (define/override (->type-check type) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 

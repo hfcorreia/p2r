@@ -19,6 +19,9 @@
                           (read-error (format "Invalid use of ->type-check ~a"
                                               this)))
 
+         (define/override (->bindings scope) 
+                          (read-error (format "Invalid use of ->bindings ~a" this)))
+
          (super-instantiate ())))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define class-node%
@@ -33,6 +36,8 @@
                                       ,@(node->racket body))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -50,6 +55,8 @@
 
          (define/override (->type-check type) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define class-field%
@@ -63,6 +70,8 @@
                             `(p-class-field ,@(node->racket vars))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -79,6 +88,8 @@
                                                        ,(node->racket body))))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -98,6 +109,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define formal-parameter% 
@@ -112,6 +125,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+
          (super-instantiate ())))
 
 (define this-node%
@@ -123,6 +138,8 @@
                             this))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -140,5 +157,7 @@
                                       ,(node->racket primary)))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))

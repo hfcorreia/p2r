@@ -1,7 +1,7 @@
 #lang racket/base
 
 (provide (all-defined-out))
-
+#|
 (require (rename-in (planet aml/rosetta:1:=50) 
                     [backend ros-backend]
                     [tikz ros-tikz])
@@ -89,3 +89,4 @@
 
 (define (noCursor)
   (error "noCursor: Not implemented!"))
+|# 

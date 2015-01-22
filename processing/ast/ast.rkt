@@ -12,10 +12,10 @@
 ;;; Simplyfies code generation by executing ->racket 
 ;;; over a single or a list of ast-nodes%
 (define-syntax-rule
-  (node->racket arg)
-  (if (list? arg)
-    (map (lambda (elem) (send elem ->racket)) arg)
-    (send arg ->racket)))
+  (node->racket node)
+  (if (list? node)
+    (map (lambda (elem) (send elem ->racket)) node)
+    (send node ->racket)))
 
 (define-syntax node->type-check
   (syntax-rules ()
@@ -27,6 +27,12 @@
      (if (list? node)
          (map (lambda (x) (send x ->type-check type)) node)
          (send node ->type-check type))]))
+
+(define-syntax-rule
+  (node->bindings node scope)
+  (if (list? node)
+    (map (lambda (elem) (send elem ->bindings scope)) node)
+    (send node ->bindings scope)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST struct definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,6 +43,7 @@
 (define ast-node%
   (class object%
          (init-field [src-info null])
+         (field [scope null])
 
          (define/public (get-src-info) src-info)
 
@@ -67,35 +74,11 @@
                         (read-error (format "Invalid use of ->type-check ~a"
                                             this)))
 
-         (super-instantiate ())))
-
-
-;;; Generates initialization code
-;;; Receives the whole ast and injects initialization code for
-;;; setup and draw functions
-(define initializer%
-  (class ast-node%
-         (init-field ast active-mode?)
-
-         (inherit ->syntax-object)
-
-         (define/override (->racket)
-                          (if active-mode?
-                            (append
-                              (node->racket ast)
-                              (list 
-                                (->syntax-object `(p-initialize setup))
-                                (->syntax-object `(p-initialize draw))))
-                            (node->racket ast)))
-
-         (define/override (->type-check)
-                          (->syntax-object
-                            (node->type-check ast)))
-                             
+         ;; ->bindings: (is-a? binding-scope<%>) -> 
+         (define/public (->bindings scope) 
+                        (read-error (format "Invalid use of ->bindings ~a" this)))
 
          (super-instantiate ())))
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Debug stuff

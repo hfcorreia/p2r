@@ -1,5 +1,6 @@
 #lang racket/base
 
+#|
 (provide (all-defined-out))
 
 (require (prefix-in ros- (planet aml/rosetta)))
@@ -237,3 +238,4 @@
     ['CORNER  (error "shapeMode: Not implemented yet!")]
     ['CORNERS (error "shapeMode: Not implemented yet!")]
     ['CENTER  (error "shapeMode: Not implemented yet!")]))
+|#

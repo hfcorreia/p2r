@@ -196,11 +196,15 @@
       ;; Compilation unit
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<compilation-unit>
-        [() null]
+        [() (make-object compilation-unit% null)]
         [(<import-declarations> <global-declarations>) 
-         (append (reverse $1) (reverse $2))]
+         (make-object compilation-unit% 
+                      (append (reverse $1) (reverse $2))
+                      (build-src 1 2))]
         [(<global-declarations>) 
-         (reverse $1)])
+         (make-object compilation-unit% 
+                      (reverse $1)
+                      (build-src 1))])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Global 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -323,14 +327,14 @@
         [(<method-header> <method-body>) 
          (begin 
            ; Changes from static mode to active mode: see mode.rkt
-           (active-mode)
+           (set-active-mode! #t)
            (make-object function-decl% $1 $2 (build-src 1 2)))])
 
       (<method-declaration>
         [(<method-header> <method-body>) 
          (begin 
            ; Changes from static mode to active mode: see mode.rkt
-           (active-mode)
+           (set-active-mode! #t)
            (make-object method-decl% $1 $2 (build-src 1 2)))])
 
       (<method-header>

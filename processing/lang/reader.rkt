@@ -26,8 +26,8 @@ processing/lang/processing
       (if (and (char-ready? in)
                (not (eof-object? (peek-char in))))
         (loop (cons (read-char in) chars))
-        (open-input-string (apply string (reverse
-                                           chars))))))
+        (open-input-string 
+          (apply string (reverse chars))))))
   (let ([code (map strip-context 
                    (compile-processing-repl 
                      (build-ast src #:input-port 

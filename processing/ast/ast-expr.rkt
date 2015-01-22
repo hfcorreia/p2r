@@ -24,6 +24,9 @@
          (define/override (->type-check)
                            (read-error (format "Invalid use of ->type-check ~a" this)))
 
+         (define/override (->bindings scope) 
+                          (read-error (format "Invalid use of ->bindings ~a" this)))
+
          ;; type-error: symbol? symbol? -> exe:fail:read
          ;; raises a exception to signal type errors
          (define/public (type-error from-type to-type)
@@ -48,6 +51,8 @@
                           (node->type-check primary)
                           (node->type-check args))
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
 
 (define primary%
@@ -68,6 +73,9 @@
                               ,(node->racket id))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) #t)
+                        
 
          (super-instantiate ())))
 
@@ -93,6 +101,8 @@
          (define/override (->type-check type) 
                           (set-type-info! type))
 
+         (define/override (->bindings scope) #t)
+                        
          ;; build-full-id : (listof string?) -> string?
          ;; Receives a list of strings corresponding to the full qualified
          ;; and builds a '-' seperated string
@@ -123,8 +133,10 @@
                                 `(get-field ,(node->racket name)
                                             ,(send name get-full-id))])))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check [type null]) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
 
 
@@ -144,6 +156,8 @@
                             (set-type-info! type)
                             (type-error literal-type (send type get-type))))
 
+         (define/override (->bindings scope) #t)
+                        
         (define (build-literal)
           (if (eq? undefined (get-type-info)) ; hack:  remove asap
             value
@@ -169,8 +183,12 @@
                           (->syntax-object
                             (node->racket (reverse args))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check args))
+                          ;(map (lambda (x) (displayln (send x get-type-info))) args))
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
 
 (define binary-op%
@@ -186,6 +204,8 @@
 
          (define/override (->type-check type) #t)
          
+         (define/override (->bindings scope) #t)
+                        
          (define p-operator
            (case operator
              ['+ 'p-add]
@@ -224,6 +244,8 @@
 
          (define/override (->type-check [type null]) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (define p-operator
            (case operator
              ['+ 'p-pos]
@@ -251,6 +273,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (define assignment-operator
            (case operator
              ['=    'p-assign]
@@ -280,6 +304,8 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (define (check-type)
            (set! type
              (case type
@@ -324,6 +350,8 @@
 
          (define/override (->type-check type) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (define (initial-value)
            (case type
              ['int        0]
@@ -346,6 +374,8 @@
 
          (define/override (->type-check type) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
 
 (define array-acces%
@@ -364,6 +394,8 @@
 
          (define/override (->type-check type) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
 
 (define array-initializer% 
@@ -378,4 +410,6 @@
 
          (define/override (->type-check type) #t)
 
+         (define/override (->bindings scope) #t)
+                        
          (super-instantiate ())))
