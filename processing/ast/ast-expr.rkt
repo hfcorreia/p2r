@@ -183,8 +183,8 @@
                           (->syntax-object
                             (node->racket (reverse args))))
 
-         (define/override (->type-check) 
-                          (node->type-check args))
+         (define/override (->type-check) #t)
+                          ;(node->type-check args type))
                           ;(map (lambda (x) (displayln (send x get-type-info))) args))
 
          (define/override (->bindings scope) #t)

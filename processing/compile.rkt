@@ -5,7 +5,8 @@
          build-ast)
 
 (require "ast/ast.rkt"
-         "parser.rkt")
+         "parser.rkt"
+         "ast/bindings.rkt")
 
 ;;; build-ast: file input-port= #f -> (listof ast-node%)
 ;;; parses the input file and constructs an ast of ast-node%
@@ -20,8 +21,9 @@
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
 (define (compile-processing ast)
-      (node->type-check ast)
-      (node->racket ast))
+  (node->bindings ast (make-object global-scope%))
+  (node->type-check ast)
+  (node->racket ast))
 
 ;;; compile-processing-repl : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast consumed by the repl

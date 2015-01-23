@@ -46,6 +46,8 @@
          (field [scope null])
 
          (define/public (get-src-info) src-info)
+         (define/public (get-scope) scope)
+         (define/public (set-scope! new-scope) (set! scope new-scope))
 
          ;; read-err: string? -> exn:fail:read
          ;; raises an exception with source of the expression

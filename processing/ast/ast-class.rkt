@@ -4,7 +4,9 @@
 
 (require racket/class
          "ast.rkt"
-         "ast-expr.rkt")
+         "ast-expr.rkt"
+         "bindings.rkt"
+         )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST class nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,7 +39,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (node->bindings body scope))
 
          (super-instantiate ())))
 
@@ -79,7 +82,7 @@
   (class class-stmt%
          (init-field header body)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -89,7 +92,11 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (let ([local-scope (make-object local-scope% scope)])
+                            (set-scope! local-scope)
+                            (node->bindings header local-scope)
+                            (node->bindings body local-scope)))
 
          (super-instantiate ())))
 
