@@ -1,6 +1,9 @@
 #lang racket/base
 
 (provide (except-out (all-defined-out)
+                     current-random-generator
+                     int-generator
+                     double-generator
                      noise1D
                      noise2D
                      noise3D
@@ -60,19 +63,6 @@
 (define (degrees ang)
   (radians->degrees ang))
 
-(define-syntax random
-  (syntax-rules ()
-    [(_ num) 
-     (+ (orig-rand (- (inexact->exact (truncate num)) 1))
-        (orig-rand (make-pseudo-random-generator)))]
-    [(_ min max)
-     (if (> min max)
-       min
-       (+ min (+ (orig-rand (inexact->exact (truncate (- max min))))
-                 (orig-rand (make-pseudo-random-generator)))))]))
-
-(define (randomSeed seed)
-  (random-seed seed))
 
 (define (lerp a b t)
   (+  a (* t (- b a))))
@@ -99,6 +89,42 @@
 
 (define (atan2 x y)
   (atan x y))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;; random
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+(define current-random-generator 
+  (lambda () (orig-rand (make-pseudo-random-generator))))
+
+(define (int-generator [i1 null] [i2 null])
+  (let ([a (if (null? i1) 362436069 i1)]
+        [b (if (null? i2) 521288629 i2)])
+    (define (shift left right)
+      (+ (arithmetic-shift left (- right))
+         (arithmetic-shift 2 (bitwise-not right))))
+      (let ([z (bitwise-and  (+ (*  36969 (bitwise-and a 65535) (shift a 16)))
+                             #xFFFFFFFF)]
+            [w (bitwise-and  (+ (*  18000 (bitwise-and b 65535) (shift b 16)))
+                             #xFFFFFFFF)])
+        (bitwise-and (bitwise-ior 
+                       (arithmetic-shift (bitwise-and z  #xFFFF) 16) 
+                       (bitwise-and w #xFFFF))
+                     #xFFFFFFFF))))
+
+(define (double-generator [i1 null] [i2 null])
+  (lambda ()
+    (let ([i (/ (int-generator i1 i2) 4294967296)])
+      (if (< i 0) (+ i 1) i))))
+
+(define (random [i1 null] [i2 null])
+  (cond 
+    [(null? i1) (current-random-generator)]
+    [(null? i2) (* i1 (current-random-generator))]
+    [else (+ (* (current-random-generator) (- i2 i1)) i1)]))
+
+(define (randomSeed seed)
+  (set! current-random-generator (double-generator seed)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 ;;; randomGaussian
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  

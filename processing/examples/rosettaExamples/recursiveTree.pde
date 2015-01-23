@@ -1,19 +1,27 @@
 #lang processing
 
-void drawTree(float x, float y, float lenght, float angle) {
-  if ( lenght > 2 ) {
-    float x1 = x + cos(angle * PI/180)*lenght;
-    float y1 = y - sin(angle * PI/180)*lenght;
+float fmax = 0.75;
+float fmin = 0.7;
+float da = PI/6;
+float db = PI/5; 
 
-    line(x, y, x1, y1);
-    
-    drawTree(x1, y1, lenght * 0.67 , angle - 33);
-    drawTree(x1, y1, lenght * 0.78, angle + 40);
+void tree(float x, float y, float len, float ang) {
+  float x2 = x - len * cos(ang);
+  float y2 = y - len * sin(ang);
+
+  line( x, y, x2, y2);
+  
+  if (len < 10) 
+    ellipse( x2, y2, 0.6, 0.6);
+  else {
+    tree(x2, y2, random(fmin,fmax) * len, ang + da);
+    tree(x2, y2, random(fmin,fmax) * len, ang - db);
   }
+                  
 }
 
 void setup(){
     backend(tikz);
-    drawTree(0,10,100,90);
+    tree(0,0,100,PI/2);
     generateTikz("tree");
 }
