@@ -1,4 +1,4 @@
-#lang racket/base
+#lang racket
 (provide (all-defined-out))
 
 (require racket/class
@@ -119,8 +119,7 @@
 
          (super-instantiate ())))
 
-;;; TODO: Check with local-var% they are too similar to exisit
-(define global-var%
+(define var-decl%
   (class stmt%
          (init-field modifiers type vars)
 
@@ -128,56 +127,19 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-declaration ,@(node->racket vars))))
+                            `(p-declaration 
+                               ,@(map (lambda (var)
+                                        (list (node->racket (car var))
+                                              (node->racket (cadr var))))
+                                      vars))))
 
-         (define/override (->type-check) 
-                          (node->type-check vars type))
-
-         (define/override (->bindings scope) 
-                          (set-scope! scope)
-                          (node->bindings vars scope))
-
-         (super-instantiate ())))
-
-(define var-decl-id%
-  (class stmt%
-         (init-field id value)
-         (field [var-type undefined])
-
-         (inherit ->syntax-object set-scope!)
-
-         (define/override (->racket) 
-                          (->syntax-object
-                            `(,(node->racket id) 
-                               ,(node->racket value))))
-
-         (define/override (->type-check type) 
-                          (set! var-type type)
-                          (node->type-check value type)
-                          (node->type-check id    type))
+         (define/override (->type-check)  #t)
+                          ;(map (lambda (x)
+                          ;      (node->type-check
 
          (define/override (->bindings scope) 
-                          (set-scope! scope)
-                          (send scope add-binding id))
-
-         (super-instantiate ())))
-
-(define local-var%
-  (class stmt%
-         (init-field modifiers type vars)
-
-         (inherit ->syntax-object set-scope!)
-
-         (define/override (->racket)
-                          (->syntax-object
-                            `(p-declaration ,@(node->racket vars))))
-
-         (define/override (->type-check) 
-                          (node->type-check vars type))
-
-         (define/override (->bindings scope) 
-                          (set-scope! scope)
-                          (node->bindings vars scope))
+                          (set-scope! scope))
+                          
 
          (super-instantiate ())))
 
@@ -393,5 +355,4 @@
 
          (define/override (->bindings scope) #t)
 
-         (super-instantiate ())))
-
+         (super-instantiate ()))) 

@@ -71,11 +71,12 @@
 
 (define function-binding%
   (class binding%
-         (init-field modifiers return-type arity)
+         (init-field modifiers return-type arg-types)
       
          (define/public (get-modifiers) modifiers)
          (define/public (get-return-type) return-type)
-         (define/public (get-arity) arity)
+         (define/public (get-arity) (length arg-types))
+         (define/public (get-args-types) arg-types)
 
          (super-instantiate ())))
 

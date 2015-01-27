@@ -5,6 +5,7 @@
 (require parser-tools/yacc
          parser-tools/lex
          syntax/readerr
+
          "mode.rkt"
          "lexer.rkt"
          "ast/ast.rkt"
@@ -444,9 +445,9 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<global-var-declaration>
         [(<modifiers> <type> <var-declarators> semicolon)
-         (make-object global-var% $1 $2 (reverse $3)  (build-src 1 4))]
+         (make-object var-decl% $1 $2 (reverse $3)  (build-src 1 4))]
         [(<type> <var-declarators> semicolon)
-         (make-object global-var% null $1 (reverse $2)  (build-src 1 3))])
+         (make-object var-decl% null $1 (reverse $2)  (build-src 1 3))])
 
       (<field-declaration>
         [(<modifiers> <type> <var-declarators> semicolon)
@@ -459,10 +460,8 @@
         [(<var-declarators> comma <var-declarator>) (cons $3 $1)])
 
       (<var-declarator>
-        [(<var-decl-id>) 
-         (make-object var-decl-id% $1 (make-object undefined% null) (build-src 1))]
-        [(<var-decl-id> = <var-initializer>) 
-         (make-object var-decl-id% $1 $3 (build-src 1 3))])
+        [(<var-decl-id>)  (list $1 (make-object undefined% (build-src 1)))]
+        [(<var-decl-id> = <var-initializer>) (list $1 $3)])
 
       (<var-decl-id> 
         [(identifier)
@@ -495,9 +494,9 @@
 
       (<local-var-decl>
         [(<modifiers> <type> <var-declarators>) 
-         (make-object local-var% $1 $2 (reverse $3)  (build-src 1 3))]
+         (make-object var-decl% $1 $2 (reverse $3)  (build-src 1 3))]
         [(<type> <var-declarators>) 
-         (make-object local-var% null $1 (reverse $2)  (build-src 1 2))])
+         (make-object var-decl% null $1 (reverse $2)  (build-src 1 2))])
 
       (<stmt>
         [(<stmt-no-trailing-substmt>) $1]
