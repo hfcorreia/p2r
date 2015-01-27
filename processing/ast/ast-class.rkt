@@ -80,13 +80,14 @@
 
 (define method-decl% 
   (class class-stmt%
-         (init-field header body)
+         (init-field modifiers return-type id parameters throws body)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
-                            `(define/public ,(node->racket header)
+                            `(define/public (,(node->racket id) 
+                                             ,@(node->racket (reverse parameters)))
                                             (call/ec (lambda (return)
                                                        ,(node->racket body))))))
 
@@ -95,28 +96,8 @@
          (define/override (->bindings scope) 
                           (let ([local-scope (make-object local-scope% scope)])
                             (set-scope! local-scope)
-                            (node->bindings header local-scope)
+                            (add-function-binding scope modifiers return-type id parameters throws)
                             (node->bindings body local-scope)))
-
-         (super-instantiate ())))
-
-(define method-header%
-  (class class-stmt%
-         (init-field modifiers type id parameters throws)
-
-         (inherit ->syntax-object)
-
-         (define/public (get-id) id)
-         (define/public (get-parameters) parameters)
-
-         (define/override (->racket)
-                          (->syntax-object 
-                            `(,(node->racket id)
-                               ,@(node->racket (reverse parameters)))))
-
-         (define/override (->type-check) #t)
-
-         (define/override (->bindings scope) #t)
 
          (super-instantiate ())))
 
@@ -124,7 +105,7 @@
   (class class-stmt%
          (init-field final type id)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -132,7 +113,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope)
+                          (add-variable-binding scope '(final) type id))
 
          (super-instantiate ())))
 

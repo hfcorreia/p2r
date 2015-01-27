@@ -54,12 +54,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-syntax-rule 
-  (function-binding modifiers return-type arity id)
-  (make-object function-binding% modifiers return-type arity id))
+  (add-function-binding scope modifiers return-type id parameters throws)
+  (send scope 
+        add-binding 
+        (make-object function-binding% modifiers return-type parameters throws id)))
 
 (define-syntax-rule 
-  (variable-binding modifiers type id)
-  (make-object function-binding% modifiers type id))
+  (add-variable-binding scope modifiers type id)
+  (send scope 
+        add-binding
+        (make-object variable-binding% modifiers type id)))
 
 (define binding%
   (class object%
@@ -71,12 +75,12 @@
 
 (define function-binding%
   (class binding%
-         (init-field modifiers return-type arg-types)
+         (init-field modifiers return-type args throws)
       
          (define/public (get-modifiers) modifiers)
          (define/public (get-return-type) return-type)
-         (define/public (get-arity) (length arg-types))
-         (define/public (get-args-types) arg-types)
+         (define/public (get-arity) (length args))
+         (define/public (get-args) args)
 
          (super-instantiate ())))
 
@@ -85,6 +89,7 @@
          (init-field modifiers type)
          
          (define/public (get-modifiers) modifiers)
+
          (define/public (get-type) type)
 
          (super-instantiate ())))

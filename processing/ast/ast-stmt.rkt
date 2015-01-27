@@ -134,13 +134,13 @@
                                       vars))))
 
          (define/override (->type-check)  #t)
-                          ;(map (lambda (x)
-                          ;      (node->type-check
 
          (define/override (->bindings scope) 
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (map (lambda (var)
+                                 (add-variable-binding scope modifiers type (car var)))
+                               vars))
                           
-
          (super-instantiate ())))
 
 (define block%
@@ -167,25 +167,27 @@
 
 (define function-decl% 
   (class stmt%
-         (init-field signature body)
+         (init-field modifiers return-type id parameters throws body)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
-                            `(define ,(node->racket signature)
+                            `(define (,(node->racket id) 
+                                      ,@(node->racket (reverse parameters)))
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
-         (define/override (->type-check) 
-                          (node->type-check signature)
-                          (node->type-check body))
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) 
                           (let ([local-scope (make-object local-scope% scope)])
                             (set-scope! local-scope)
-                            (node->bindings signature local-scope)
-                            (node->bindings body local-scope)))
+                            (add-function-binding scope modifiers return-type id parameters throws)
+                            (node->bindings body local-scope)
+                            (displayln (map (lambda (x)
+                                              (send  (send x get-id) get-id))
+                                            (send scope get-scope)))))
 
          (super-instantiate ())))
 
@@ -205,7 +207,10 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (node->bindings then scope)
+                          (and (not (null? else))
+                               (node->bindings else scope)))
 
          (super-instantiate ())))
 
@@ -327,8 +332,7 @@
                           (->syntax-object 
                             `(continue (void))))
 
-         (define/override (->type-check) 
-                          #t)
+         (define/override (->type-check) #t)
 
          (super-instantiate ())))
 

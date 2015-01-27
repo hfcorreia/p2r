@@ -152,14 +152,14 @@
 
       (<class-or-interface-type>
         [(<name>) $1])
-         
+
 
       (<class-type>
         [(<class-or-interface-type>) $1])
 
       (<interface-type>
         [(<class-or-interface-type>) $1])
-        
+
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Dims & Args
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -329,33 +329,47 @@
          (begin 
            ; Changes from static mode to active mode: see mode.rkt
            (set-active-mode! #t)
-           (make-object function-decl% $1 $2 (build-src 1 2)))])
+           (make-object function-decl% 
+                        (first $1)    ; mods
+                        (second $1)   ; ret-type
+                        (third $1)    ; id
+                        (fourth $1)   ; parameter-list
+                        (fifth $1)    ; throws
+                        $2            ; body
+                        (build-src 1 2)))])
 
       (<method-declaration>
         [(<method-header> <method-body>) 
          (begin 
            ; Changes from static mode to active mode: see mode.rkt
            (set-active-mode! #t)
-           (make-object method-decl% $1 $2 (build-src 1 2)))])
+           (make-object method-decl% 
+                        (first $1)    ; mods
+                        (second $1)   ; ret-type
+                        (third $1)    ; id
+                        (fourth $1)   ; parameter-list
+                        (fifth $1)    ; throws
+                        $2            ; body
+                        (build-src 1 2)))])
 
+      ;; (mod ret-type id parameter-list throws)
       (<method-header>
         [(<modifiers> <type> <method-declarator> <throws>) 
-         (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
+         (list $1 $2 (car $3) (cdr $3) $4)]
         [(<modifiers> <type> <method-declarator>) 
-         (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
+         (list $1 $2 (car $3) (cdr $3) null)]
         [(<type> <method-declarator> <throws>) 
-         (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
+         (list null $1 (car $2) (cdr $2) $3)]
         [(<type> <method-declarator>) 
-         (make-object method-header% null $1 (car $2) (cdr $2) null (build-src 2))]
+         (list null $1 (car $2) (cdr $2) null)]
         [(<modifiers> <void> <method-declarator> <throws>) 
-         (make-object method-header% $1 $2 (car $3) (cdr $3) $4 (build-src 3))]
+         (list $1 $2 (car $3) (cdr $3) $4)]
         [(<modifiers> <void> <method-declarator>) 
-         (make-object method-header% $1 $2 (car $3) (cdr $3) null (build-src 3))]
+         (list $1 $2 (car $3) (cdr $3) null)]
         [(<void> <method-declarator> <throws>) 
-         (make-object method-header% null $1 (car $2) (cdr $2) $3 (build-src 2))]
+         (list null $1 (car $2) (cdr $2) $3)]
         [(<void> <method-declarator>) 
-         (make-object method-header% null $1 (car $2) (cdr $2) null (build-src 2))])
-
+         (list null $1 (car $2) (cdr $2) null)])
 
       (<method-declarator>
         [(identifier l-paren <formal-parameter-list> r-paren) 
