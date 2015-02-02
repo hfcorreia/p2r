@@ -72,6 +72,7 @@
                           (->syntax-object 
                             `(p-require ,(read (open-input-string name)))))
 
+         ;; Everything from racket is an Object?
          (define/override (->type-check) #t)
 
          ;; Possibly introduces bindings
@@ -135,7 +136,11 @@
                                               (node->racket (cadr var))))
                                       vars))))
 
-         (define/override (->type-check)  #t)
+         (define/override (->type-check)  
+                          (map (lambda (var)
+                                 (node->type-check (car var))
+                                 (node->type-check (cadr var)))
+                               vars))
 
          (define/override (->bindings scope) 
                           (set-scope! scope)
@@ -372,7 +377,7 @@
          (define/override (->racket)
                           (->syntax-object undefined))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope)
                           (set-scope! scope))

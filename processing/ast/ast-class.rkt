@@ -56,7 +56,7 @@
                                ,(node->racket name) 
                                ,@(node->racket (reverse args)))))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
 
@@ -70,7 +70,12 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-class-field ,@(node->racket vars))))
+                            `(p-class-field 
+                               ,@(map (lambda (var)
+                                        (list
+                                          (node->racket (car var))
+                                          (node->racket (cadr var))))
+                                      vars))))
 
          (define/override (->type-check) #t)
 

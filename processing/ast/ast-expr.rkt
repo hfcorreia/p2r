@@ -47,7 +47,7 @@
                             `(p-call ,@(node->racket primary) 
                                      ,@(node->racket args))))
 
-         (define/override (->type-check [type null]) 
+         (define/override (->type-check) 
                           (node->type-check primary)
                           (node->type-check args))
 
@@ -98,8 +98,7 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check type) 
-                          (set-type-info! type))
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -133,7 +132,7 @@
                                 `(get-field ,(node->racket name)
                                             ,(send name get-full-id))])))
 
-         (define/override (->type-check [type null]) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -144,30 +143,33 @@
   (class expression%
          (init-field value literal-type)
 
-         (inherit ->syntax-object set-type-info! get-type-info type-error)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket) 
-                          (->syntax-object (build-literal)))
+                          (->syntax-object value))
 
          ;;; ->type-check: type% -> (or/c void type-error)
-         (define/override (->type-check type) 
-                          (if (or (send type type=? literal-type) 
-                                  (send type widening-conversion? literal-type))
-                            (set-type-info! type)
-                            (type-error literal-type (send type get-type))))
+         (define/override (->type-check) #t)
+                          
+                          
+                      ;   (if (or (send type type=? literal-type) 
+                      ;           (send type widening-conversion? literal-type))
+                      ;     (set-type-info! type)
+                      ;     (type-error literal-type (send type get-type))))
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
                         
-        (define (build-literal)
-          (if (eq? undefined (get-type-info)) ; hack:  remove asap
-            value
-          (let ([type (send (get-type-info) get-type)])
-            (case type
-              [(float double) (exact->inexact value)]
-              [(char int long boolean short byte) value]
-              [(String color) value] ;maybe should not be here
-              [(null) 'null]
-              [else (error "Unknown type in literal ~a" type)]))))
+     ;  (define (build-literal)
+     ;    (if (eq? undefined (get-type-info)) ; hack:  remove asap
+     ;      value
+     ;    (let ([type (send (get-type-info) get-type)])
+     ;      (case type
+     ;        [(float double) (exact->inexact value)]
+     ;        [(char int long boolean short byte) value]
+     ;        [(String color) value] ;maybe should not be here
+     ;        [(null) 'null]
+     ;        [else (error "Unknown type in literal ~a" type)]))))
 
          (super-instantiate ())))
 
@@ -184,8 +186,6 @@
                             (node->racket (reverse args))))
 
          (define/override (->type-check) #t)
-                          ;(node->type-check args type))
-                          ;(map (lambda (x) (displayln (send x get-type-info))) args))
 
          (define/override (->bindings scope) #t)
                         
@@ -202,7 +202,7 @@
                             `(,p-operator ,(node->racket arg1) 
                                           ,(node->racket arg2))))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
          
          (define/override (->bindings scope) #t)
                         
@@ -242,7 +242,7 @@
                           (->syntax-object 
                             `(,p-operator ,(node->racket arg))))
 
-         (define/override (->type-check [type null]) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -348,7 +348,7 @@
                               `(p-vector ,(node->racket dim-expr)
                                          ,(initial-value)))))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -372,7 +372,7 @@
                           (->syntax-object
                             (node->racket expr)))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -392,7 +392,7 @@
                             `(vector-ref ,(node->racket id) 
                                          ,(node->racket expr))))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         
@@ -408,7 +408,7 @@
                           (->syntax-object
                             `(vector ,@(node->racket initializers))))
 
-         (define/override (->type-check type) #t)
+         (define/override (->type-check) #t)
 
          (define/override (->bindings scope) #t)
                         

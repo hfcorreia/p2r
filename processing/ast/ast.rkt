@@ -100,7 +100,7 @@
                           (->syntax-object
                             (aux child)))
 
-         (define/override (->type-check [type null]) #t)
+         (define/override (->type-check) #t)
 
          ;; aux funtion
          (define (aux child)
@@ -110,5 +110,8 @@
                                  child)]
              [(is-a? child ast-node%) (send child ->racket)]
              [else child]))
+
+         (define/override (->bindings scope) #t)
+
 
          (super-instantiate ())))
