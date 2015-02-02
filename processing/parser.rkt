@@ -785,7 +785,7 @@
         [(new <class-or-interface-type> l-paren r-paren)
          (make-object new-node% $2 null (build-src 1 4))]
         [(new <class-or-interface-type> l-paren <args> r-paren)
-         (make-object new-node% $2 $4 (build-src 1 5))]
+         (make-object new-node% $2 (reverse $4) (build-src 1 5))]
 
         ;; TODO
         [(new <class-or-interface-type> l-paren <args> r-paren <class-body>)

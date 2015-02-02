@@ -40,7 +40,7 @@
   (class expression%
          (init-field primary args)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -51,7 +51,8 @@
                           (node->type-check primary)
                           (node->type-check args))
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
                         
          (super-instantiate ())))
 
@@ -59,7 +60,7 @@
   (class expression%
          (init-field primary id)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/public (is-method?) (null? (send id get-list)))
 
@@ -74,8 +75,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
@@ -83,7 +84,7 @@
   (class expression%
          (init-field id-list identifier)
 
-         (inherit ->syntax-object set-type-info!)
+         (inherit ->syntax-object set-scope! set-type-info!)
 
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
@@ -100,7 +101,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
                         
          ;; build-full-id : (listof string?) -> string?
          ;; Receives a list of strings corresponding to the full qualified
@@ -118,7 +120,7 @@
   (class expression% 
          (init-field name)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -134,7 +136,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
                         
          (super-instantiate ())))
 
@@ -177,7 +180,7 @@
   (class expression%
          (init-field args)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/public (get-args) args)
 
@@ -187,15 +190,16 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (super-instantiate ())))
 
 (define binary-op%
   (class expression%
          (init-field operator arg1 arg2)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -204,8 +208,9 @@
 
          (define/override (->type-check) #t)
          
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (define p-operator
            (case operator
              ['+ 'p-add]
@@ -236,7 +241,7 @@
   (class expression%
          (init-field operator arg)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -244,8 +249,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+        (define/override (->bindings scope)
+                         (set-scope! scope))
          (define p-operator
            (case operator
              ['+ 'p-pos]
@@ -263,7 +268,7 @@
   (class expression%
          (init-field operator left-val right-val) 
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -273,7 +278,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
                         
          (define assignment-operator
            (case operator
@@ -296,7 +302,7 @@
   (class expression%
          (init-field value type)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -304,8 +310,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope)
+                          (set-scope! scope))
+
          (define (check-type)
            (set! type
              (case type
@@ -339,7 +346,7 @@
   (class expression%
          (init-field type dim-expr dims initializer)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -350,8 +357,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (define (initial-value)
            (case type
              ['int        0]
@@ -360,13 +368,14 @@
              ['char       #\space]
              [else        undefined]))
 
+                        
          (super-instantiate ())))
 
 (define array-dim%
   (class expression%
          (init-field expr)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -374,8 +383,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (super-instantiate ())))
 
 (define array-acces%
@@ -385,7 +395,7 @@
          (define/public (get-id)   (node->racket id))
          (define/public (get-expr) (node->racket expr))
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -394,15 +404,16 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (super-instantiate ())))
 
 (define array-initializer% 
   (class expression%
          (init-field initializers)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -410,6 +421,7 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-                        
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
+
          (super-instantiate ())))

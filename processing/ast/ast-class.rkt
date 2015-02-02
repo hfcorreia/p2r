@@ -30,7 +30,7 @@
   (class class-stmt%
          (init-field name body)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -40,6 +40,7 @@
          (define/override (->type-check) #t)
 
          (define/override (->bindings scope) 
+                          (set-scope! scope)
                           (node->bindings body scope))
 
          (super-instantiate ())))
@@ -48,17 +49,20 @@
   (class class-stmt%
          (init-field name args)
 
-         (inherit ->syntax-object get-src-info)
+         (inherit ->syntax-object get-src-info set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
                             `(p-new-class
                                ,(node->racket name) 
-                               ,@(node->racket (reverse args)))))
+                               ,@(node->racket args))))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope)
+                          (node->bindings name scope)
+                          (node->bindings args scope))
 
          (super-instantiate ())))
 
@@ -66,7 +70,7 @@
   (class class-stmt%
          (init-field modifiers type vars)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -79,7 +83,12 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (map (lambda (var)
+                                 (node->bindings (car var) scope)
+                                 (node->bindings (cadr var) scope))
+                               vars))
 
          (super-instantiate ())))
 
@@ -133,7 +142,8 @@
 
 (define this-node%
   (class class-stmt%
-         (inherit ->syntax-object)
+
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -141,7 +151,8 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
@@ -152,14 +163,18 @@
          (define/public (get-id)      (node->racket id))
          (define/public (get-primary) (node->racket primary))
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
-                          `(get-field ,(node->racket id)
-                                      ,(node->racket primary)))
+                          (->syntax-object
+                            `(get-field ,(node->racket id)
+                                      ,(node->racket primary))))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings primary scope)
+                          (node->bindings id scope))
 
          (super-instantiate ())))
