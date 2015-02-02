@@ -14,9 +14,9 @@
          (inherit read-error)
          (field [type-info undefined])
 
-         (define/public (get-type-info) type-info)
+         (define/public (get-type) type-info)
 
-         (define/public (set-type-info! info) (set! type-info info))
+         (define/public (set-type! type) (set! type-info type))
 
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
@@ -29,9 +29,9 @@
 
          ;; type-error: symbol? symbol? -> exe:fail:read
          ;; raises a exception to signal type errors
-         (define/public (type-error from-type to-type)
-                        (read-error (format "Cannot convert from ~a to ~a"
-                                            from-type to-type)))
+         (define/public (type-error msg)
+                        (read-error msg))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,7 +84,7 @@
   (class expression%
          (init-field id-list identifier)
 
-         (inherit ->syntax-object set-scope! set-type-info!)
+         (inherit ->syntax-object set-scope!)
 
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
@@ -146,33 +146,25 @@
   (class expression%
          (init-field value literal-type)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type! get-type type-error)
 
          (define/override (->racket) 
-                          (->syntax-object value))
+                          (->syntax-object (build-literal)))
 
-         ;;; ->type-check: type% -> (or/c void type-error)
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (set-type! literal-type))
                           
-                          
-                      ;   (if (or (send type type=? literal-type) 
-                      ;           (send type widening-conversion? literal-type))
-                      ;     (set-type-info! type)
-                      ;     (type-error literal-type (send type get-type))))
-
          (define/override (->bindings scope) 
                           (set-scope! scope))
                         
-     ;  (define (build-literal)
-     ;    (if (eq? undefined (get-type-info)) ; hack:  remove asap
-     ;      value
-     ;    (let ([type (send (get-type-info) get-type)])
-     ;      (case type
-     ;        [(float double) (exact->inexact value)]
-     ;        [(char int long boolean short byte) value]
-     ;        [(String color) value] ;maybe should not be here
-     ;        [(null) 'null]
-     ;        [else (error "Unknown type in literal ~a" type)]))))
+       (define (build-literal)
+         (let ([type (get-type)])
+           (case type
+             [(float double) (exact->inexact value)]
+             [(undef char int long boolean short byte) value]
+             [(String color) value] ;maybe should not be here
+             [(null) 'null]
+             [else (type-error "Unknown type!")])))
 
          (super-instantiate ())))
 

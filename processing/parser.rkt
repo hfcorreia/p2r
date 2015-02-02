@@ -5,6 +5,7 @@
 (require parser-tools/yacc
          parser-tools/lex
          syntax/readerr
+         racket/undefined
 
          "mode.rkt"
          "lexer.rkt"
@@ -474,7 +475,7 @@
         [(<var-declarators> comma <var-declarator>) (cons $3 $1)])
 
       (<var-declarator>
-        [(<var-decl-id>)  (list $1 (make-object undefined% (build-src 1)))]
+        [(<var-decl-id>)  (list $1 (make-object literal% undefined 'undef (build-src 1)))]
         [(<var-decl-id> = <var-initializer>) (list $1 $3)])
 
       (<var-decl-id> 

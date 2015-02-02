@@ -5,6 +5,7 @@
          racket/undefined
          "ast.rkt"
          "bindings.rkt"
+         "types.rkt"
          "../lib/runtime.rkt"
          "../mode.rkt")
 
@@ -138,8 +139,8 @@
 
          (define/override (->type-check)  
                           (map (lambda (var)
-                                 (node->type-check (car var))
-                                 (node->type-check (cadr var)))
+                                 (node->type-check (cadr var))
+                                 (check-literal (cadr var)))
                                vars))
 
          (define/override (->bindings scope) 
@@ -147,7 +148,25 @@
                           (map (lambda (var)
                                  (add-variable-binding scope modifiers type (car var)))
                                vars))
-                          
+
+         ;; check-literal: type literal% -> (or/c void error)
+         ;; checks if types are the same or can be promoted
+         ;; produces type-error otherwise
+         (define (check-literal literal)
+           (let ([type (send type get-type)]
+                 [literal-type (send literal get-type)])
+             (cond 
+               [(eq? 'undef literal-type) 
+                (send literal set-type! 'undef)]
+               [(or (type=? type literal-type)
+                    (widening-conversion? type literal-type))
+                (send literal set-type! type)]
+               [else (send literal 
+                           type-error 
+                           (format "Cannot convert a ~a to ~a" 
+                                   literal-type
+                                   type))])))
+
          (super-instantiate ())))
 
 (define block%
@@ -181,7 +200,7 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(define (,(node->racket id) 
-                                      ,@(node->racket parameters))
+                                       ,@(node->racket parameters))
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
@@ -191,7 +210,7 @@
                           (let ([local-scope      (make-object local-scope% scope)]
                                 [parameter-types  (map (lambda (x)
                                                          (send x get-type))
-                                                         parameters)])
+                                                       parameters)])
                             (set-scope! local-scope)
                             (add-function-binding scope modifiers return-type id
                                                   parameter-types throws)
@@ -370,16 +389,3 @@
 
          (super-instantiate ())))
 
-(define undefined%
-  (class stmt%
-         (inherit ->syntax-object set-scope!)
-
-         (define/override (->racket)
-                          (->syntax-object undefined))
-
-         (define/override (->type-check) #t)
-
-         (define/override (->bindings scope)
-                          (set-scope! scope))
-
-         (super-instantiate ()))) 
