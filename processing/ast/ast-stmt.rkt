@@ -66,7 +66,7 @@
   (class stmt%
          (init-field name)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -74,7 +74,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         ;; Possibly introduces bindings
+         (define/override (->bindings scope) 
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
@@ -174,20 +176,22 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(define (,(node->racket id) 
-                                      ,@(node->racket (reverse parameters)))
+                                      ,@(node->racket parameters))
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
          (define/override (->type-check) #t)
 
          (define/override (->bindings scope) 
-                          (let ([local-scope (make-object local-scope% scope)])
+                          (let ([local-scope      (make-object local-scope% scope)]
+                                [parameter-types  (map (lambda (x)
+                                                         (send x get-type))
+                                                         parameters)])
                             (set-scope! local-scope)
-                            (add-function-binding scope modifiers return-type id parameters throws)
-                            (node->bindings body local-scope)
-                            (displayln (map (lambda (x)
-                                              (send  (send x get-id) get-id))
-                                            (send scope get-scope)))))
+                            (add-function-binding scope modifiers return-type id
+                                                  parameter-types throws)
+                            (node->bindings parameters local-scope)
+                            (node->bindings body local-scope)))
 
          (super-instantiate ())))
 
@@ -218,7 +222,7 @@
   (class stmt%
          (init-field test body)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -230,7 +234,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope)
+                          (node->bindings body scope))
 
          (super-instantiate ())))
 
@@ -238,7 +244,7 @@
   (class stmt%
          (init-field test body)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -250,7 +256,9 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope) 
+                          (set-scope! scope)
+                          (node->bindings body scope))
 
          (super-instantiate ())))
 
@@ -259,7 +267,7 @@
   (class stmt%
          (init-field initialization test increment body)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -272,6 +280,12 @@
                                          (loop))))))
 
          (define/override (->type-check) #t)
+
+         (define/override (->bindings scope) 
+                          (let ([local-scope (make-object local-scope% scope)])
+                            (set-scope! local-scope)
+                            (node->bindings initialization local-scope)
+                            (node->bindings body local-scope)))
 
          (super-instantiate ())))
 
@@ -287,15 +301,13 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
-
          (super-instantiate ())))
 
 (define return% 
   (class stmt%
          (init-field expr)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -305,28 +317,29 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
 (define break% 
   (class stmt%
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
                             `(break (void))))
 
-         (define/override (->type-check) 
-                          #t)
+         (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
 (define continue% 
   (class stmt%
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object 
@@ -334,29 +347,34 @@
 
          (define/override (->type-check) #t)
 
+         (define/override (->bindings scope)
+                          (set-scope! scope))
+
          (super-instantiate ())))
 
 (define empty-stmt% 
   (class stmt%
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket) (void))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
          (super-instantiate ())))
 
 (define undefined%
   (class stmt%
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object undefined))
 
          (define/override (->type-check type) #t)
 
-         (define/override (->bindings scope) #t)
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
          (super-instantiate ()))) 

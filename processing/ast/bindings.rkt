@@ -47,6 +47,8 @@
     (define/public (is-local? id)
       (member id scope))
     
+    (define/public (get-scope) scope)
+
     (super-instantiate ())))
      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

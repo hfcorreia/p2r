@@ -87,16 +87,22 @@
          (define/override (->racket)
                           (->syntax-object 
                             `(define/public (,(node->racket id) 
-                                             ,@(node->racket (reverse parameters)))
+                                             ,@(node->racket parameters))
                                             (call/ec (lambda (return)
                                                        ,(node->racket body))))))
 
          (define/override (->type-check) #t)
 
          (define/override (->bindings scope) 
-                          (let ([local-scope (make-object local-scope% scope)])
+                          (let ([local-scope      (make-object local-scope% scope)]
+                                [parameter-types  (map (lambda (x)
+                                                         (send x get-type))
+                                                       parameters)])
+                            
                             (set-scope! local-scope)
-                            (add-function-binding scope modifiers return-type id parameters throws)
+                            (add-function-binding scope modifiers return-type id
+                                                  parameter-types throws)
+                            (node->bindings parameters local-scope)
                             (node->bindings body local-scope)))
 
          (super-instantiate ())))
@@ -107,9 +113,10 @@
 
          (inherit ->syntax-object set-scope!)
 
+         (define/public (get-type) type)
+
          (define/override (->racket)
-                          (->syntax-object 
-                            (node->racket id)))
+                          (->syntax-object (node->racket id)))
 
          (define/override (->type-check) #t)
 

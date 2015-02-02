@@ -373,7 +373,7 @@
 
       (<method-declarator>
         [(identifier l-paren <formal-parameter-list> r-paren) 
-         (cons (make-object identifier% null $1 (build-src 1)) $3)]
+         (cons (make-object identifier% null $1 (build-src 1)) (reverse $3))]
         [(identifier l-paren r-paren) 
          (cons (make-object identifier% null $1 (build-src 1)) null)]
         [(identifier l-paren <formal-parameter-list> r-paren <dims>) 
