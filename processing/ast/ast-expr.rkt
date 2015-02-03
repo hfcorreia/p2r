@@ -180,7 +180,9 @@
                             `(,p-operator ,(node->racket arg1) 
                                           ,(node->racket arg2))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check arg1)
+                          (node->type-check arg2))
          
          (define/override (->bindings scope) 
                           (set-scope! scope))
@@ -221,7 +223,8 @@
                           (->syntax-object 
                             `(,p-operator ,(node->racket arg))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check arg))
 
         (define/override (->bindings scope)
                          (set-scope! scope))
@@ -250,7 +253,9 @@
                                            ,(node->racket left-val)
                                            ,(node->racket right-val))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check left-val)
+                          (node->type-check right-val))
 
          (define/override (->bindings scope)
                           (set-scope! scope))

@@ -204,7 +204,8 @@
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check body))
 
          (define/override (->bindings scope) 
                           (let ([local-scope      (make-object local-scope% scope)]
@@ -233,7 +234,11 @@
                                   (void) 
                                   (node->racket else)))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check test)
+                          (node->type-check then)
+                          (and (not (null? else))
+                               (node->type-check else)))
 
          (define/override (->bindings scope) 
                           (node->bindings then scope)
@@ -278,7 +283,9 @@
                                          (let/ec continue ,(node->racket body))
                                          (loop))))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check test)
+                          (node->type-check body))
 
          (define/override (->bindings scope) 
                           (set-scope! scope)
@@ -303,7 +310,11 @@
                                          ,(node->racket increment)
                                          (loop))))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check initialization)
+                          (node->type-check test)
+                          (node->type-check increment)
+                          (node->type-check body))
 
          (define/override (->bindings scope) 
                           (let ([local-scope (make-object local-scope% scope)])
@@ -323,7 +334,8 @@
                           (->syntax-object 
                             `(begin ,@(node->racket exprs))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check exprs))
 
          (super-instantiate ())))
 
