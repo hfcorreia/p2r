@@ -168,24 +168,6 @@
 
          (super-instantiate ())))
 
-(define arguments%
-  (class expression%
-         (init-field args)
-
-         (inherit ->syntax-object set-scope!)
-
-         (define/public (get-args) args)
-
-         (define/override (->racket)
-                          (->syntax-object
-                            (node->racket (reverse args))))
-
-         (define/override (->type-check) #t)
-
-         (define/override (->bindings scope) 
-                          (set-scope! scope))
-
-         (super-instantiate ())))
 
 (define binary-op%
   (class expression%

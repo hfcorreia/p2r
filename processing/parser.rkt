@@ -737,12 +737,12 @@
         [(<data-conversion> l-paren <args> r-paren)
          (make-object method-call% 
                       (make-object primary% null $1 (build-src 1))
-                      (make-object arguments% $3 (build-src 3))
+                      (reverse $3)
                       (build-src 1 4))]
         [(<name> l-paren <args> r-paren) 
          (make-object method-call% 
                       (make-object primary% null $1 (build-src 1))
-                      (make-object arguments% $3 (build-src 3))
+                      (reverse $3)
                       (build-src 1 4))]
         [(<name> l-paren r-paren) 
          (make-object method-call% 
@@ -755,7 +755,7 @@
                                    $1 
                                    (make-object identifier% null $3 (build-src 3))
                                    (build-src 1 3))
-                      (make-object arguments% $5 (build-src 5))
+                      (reverse $3)
                       (build-src 1 6))]
         [(<primary> period identifier l-paren r-paren)
          (make-object method-call% 
@@ -820,7 +820,7 @@
                                    null 
                                    (make-object identifier% null "color" (build-src 1)) 
                                    (build-src 1))
-                      (make-object arguments% $3 (build-src 3))
+                      (reverse $3)
                       (build-src 1 4))])
 
       (<array-creation-expr>
