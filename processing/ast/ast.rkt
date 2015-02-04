@@ -4,6 +4,7 @@
 
 (require racket/class
          syntax/readerr
+         "../mode.rkt"
          "../lib/runtime.rkt")
 
 
@@ -79,6 +80,38 @@
          ;; ->bindings: (is-a? binding-scope<%>) -> 
          (define/public (->bindings scope) 
                         (read-error (format "Invalid use of ->bindings ~a" this)))
+
+         (super-instantiate ())))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define compilation-unit% 
+  (class ast-node%
+         (init-field ast)
+
+         (inherit ->syntax-object set-scope!)
+
+         (define/public (->repl)
+                        (set-active-mode! #f)
+                        (node->type-check ast)
+                        (node->racket ast))
+
+         ;; injects call to setup and draw functions if in active-mode
+         (define/override (->racket)
+                          (if active-mode?
+                            (append
+                              (node->racket ast)
+                              (list 
+                                (->syntax-object `(p-initialize setup))
+                                (->syntax-object `(p-initialize draw))))
+                            (node->racket ast)))
+
+         (define/override (->type-check)
+                          (->syntax-object
+                            (node->type-check ast)))
+
+         (define/override (->bindings scope) 
+                          (set-scope! scope)
+                          (node->bindings ast scope))
 
          (super-instantiate ())))
 

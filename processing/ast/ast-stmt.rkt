@@ -3,11 +3,12 @@
 
 (require racket/class
          racket/undefined
+
          "ast.rkt"
+         "errors.rkt"
          "bindings.rkt"
          "types.rkt"
-         "../lib/runtime.rkt"
-         "../mode.rkt")
+         "../lib/runtime.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -30,38 +31,6 @@
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define compilation-unit% 
-  (class ast-node%
-         (init-field ast)
-
-         (inherit ->syntax-object set-scope!)
-
-         (define/public (->repl)
-                        (set-active-mode! #f)
-                        (node->type-check ast)
-                        (node->racket ast))
-
-         ;; injects call to setup and draw functions if in active-mode
-         (define/override (->racket)
-                          (if active-mode?
-                            (append
-                              (node->racket ast)
-                              (list 
-                                (->syntax-object `(p-initialize setup))
-                                (->syntax-object `(p-initialize draw))))
-                            (node->racket ast)))
-
-         (define/override (->type-check)
-                          (->syntax-object
-                            (node->type-check ast)))
-
-         (define/override (->bindings scope) 
-                          (set-scope! scope)
-                          (node->bindings ast scope))
-
-         (super-instantiate ())))
-
 ;;; Import of racket modules in processing
 (define require% 
   (class stmt%
@@ -81,7 +50,7 @@
                           (set-scope! scope))
 
          (super-instantiate ())))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define global-stmt%
   (class stmt%
          (init-field stmt)
@@ -159,13 +128,9 @@
                [(eq? 'undef literal-type) 
                 (send literal set-type! 'undef)]
                [(or (type=? type literal-type)
-                    (widening-conversion? type literal-type))
+                    (widening-primitive-conversion? type literal-type))
                 (send literal set-type! type)]
-               [else (send literal 
-                           type-error 
-                           (format "Cannot convert a ~a to ~a" 
-                                   literal-type
-                                   type))])))
+               [else (type-conversion-error literal literal-type type)])))
 
          (super-instantiate ())))
 
