@@ -34,7 +34,7 @@
     (ros-circle (ros-xy a b) c)
     (ros-ellipse (ros-xy a b) c d)))
 
-(define-syntax line 
+(define-syntax line
   (syntax-rules ()
     [(_ x1 y1 z1 x2 y2 z2)
      (error "No support for 3D")]
@@ -49,7 +49,7 @@
      (ros-point (ros-xy x y z))]))
 
 (define (quad x1 y1 x2 y2 x3 y3 x4 y4)
-  (ros-polygon 
+  (ros-polygon
     (ros-xy x1 y1)
     (ros-xy x2 y2)
     (ros-xy x3 y3)
@@ -59,7 +59,7 @@
   (ros-rectangle (ros-xy a b) c d))
 
 (define (triangle x1 y1 x2 y2 x3 y3)
-  (ros-polygon 
+  (ros-polygon
     (ros-xy x1 y1)
     (ros-xy x2 y2)
     (ros-xy x3 y3)))
@@ -166,7 +166,7 @@
 ;;; Vertex
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (beginContour) 
+(define (beginContour)
   (error "beginContour: Not implemented yet!"))
 
 (define (endContour)

@@ -19,7 +19,7 @@
   ;; turns on line and column location for input-port
   (port-count-lines! input-port)
   ;; lexer uses this for source location in case of error
-  (file-path src) 
+  (file-path src)
   ((processing-parser src) (lambda () (lex input-port))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -28,33 +28,33 @@
 (define-syntax (build-src stx)
   (syntax-case stx ()
     [(_ src-arg)
-     (with-syntax 
-       ([start-pos 
-          (datum->syntax stx 
-                         (string->symbol (format "$~a-start-pos" 
-                                                 (syntax-e #'src-arg))))] 
-        [end-pos 
-          (datum->syntax stx 
-                         (string->symbol (format "$~a-end-pos" 
+     (with-syntax
+       ([start-pos
+          (datum->syntax stx
+                         (string->symbol (format "$~a-start-pos"
+                                                 (syntax-e #'src-arg))))]
+        [end-pos
+          (datum->syntax stx
+                         (string->symbol (format "$~a-end-pos"
                                                  (syntax-e #'src-arg))))]
         [src  (datum->syntax stx (string->symbol "src"))])
        #'(srcinfo->list src start-pos end-pos))]
     [(_ start-arg end-arg)
-     (with-syntax 
-       ([start-pos 
-          (datum->syntax stx 
-                         (string->symbol (format "$~a-start-pos" 
-                                                 (syntax-e #'start-arg))))] 
-        [end-pos 
-          (datum->syntax stx 
-                         (string->symbol (format "$~a-end-pos" 
+     (with-syntax
+       ([start-pos
+          (datum->syntax stx
+                         (string->symbol (format "$~a-start-pos"
+                                                 (syntax-e #'start-arg))))]
+        [end-pos
+          (datum->syntax stx
+                         (string->symbol (format "$~a-end-pos"
                                                  (syntax-e #'end-arg))))]
         [src  (datum->syntax stx (string->symbol "src"))])
        #'(srcinfo->list src start-pos end-pos))]))
 
 ;;; Creates a list with all the source info
 (define (srcinfo->list src start end)
-  (list src 
+  (list src
         (and start (position-line   start))
         (and start (position-col    start))
         (and start (position-offset start))
@@ -70,9 +70,9 @@
     (end EOF)
     ;(debug "parser.debug")
     ;(yacc-output "yacc-output.debug")
-    (error 
+    (error
       (lambda (tok-ok? tok-name tok-value start-pos end-pos)
-        (raise-read-error 
+        (raise-read-error
           (if tok-ok?
             (format "parse error with token: ~a, value: ~a" tok-name tok-value)
             (format "unrecognized token: ~a, value: ~a" tok-name tok-value))
@@ -90,30 +90,30 @@
       ;; Literals
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<literal>
-        [(int-lit)      
-         (make-object literal% $1 'int (build-src 1))] 
-        [(long-lit)     
-         (make-object literal% $1 'long (build-src 1))] 
-        [(float-lit)    
-         (make-object literal% $1 'float (build-src 1))] 
-        [(double-lit)   
-         (make-object literal% $1 'double (build-src 1))] 
-        [(boolean-lit)  
-         (make-object literal% $1 'boolean (build-src 1))] 
-        [(string-lit)   
+        [(int-lit)
+         (make-object literal% $1 'int (build-src 1))]
+        [(long-lit)
+         (make-object literal% $1 'long (build-src 1))]
+        [(float-lit)
+         (make-object literal% $1 'float (build-src 1))]
+        [(double-lit)
+         (make-object literal% $1 'double (build-src 1))]
+        [(boolean-lit)
+         (make-object literal% $1 'boolean (build-src 1))]
+        [(string-lit)
          (make-object literal% $1 'String (build-src 1))]
-        [(char-lit)     
-         (make-object literal% $1 'char (build-src 1))] 
-        [(null-lit)     
-         (make-object literal% null 'null (build-src 1))] 
-        [(color-lit)    
+        [(char-lit)
+         (make-object literal% $1 'char (build-src 1))]
+        [(null-lit)
+         (make-object literal% null 'null (build-src 1))]
+        [(color-lit)
          (make-object literal% $1 'color (build-src 1))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Types
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<type>
-        [(<primitive-type>) 
+        [(<primitive-type>)
          (make-object primitive-type% $1)]
         [(<reference-type>) $1])
 
@@ -128,27 +128,27 @@
 
       (<integral-type>
         [(byte)   'byte]
-        [(short)  'short]   
+        [(short)  'short]
         [(int)    'int]
         [(long)   'long]
         [(char)   'char])
 
       (<floating-type>
         [(float)  'float]
-        [(double) 'double])   
+        [(double) 'double])
 
       (<void>
         [(void)     (make-object primitive-type% 'void)])
 
       (<reference-type>
-        [(<name>)      
+        [(<name>)
          (make-object reference-type% (send $1 get-list) (send $1 get-id))]
         [(<array-type>) $1])
 
       (<array-type>
-        [(<primitive-type> <dims>) 
+        [(<primitive-type> <dims>)
          (make-object array-type% $2 null $1)]
-        [(<name> <dims>)           
+        [(<name> <dims>)
          (make-object array-type% $2 (send $1 get-list) (send $1 get-id))])
 
       (<class-or-interface-type>
@@ -173,7 +173,7 @@
         [(<dim-exprs> <dim-expr>) (cons $2 $1)])
 
       (<dim-expr>
-        [(l-sbrack <expr> r-sbrack) 
+        [(l-sbrack <expr> r-sbrack)
          (make-object array-dim% $2 (build-src 2))])
 
       (<dims>
@@ -184,31 +184,31 @@
       ;; Name
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<name>
-        [(identifier)         
+        [(identifier)
          (make-object identifier% null $1 (build-src 1))]
         [(<qualified-name>) $1])
 
       (<qualified-name>
-        [(<name> period identifier) 
-         (make-object identifier%  
+        [(<name> period identifier)
+         (make-object identifier%
                       (append (list (send $1 get-id)) (send $1 get-list))
-                      $3 
+                      $3
                       (build-src 1 3))])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Compilation unit
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<compilation-unit>
         [() (make-object compilation-unit% null)]
-        [(<import-declarations> <global-declarations>) 
-         (make-object compilation-unit% 
+        [(<import-declarations> <global-declarations>)
+         (make-object compilation-unit%
                       (append (reverse $1) (reverse $2))
                       (build-src 1 2))]
-        [(<global-declarations>) 
-         (make-object compilation-unit% 
+        [(<global-declarations>)
+         (make-object compilation-unit%
                       (reverse $1)
                       (build-src 1))])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      ;; Global 
+      ;; Global
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<global-declarations>
         [(<global-declaration>) (list $1)]
@@ -216,9 +216,9 @@
 
       (<global-declaration>
         [(<class-declaration>) $1]
-        [(<global-member-declaration>) 
+        [(<global-member-declaration>)
          (make-object global-decl% $1 (build-src 1))]
-        [(<global-stmt>)  
+        [(<global-stmt>)
          (make-object global-stmt% $1 (build-src 1))])
 
       (<global-stmt>
@@ -251,7 +251,7 @@
       ;; Requires - extention to support racket modules
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<require-import-declaration>
-        [(require semicolon) 
+        [(require semicolon)
          (make-object require% $1 (build-src 1))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -289,9 +289,9 @@
         [(class identifier <interfaces> <class-body>)
          (make-object todo-node% (list $3 $4) 'class-decl (build-src 1))]
         [(class identifier <class-body>)
-         (make-object class-node% 
-                      (make-object identifier% null $2 (build-src 2)) 
-                      $3 
+         (make-object class-node%
+                      (make-object identifier% null $2 (build-src 2))
+                      $3
                       (build-src 1 3))])
 
       (<super>
@@ -326,11 +326,11 @@
       ;; Methods
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<global-function-declaration>
-        [(<method-header> <method-body>) 
-         (begin 
+        [(<method-header> <method-body>)
+         (begin
            ; Changes from static mode to active mode: see mode.rkt
            (set-active-mode! #t)
-           (make-object function-decl% 
+           (make-object function-decl%
                         (first $1)    ; mods
                         (second $1)   ; ret-type
                         (third $1)    ; id
@@ -340,11 +340,11 @@
                         (build-src 1 2)))])
 
       (<method-declaration>
-        [(<method-header> <method-body>) 
-         (begin 
+        [(<method-header> <method-body>)
+         (begin
            ; Changes from static mode to active mode: see mode.rkt
            (set-active-mode! #t)
-           (make-object method-decl% 
+           (make-object method-decl%
                         (first $1)    ; mods
                         (second $1)   ; ret-type
                         (third $1)    ; id
@@ -355,31 +355,31 @@
 
       ;; (mod ret-type id parameter-list throws)
       (<method-header>
-        [(<modifiers> <type> <method-declarator> <throws>) 
+        [(<modifiers> <type> <method-declarator> <throws>)
          (list $1 $2 (car $3) (cdr $3) $4)]
-        [(<modifiers> <type> <method-declarator>) 
+        [(<modifiers> <type> <method-declarator>)
          (list $1 $2 (car $3) (cdr $3) null)]
-        [(<type> <method-declarator> <throws>) 
+        [(<type> <method-declarator> <throws>)
          (list null $1 (car $2) (cdr $2) $3)]
-        [(<type> <method-declarator>) 
+        [(<type> <method-declarator>)
          (list null $1 (car $2) (cdr $2) null)]
-        [(<modifiers> <void> <method-declarator> <throws>) 
+        [(<modifiers> <void> <method-declarator> <throws>)
          (list $1 $2 (car $3) (cdr $3) $4)]
-        [(<modifiers> <void> <method-declarator>) 
+        [(<modifiers> <void> <method-declarator>)
          (list $1 $2 (car $3) (cdr $3) null)]
-        [(<void> <method-declarator> <throws>) 
+        [(<void> <method-declarator> <throws>)
          (list null $1 (car $2) (cdr $2) $3)]
-        [(<void> <method-declarator>) 
+        [(<void> <method-declarator>)
          (list null $1 (car $2) (cdr $2) null)])
 
       (<method-declarator>
-        [(identifier l-paren <formal-parameter-list> r-paren) 
+        [(identifier l-paren <formal-parameter-list> r-paren)
          (cons (make-object identifier% null $1 (build-src 1)) (reverse $3))]
-        [(identifier l-paren r-paren) 
+        [(identifier l-paren r-paren)
          (cons (make-object identifier% null $1 (build-src 1)) null)]
-        [(identifier l-paren <formal-parameter-list> r-paren <dims>) 
+        [(identifier l-paren <formal-parameter-list> r-paren <dims>)
          (make-object todo-node% (list $3 $5) 'method-declarator (build-src 2))]
-        [(identifier l-paren r-paren <dims>) 
+        [(identifier l-paren r-paren <dims>)
          (make-object todo-node% $4 'method-declarator (build-src 2))])
 
       (<formal-parameter-list>
@@ -389,11 +389,11 @@
       (<formal-parameter>
         [(<type> <var-decl-id>)
          (make-object formal-parameter% null $1 $2 (build-src 1))]
-        [(final <type> <var-decl-id>) 
+        [(final <type> <var-decl-id>)
          (make-object formal-parameter% 'final $2 $3 (build-src 2))])
 
       (<throws>
-        [(throws <class-type-list>) 
+        [(throws <class-type-list>)
          (make-object todo-node% $2 'throws (build-src 2))])
 
       (<class-type-list>
@@ -404,7 +404,7 @@
         [(<block>)   $1]
         [(semicolon) null])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      ;; Constructors 
+      ;; Constructors
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<constructor-declaration>
         [(<modifiers> <constructor-declarator> <throws> <constructor-body>)
@@ -417,9 +417,9 @@
          (make-object todo-node% (list $1 $2) 'construct-decl (build-src 1))])
 
       (<constructor-declarator>
-        [(identifier l-paren <formal-parameter-list> r-paren) 
+        [(identifier l-paren <formal-parameter-list> r-paren)
          (make-object todo-node% $3 'construct-declarator (build-src 1))]
-        [(identifier l-paren r-paren) 
+        [(identifier l-paren r-paren)
          (make-object todo-node% null 'construct-declarator (build-src 1))])
 
       (<constructor-body>
@@ -445,15 +445,15 @@
       ;; Array init
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<array-initializer>
-        [(l-cbrack <var-initializers> r-cbrack)         
+        [(l-cbrack <var-initializers> r-cbrack)
          (make-object array-initializer% (reverse $2) (build-src 1 3))]
-        [(l-cbrack r-cbrack)     
+        [(l-cbrack r-cbrack)
          (make-object array-initializer% null (build-src 1 2))])
 
       (<var-initializers>
-        [(<var-initializer>)       
+        [(<var-initializer>)
          (list $1)]
-        [(<var-initializers> comma <var-initializer>) 
+        [(<var-initializers> comma <var-initializer>)
          (cons $3 $1)])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Fields
@@ -478,7 +478,7 @@
         [(<var-decl-id>)  (list $1 (make-object literal% undefined 'undef (build-src 1)))]
         [(<var-decl-id> = <var-initializer>) (list $1 $3)])
 
-      (<var-decl-id> 
+      (<var-decl-id>
         [(identifier)
          (make-object identifier% null $1 (build-src 1))]
         [(identifier <dims>)
@@ -491,9 +491,9 @@
       ;; Statements
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<block>
-        [(l-cbrack <block-stmts> r-cbrack)  
+        [(l-cbrack <block-stmts> r-cbrack)
          (make-object block% (reverse $2) (build-src 1))]
-        [(l-cbrack r-cbrack)              
+        [(l-cbrack r-cbrack)
          (make-object block% null (build-src 1))])
 
       (<block-stmts>
@@ -508,9 +508,9 @@
         [(<local-var-decl> semicolon) $1])
 
       (<local-var-decl>
-        [(<modifiers> <type> <var-declarators>) 
+        [(<modifiers> <type> <var-declarators>)
          (make-object var-decl% $1 $2 (reverse $3)  (build-src 1 3))]
-        [(<type> <var-declarators>) 
+        [(<type> <var-declarators>)
          (make-object var-decl% null $1 (reverse $2)  (build-src 1 2))])
 
       (<stmt>
@@ -542,7 +542,7 @@
         [(<try-stmt>) $1])
 
       (<empty-stmt>
-        [(semicolon) 
+        [(semicolon)
          (make-object empty-stmt% (build-src 1))])
 
       (<expr-stmt>
@@ -588,12 +588,12 @@
       (<finit>
         [() (make-object empty-stmt% null)]
         [(<local-var-decl>) $1]
-        [(<stmt-expr-list>) 
+        [(<stmt-expr-list>)
          (make-object expr-list% (reverse $1) (build-src 1))])
 
       (<fupdate>
         [() (make-object empty-stmt% null)]
-        [(<stmt-expr-list>) 
+        [(<stmt-expr-list>)
          (make-object expr-list% (reverse $1) (build-src 1))])
 
       (<stmt-expr-list>
@@ -603,7 +603,7 @@
       ;; Control stmts
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<if-then-stmt>
-        [(if l-paren <expr> r-paren <stmt>) 
+        [(if l-paren <expr> r-paren <stmt>)
          (make-object if% $3 $5 null (build-src 1))])
 
       (<if-then-else-stmt>
@@ -615,11 +615,11 @@
          (make-object if% $3 $5 $7 (build-src 1))])
 
       (<labeled-stmt>
-        [(identifier : <stmt>) 
+        [(identifier : <stmt>)
          (make-object todo-node% $3 'labeld-stmt (build-src 1))])
 
       (<labeled-stmt-no-short-if>
-        [(identifier : <stmt-no-short-if>) 
+        [(identifier : <stmt-no-short-if>)
          (make-object todo-node% $3 'labeld-stmt-no-if (build-src 1))])
 
       (<switch-stmt>
@@ -629,11 +629,11 @@
       (<switch-block>
         [(l-cbrack <switch-block-stmt-groups> <switch-labels> r-cbrack)
          (make-object todo-node% (list $2 $3) 'switch-block (build-src 2))]
-        [(l-cbrack <switch-block-stmt-groups> r-cbrack) 
+        [(l-cbrack <switch-block-stmt-groups> r-cbrack)
          (make-object todo-node% $2 'switch-block (build-src 2))]
         [(l-cbrack <switch-labels> r-cbrack)
          (make-object todo-node% $2 'switch-block (build-src 2))]
-        [(l-cbrack r-cbrack) 
+        [(l-cbrack r-cbrack)
          (make-object todo-node% null 'switch-block (build-src 2))])
 
       (<switch-block-stmt-groups>
@@ -641,7 +641,7 @@
         [(<switch-block-stmt-groups> <switch-block-stmt-group>) (cons $2 $1)])
 
       (<switch-block-stmt-group>
-        [(<switch-labels> <block-stmts>) 
+        [(<switch-labels> <block-stmts>)
          (make-object todo-node% (list $1 $2) 'switch-block-stmt-group (build-src 1))])
 
       (<switch-labels>
@@ -649,27 +649,27 @@
         [(<switch-labels> <switch-label>) (cons $2 $1)])
 
       (<switch-label>
-        [(case <constant-expr> :) 
+        [(case <constant-expr> :)
          (make-object todo-node% $2 'switch-case (build-src 1))]
         [(default :)
          (make-object todo-node% null 'switch-default (build-src 1))])
 
       (<break-stmt>
-        [(break identifier semicolon) 
+        [(break identifier semicolon)
          (make-object todo-node% null 'break (build-src 1))]
-        [(break semicolon) 
+        [(break semicolon)
          (make-object break% (build-src 1))])
 
       (<continue-stmt>
-        [(continue identifier semicolon) 
+        [(continue identifier semicolon)
          (make-object todo-node% null 'continue (build-src 1))]
-        [(continue semicolon) 
+        [(continue semicolon)
          (make-object continue% (build-src 1))])
 
       (<return-stmt>
-        [(return <expr> semicolon) 
+        [(return <expr> semicolon)
          (make-object return% $2 (build-src 1))]
-        [(return semicolon) 
+        [(return semicolon)
          (make-object return% null (build-src 1))])
 
       (<synchronized-stmt>
@@ -677,15 +677,15 @@
          (make-object todo-node% (list $3 $5) 'synchronized (build-src 1))])
 
       (<throw-stmt>
-        [(throw <expr> semicolon) 
+        [(throw <expr> semicolon)
          (make-object todo-node% $2 'throw (build-src 1))])
 
       (<try-stmt>
-        [(try <block> <catches>) 
+        [(try <block> <catches>)
          (make-object todo-node% (list $2 $3) 'try (build-src 1))]
-        [(try <block> <catches> <finally-stmt>) 
+        [(try <block> <catches> <finally-stmt>)
          (make-object todo-node% (list $2 $3 $4) 'try (build-src 1))]
-        [(try <block> <finally-stmt>) 
+        [(try <block> <finally-stmt>)
          (make-object todo-node% (list $2 $3) 'try (build-src 1))])
 
       (<catches>
@@ -697,7 +697,7 @@
          (make-object todo-node% (list $3 $5) 'catch (build-src 1))])
 
       (<finally-stmt>
-        [(finally <block>) 
+        [(finally <block>)
          (make-object todo-node% $2 'finally-stmt (build-src 1))])
 
       (<primary>
@@ -716,14 +716,14 @@
         [(<name> period this) (error "parser: Not Implemented")])
 
       (<field-access>
-        [(<primary> period identifier)    
-         (make-object field-acces% 
-                      $1 
-                      (make-object identifier% null $3 (build-src 3)) 
+        [(<primary> period identifier)
+         (make-object field-acces%
+                      $1
+                      (make-object identifier% null $3 (build-src 3))
                       (build-src 1 3))]
-        [(super period identifier)     
+        [(super period identifier)
          (make-object todo-node% null 'super-field-access (build-src 1))]
-        [(<name> period super period identifier)     
+        [(<name> period super period identifier)
          (make-object todo-node% $1 'name-super-field-access (build-src 1))])
 
       (<array-access>
@@ -735,32 +735,32 @@
 
       (<method-call>
         [(<data-conversion> l-paren <args> r-paren)
-         (make-object method-call% 
+         (make-object method-call%
                       (make-object primary% null $1 (build-src 1))
                       (reverse $3)
                       (build-src 1 4))]
-        [(<name> l-paren <args> r-paren) 
-         (make-object method-call% 
+        [(<name> l-paren <args> r-paren)
+         (make-object method-call%
                       (make-object primary% null $1 (build-src 1))
                       (reverse $3)
                       (build-src 1 4))]
-        [(<name> l-paren r-paren) 
-         (make-object method-call% 
+        [(<name> l-paren r-paren)
+         (make-object method-call%
                       (make-object primary% null $1 (build-src 1))
-                      null 
+                      null
                       (build-src 1 3))]
         [(<primary> period identifier l-paren <args> r-paren)
-         (make-object method-call% 
-                      (make-object primary% 
-                                   $1 
+         (make-object method-call%
+                      (make-object primary%
+                                   $1
                                    (make-object identifier% null $3 (build-src 3))
                                    (build-src 1 3))
                       (reverse $5)
                       (build-src 1 6))]
         [(<primary> period identifier l-paren r-paren)
-         (make-object method-call% 
-                      (make-object primary% 
-                                   $1 
+         (make-object method-call%
+                      (make-object primary%
+                                   $1
                                    (make-object identifier% null $3 (build-src 3))
                                    (build-src 1 3))
                       null
@@ -775,7 +775,7 @@
         [(<name> period super period identifier l-paren r-paren)
          (make-object todo-node% $1 'method-call (build-src 1))])
 
-      (<data-conversion> 
+      (<data-conversion>
         [(int)     (make-object identifier% null "int"     (build-src 1))]
         [(char)    (make-object identifier% null "char"    (build-src 1))]
         [(byte)    (make-object identifier% null "byte"    (build-src 1))]
@@ -814,27 +814,27 @@
          (make-object todo-node% $1 'new (build-src 1))])
 
       (<color-instance-creation>
-        [(color l-paren <args> r-paren) 
-         (make-object method-call% 
-                      (make-object primary% 
-                                   null 
-                                   (make-object identifier% null "color" (build-src 1)) 
+        [(color l-paren <args> r-paren)
+         (make-object method-call%
+                      (make-object primary%
+                                   null
+                                   (make-object identifier% null "color" (build-src 1))
                                    (build-src 1))
                       (reverse $3)
                       (build-src 1 4))])
 
       (<array-creation-expr>
-        [(new <primitive-type> <dim-exprs>) 
+        [(new <primitive-type> <dim-exprs>)
          (make-object new-array% $2 (reverse $3) null null (build-src 1 3))]
-        [(new <primitive-type> <dim-exprs> <dims>) 
+        [(new <primitive-type> <dim-exprs> <dims>)
          (make-object new-array% $2 (reverse $3) $4 null (build-src 1 4))]
-        [(new <primitive-type> <dims> <array-initializer>) 
+        [(new <primitive-type> <dims> <array-initializer>)
          (make-object new-array% $2 null $3 $4 (build-src 1 4))]
-        [(new <class-or-interface-type> <dim-exprs>) 
+        [(new <class-or-interface-type> <dim-exprs>)
          (make-object new-array% $2 $3 null null (build-src 1 3))]
-        [(new <class-or-interface-type> <dim-exprs> <dims>) 
+        [(new <class-or-interface-type> <dim-exprs> <dims>)
          (make-object new-array% $2 $3 $4 null (build-src 1 4))]
-        [(new <class-or-interface-type> <dims> <array-initializer>) 
+        [(new <class-or-interface-type> <dims> <array-initializer>)
          (make-object new-array% $2 null $3 $4 (build-src 1 4))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -845,11 +845,11 @@
          (make-object assignment% $2 $1 $3 (build-src 1))])
 
       (<left-hand>
-        [(<name>)  
+        [(<name>)
          (make-object left-value% $1 'name (build-src 1))]
         [(<field-access>)
          (make-object left-value% $1 'field (build-src 1))]
-        [(<array-access>) 
+        [(<array-access>)
          (make-object left-value% $1 'array (build-src 1))])
 
       (<postfix-expr>
@@ -859,35 +859,35 @@
         [(<post-dec-expr>) $1])
 
       (<post-inc-expr>
-        [(<postfix-expr> ++) 
+        [(<postfix-expr> ++)
          (make-object unary-op% 'pos++ $1 (build-src 1 2))])
 
       (<post-dec-expr>
-        [(<postfix-expr> --) 
+        [(<postfix-expr> --)
          (make-object  unary-op% 'pos-- $1 (build-src 1 2))])
 
       (<unary-expr>
         [(<pre-inc-expr>) $1]
         [(<pre-dec-expr>) $1]
-        [(+ <unary-expr>) 
+        [(+ <unary-expr>)
          (make-object unary-op% '+ $2  (build-src 1 2))]
-        [(- <unary-expr>) 
+        [(- <unary-expr>)
          (make-object unary-op% '- $2  (build-src 1 2))]
         [(<unary-expr-not-plus-minus>) $1])
 
       (<pre-inc-expr>
-        [(++ <unary-expr>) 
+        [(++ <unary-expr>)
          (make-object unary-op% 'pre++ $2  (build-src 1 2))])
 
       (<pre-dec-expr>
-        [(-- <unary-expr>) 
+        [(-- <unary-expr>)
          (make-object unary-op%'pre-- $2 (build-src 1 2))])
 
       (<unary-expr-not-plus-minus>
         [(<postfix-expr>) $1]
-        [(~ <unary-expr>) 
+        [(~ <unary-expr>)
          (make-object unary-op% 'not $2  (build-src 2))]
-        [(! <unary-expr>) 
+        [(! <unary-expr>)
          (make-object unary-op% '! $2  (build-src 2))]
         [(<cast-expr>) $1])
 

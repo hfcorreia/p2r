@@ -12,9 +12,9 @@
 ;;; parses the input file and constructs an ast of ast-node%
 (define (build-ast file #:input-port [input-port #f])
   (if (eq? input-port #f)
-    (with-input-from-file 
+    (with-input-from-file
       file
-      (lambda () (parse-processing file (current-input-port))) 
+      (lambda () (parse-processing file (current-input-port)))
       #:mode 'text)
     (parse-processing file input-port)))
 

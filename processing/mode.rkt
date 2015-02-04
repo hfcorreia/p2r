@@ -9,5 +9,5 @@
 
 (define (active-mode?) mode)
 
-(define (set-active-mode! [pred #t]) 
+(define (set-active-mode! [pred #t])
   (set! mode pred))

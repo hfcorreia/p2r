@@ -7,24 +7,24 @@
 
 (define PVector
   (class object%
-         (init-field [x 0] 
+         (init-field [x 0]
                      [y 0]
                      [z 0])
 
          (define/public (set x [y null] [z null])
-                        (cond 
-                          [(vector? x) 
-                           (begin 
+                        (cond
+                          [(vector? x)
+                           (begin
                              (set-field! x this (vector-ref x 0))
                              (set-field! y this (vector-ref x 1))
                              (set-field! z this (vector-ref x 2)))]
                           [(is-a? x PVector)
-                           (begin 
+                           (begin
                              (set-field! x this (get-field x x))
                              (set-field! y this (get-field y x))
                              (set-field! z this (get-field z x)))]
-                          [else 
-                            (begin 
+                          [else
+                            (begin
                               (set-field! x this x)
                               (and (not (null? y)) (set-field! y this y))
                               (and (not (null? z)) (set-field! z this z)))]))
@@ -40,7 +40,7 @@
          ;                       [vy (* mult (sin ang))])
          ;                  (if (null? v)
          ;                    (make-object PVector vx vy vz)
-         ;                    (begin 
+         ;                    (begin
          ;                      (set-field! x v vx)
          ;                      (set-field! y v vy)
          ;                      (set-field! z v vz)
@@ -48,11 +48,11 @@
 
 
          ; (define/public (fromAngle ang [v null])
-         ;                (let ([x-val (cos ang)] 
+         ;                (let ([x-val (cos ang)]
          ;                      [y-val (sin ang)])
          ;                  (if (null? v)
          ;                    (make-object PVector x-val y-val)
-         ;                    (begin 
+         ;                    (begin
          ;                      (set-field! x v x-val)
          ;                      (set-field! y v y-val)
          ;                      v))))
@@ -75,14 +75,14 @@
                         (cond
                           [(and (is-a? x PVector) (null? y))
                            (begin
-                             (set-field! x this (+ (get-field x this) 
+                             (set-field! x this (+ (get-field x this)
                                                    (get-field x x)))
-                             (set-field! y this (+ (get-field y this) 
+                             (set-field! y this (+ (get-field y this)
                                                    (get-field y x)))
                              (set-field! z this (+ (get-field z this)
                                                    (get-field z x))))]
-                          [else 
-                            (begin 
+                          [else
+                            (begin
                               (set-field! x this (+ x (get-field x this)))
                               (set-field! y this (+ y (get-field y this)))
                               (set-field! z this (+ z (get-field z this))))]))
@@ -98,7 +98,7 @@
                              (set-field! z this (- (get-field z this)
                                                    (get-field z x))))]
                           [(and (not (null? y)) (not (null? z)))
-                           (begin 
+                           (begin
                              (set-field! x this (- (get-field x this) x))
                              (set-field! y this (- (get-field y this) y))
                              (set-field! z this (- (get-field z this) z)))]))
@@ -140,7 +140,7 @@
                         (let ([v-x (get-field x v)]
                               [v-y (get-field y v)]
                               [v-z (get-field z v)])
-                          (cond 
+                          (cond
                             [(null? res)
                              (make-object PVector
                                           (- (* y v-z) (* v-y z))
@@ -148,8 +148,8 @@
                                           (- (* x v-y) (* v-x y)))]
                             [(is-a? res PVector)
                              (begin
-                               (send res 
-                                     set 
+                               (send res
+                                     set
                                      (- (* y v-z) (* v-y z))
                                      (- (* z v-x) (* v-z x))
                                      (- (* x v-y) (* v-x y)))
@@ -172,10 +172,10 @@
 
          (define/public (setMag len [target null])
                         (if (null? target)
-                          (begin 
+                          (begin
                             (normalize)
                             (mult len))
-                          (begin 
+                          (begin
                             (send len normalize)
                             (send len mult target)
                             len)))

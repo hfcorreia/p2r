@@ -10,11 +10,11 @@
   (syntax-rules ()
     [(_ src)
      (error "applyMatrix: not implemented")]
-    [(_ src 
-        n00 n01 n02 
+    [(_ src
+        n00 n01 n02
         n10 n11 n12)
      (error "applyMatrix: not implemented")]
-    [(_ src 
+    [(_ src
         n00 n01 n02 n03
         n10 n11 n12 n13
         n20 n21 n22 n23

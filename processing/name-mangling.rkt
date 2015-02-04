@@ -4,7 +4,7 @@
 
 ;;; Converts a racket name to a java name
 (define (racket->java name)
-  (let ((name (regexp-replace #rx"^([0-9]+)" name "_\\1"))) 
+  (let ((name (regexp-replace #rx"^([0-9]+)" name "_\\1")))
     (list->string
       (let iter ((i 0))
         (if (= i (string-length name))

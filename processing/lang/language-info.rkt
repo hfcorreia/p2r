@@ -5,7 +5,7 @@
 (define (get-language-info data)
   (lambda (key default)
     (case key
-      [(configure-runtime) 
+      [(configure-runtime)
        `(#(processing/lang/runtime-config configure #f)) ]
-;      [(drracket:submit-predicate) read-to-submit?]
+      ;      [(drracket:submit-predicate) read-to-submit?]
       [else default])))

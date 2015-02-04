@@ -24,11 +24,11 @@
                 (test-not-exn
                   "Test"
                   (lambda ()
-                    (check-pred 
+                    (check-pred
                       list?
                       (compile-processing (build-ast path))
                       (format "Erro: at ~a" path))
-                    (check-false 
-                      (begin (compile-processing (build-ast path)) todo?) 
+                    (check-false
+                      (begin (compile-processing (build-ast path)) todo?)
                       (format "Error: Incomplete AST ~a" path)))))))
   'normal)

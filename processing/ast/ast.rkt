@@ -8,9 +8,9 @@
          "../lib/runtime.rkt")
 
 
-;;; node->racket : (or/c (listof ast-node%) ast-node%) 
+;;; node->racket : (or/c (listof ast-node%) ast-node%)
 ;;;     -> (or/c (listof ast-node%) ast-node%)
-;;; Simplyfies code generation by executing ->racket 
+;;; Simplyfies code generation by executing ->racket
 ;;; over a single or a list of ast-nodes%
 (define-syntax-rule
   (node->racket node)
@@ -22,12 +22,12 @@
   (syntax-rules ()
     [(_ node)
      (if (list? node)
-         (map (lambda (x) (send x ->type-check)) node)
-         (send node ->type-check))]
+       (map (lambda (x) (send x ->type-check)) node)
+       (send node ->type-check))]
     [(_ node type)
      (if (list? node)
-         (map (lambda (x) (send x ->type-check type)) node)
-         (send node ->type-check type))]))
+       (map (lambda (x) (send x ->type-check type)) node)
+       (send node ->type-check type))]))
 
 (define-syntax-rule
   (node->bindings node scope)
@@ -62,8 +62,8 @@
                         (datum->syntax #'here
                                        datum
                                        (and (not (null? src-info)) src-info)
-                                       (read-syntax #f 
-                                                    (open-input-string "orig")) 
+                                       (read-syntax #f
+                                                    (open-input-string "orig"))
                                        ))
 
          ;; ->racket: -> syntax-object?
@@ -77,14 +77,14 @@
                         (read-error (format "Invalid use of ->type-check ~a"
                                             this)))
 
-         ;; ->bindings: (is-a? binding-scope<%>) -> 
-         (define/public (->bindings scope) 
+         ;; ->bindings: (is-a? binding-scope<%>) ->
+         (define/public (->bindings scope)
                         (read-error (format "Invalid use of ->bindings ~a" this)))
 
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define compilation-unit% 
+(define compilation-unit%
   (class ast-node%
          (init-field ast)
 
@@ -100,7 +100,7 @@
                           (if active-mode?
                             (append
                               (node->racket ast)
-                              (list 
+                              (list
                                 (->syntax-object `(p-initialize setup))
                                 (->syntax-object `(p-initialize draw))))
                             (node->racket ast)))
@@ -109,7 +109,7 @@
                           (->syntax-object
                             (node->type-check ast)))
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings ast scope))
 
@@ -137,7 +137,7 @@
 
          ;; aux funtion
          (define (aux child)
-           (cond 
+           (cond
              [(list? child) (map (lambda (node)
                                    (aux node))
                                  child)]

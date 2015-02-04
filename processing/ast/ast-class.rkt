@@ -21,7 +21,7 @@
                           (read-error (format "Invalid use of ->type-check ~a"
                                               this)))
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (read-error (format "Invalid use of ->bindings ~a" this)))
 
          (super-instantiate ())))
@@ -34,12 +34,12 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-class ,(node->racket name) 
+                            `(p-class ,(node->racket name)
                                       ,@(node->racket body))))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings body scope))
 
@@ -54,12 +54,12 @@
          (define/override (->racket)
                           (->syntax-object
                             `(p-new-class
-                               ,(node->racket name) 
+                               ,(node->racket name)
                                ,@(node->racket args))))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings name scope)
                           (node->bindings args scope))
@@ -74,7 +74,7 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-class-field 
+                            `(p-class-field
                                ,@(map (lambda (var)
                                         (list
                                           (node->racket (car var))
@@ -92,27 +92,27 @@
 
          (super-instantiate ())))
 
-(define method-decl% 
+(define method-decl%
   (class class-stmt%
          (init-field modifiers return-type id parameters throws body)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
-                          (->syntax-object 
-                            `(define/public (,(node->racket id) 
-                                             ,@(node->racket parameters))
+                          (->syntax-object
+                            `(define/public (,(node->racket id)
+                                              ,@(node->racket parameters))
                                             (call/ec (lambda (return)
                                                        ,(node->racket body))))))
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (let ([local-scope      (make-object local-scope% scope)]
                                 [parameter-types  (map (lambda (x)
                                                          (send x get-type))
                                                        parameters)])
-                            
+
                             (set-scope! local-scope)
                             (add-function-binding scope modifiers return-type id
                                                   parameter-types throws)
@@ -121,7 +121,7 @@
 
          (super-instantiate ())))
 
-(define formal-parameter% 
+(define formal-parameter%
   (class class-stmt%
          (init-field final type id)
 
@@ -134,7 +134,7 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope) 
+         (define/override (->bindings scope)
                           (set-scope! scope)
                           (add-variable-binding scope '(final) type id))
 
@@ -146,7 +146,7 @@
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
-                          (->syntax-object 
+                          (->syntax-object
                             this))
 
          (define/override (->type-check) #t)
@@ -168,7 +168,7 @@
          (define/override (->racket)
                           (->syntax-object
                             `(get-field ,(node->racket id)
-                                      ,(node->racket primary))))
+                                        ,(node->racket primary))))
 
          (define/override (->type-check) #t)
 

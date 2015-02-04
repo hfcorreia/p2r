@@ -27,17 +27,17 @@
           (cond
             [(and (boolean? arg) arg) "true"]
             [(and (boolean? arg) (not arg)) "false"]
-            [(void? arg)  ""] 
+            [(void? arg)  ""]
             [(is-a? arg PVector) (send arg toString)]
             [(not (null? arg)) arg]
             [else ""])))
 
 ;;; Given a list of strings generates a string seprated by char
 (define (build-seperated-string lst char)
-  (cond 
+  (cond
     [(null? lst) ""]
     [(eq? (length lst) 1) (car lst)]
-    [else (format "~a~a~a" 
-                  (car lst) 
+    [else (format "~a~a~a"
+                  (car lst)
                   char
                   (build-seperated-string (cdr lst) char))]))

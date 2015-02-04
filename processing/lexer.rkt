@@ -9,14 +9,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Tokens definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define-empty-tokens operators 
+(define-empty-tokens operators
                      (
                       PIPE OR OREQUAL =    >    <    !     ~    ?     :
                       ==   <=   >=   !=    &&   ++    --
                       +    -    *    /     &    ^     %     <<     >>     >>>
                       +=   -=   *=   /=    &=   ^=    %=    <<=    >>=    >>>=))
 
-(define-empty-tokens keywords 
+(define-empty-tokens keywords
                      (
                       abstract    continue    for          new          switch
                       assert      default     if            package      synchronized
@@ -25,7 +25,7 @@
                       byte        else        import        public       throws
                       case        enum        instanceof    return       transient
                       catch       extends     int           short        try
-                      char        final       interface     static       void 
+                      char        final       interface     static       void
                       class       finally     long          strictfp     volatile
                       const       float       native        super        while
                       ; custom keywords
@@ -33,7 +33,7 @@
 
 
 
-(define-empty-tokens seperators 
+(define-empty-tokens seperators
                      (
                       semicolon period comma
                       l-paren  r-paren
@@ -42,12 +42,12 @@
 
 (define-empty-tokens empty-literals (EOF null-lit))
 
-(define-tokens literals 
-               ( 
-                 identifier int-lit long-lit float-lit double-lit 
-                 char-lit boolean-lit string-lit token-lit color-lit
-                 ; custom token
-                 require))
+(define-tokens literals
+               (
+                identifier int-lit long-lit float-lit double-lit
+                char-lit boolean-lit string-lit token-lit color-lit
+                ; custom token
+                require))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Token abbreviations exapanded by the lexer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -90,7 +90,7 @@
                       "boolean"     "do"          "goto"          "private"      "this"
                       "break"       "double"      "implements"    "protected"    "throw"
                       "byte"        "else"        "import"        "public"       "throws"
-                      "case"        "enum"        "instanceof"    "return"       "transient" 
+                      "case"        "enum"        "instanceof"    "return"       "transient"
                       "catch"       "extends"     "int"           "short"        "try"
                       "char"        "final"       "interface"     "static"       "void"
                       "class"       "finally"     "long"          "strictfp"     "volatile"
@@ -101,14 +101,14 @@
   ;; operator
   (operator   (re:or "="    ">"    "<"    "!"     "~"    "?"     ":"
                      "=="   "<="   ">="   "!="    "&&"   "||"    "++"    "--"
-                     "+"    "-"    "*"   "/"     "&"    "|"     
+                     "+"    "-"    "*"   "/"     "&"    "|"
                      "^"     "%"     "<<"     ">>"     ">>>"
-                     "+="   "-="   "*="  "/="    "&="   "|="    
+                     "+="   "-="   "*="  "/="    "&="   "|="
                      "^="    "%="    "<<="    ">>="    ">>>="))
 
   ;; identifier
   (identifier  (re:: (re:or "_" "$" (re:/ "az" "AZ"))
-                     (re:*  (re:or (re:/ "AZ" "az" "09") "_" "$")))) 
+                     (re:*  (re:or (re:/ "AZ" "az" "09") "_" "$"))))
 
   ;; comments
   (line-comment       (re:: "//" (re:* input-charcter) ))
@@ -154,17 +154,17 @@
     ("false"  (token-boolean-lit #f))
 
     ;; integers
-    (binary     
+    (binary
       (token-int-lit (string->number (trim-string lexeme 2 0) 2)))
-    (octal      
+    (octal
       (token-int-lit (string->number lexeme 8)))
-    (hexa       
+    (hexa
       (token-int-lit (string->number (trim-string lexeme 2 0) 16)))
-    (decimal    
+    (decimal
       (token-int-lit (string->number lexeme 10)))
 
     ;; longs
-    ((re:: decimal long-suf)       
+    ((re:: decimal long-suf)
      (token-long-lit (string->number (trim-string lexeme 0 1) 10)))
     ((re:: hexa long-suf)
      (token-long-lit (string->number (trim-string lexeme 2 1) 16)))
@@ -181,7 +181,7 @@
 
     ;; chars
     (char            (token-char-lit (string-ref lexeme 1)))
-    ((re:: #\' escape-seq #\')   
+    ((re:: #\' escape-seq #\')
      (token-char-lit (escape->char (trim-string lexeme 1 1))))
 
     ;; strings
@@ -200,7 +200,7 @@
     (identifier     (token-identifier lexeme))
 
     ;; used in require
-    ((re:: "require" (re:* (re:~ ";"))) 
+    ((re:: "require" (re:* (re:~ ";")))
      (token-require (trim-string lexeme 7 0)))
 
     ;; terminator

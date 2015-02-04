@@ -10,7 +10,7 @@
 ;;; Type nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define type% 
+(define type%
   (class object%
          (init-field type)
 
@@ -18,7 +18,7 @@
 
          (super-instantiate ())))
 
-(define primitive-type% 
+(define primitive-type%
   (class type%
          (super-instantiate ())))
 
@@ -29,7 +29,7 @@
 
          (super-instantiate ())))
 
-(define array-type% 
+(define array-type%
   (class reference-type%
          (init-field dims)
          (inherit-field type qualified-types)
@@ -39,26 +39,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type Structure:
 ;;;
-;;; symbol-type = 'null   | 'string | 'boolean 
-;;;             | 'char   | 'byte   | 'short 
-;;;             | 'int    | 'long   | 'float  
+;;; symbol-type = 'null   | 'string | 'boolean
+;;;             | 'char   | 'byte   | 'short
+;;;             | 'int    | 'long   | 'float
 ;;;             | 'double | 'void   | 'color
 ;;;
-;;; reference-type = 'null 
-;;;                | 'string 
+;;; reference-type = 'null
+;;;                | 'string
 ;;;                | reference-type%
 ;;;
-;;; array-type = array-type% 
+;;; array-type = array-type%
 ;;;
 ;;; type = symbol-type
 ;;;      | reference-type
 ;;;      | array-type
-;;;      
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; reference-type?: symbol -> boolean
 ;; checks if the type is a reference type
-(define (reference-type? type) 
+(define (reference-type? type)
   (is-a? reference-type% type))
 
 ;; array-type?: symbol -> boolean
@@ -102,7 +102,7 @@
 (define (widening-primitive-conversion? to-type from-type)
   (cond
     [(symbol=? to-type 'char)     #f]
-    [(symbol=? to-type 'short) 
+    [(symbol=? to-type 'short)
      (memq from-type '(byte int))]
     [(symbol=? to-type 'int)
      (memq from-type '(byte short char))]
@@ -123,18 +123,18 @@
 
 ;; binary-op-type-check?: operator type type -> type
 ;; checks if types are correct in binary operators
-;; return the final type for the operation or 
+;; return the final type for the operation or
 ;; an error symbol
 (define (binary-operator-type op left right)
   (case op
-    [(* / % *= /= %= -= -) 
+    [(* / % *= /= %= -= -)
      (if (binary-check numeric-type? left right)
        (binary-promotion left right)
        'error)]
     [(+ +=)
      (cond
        [(binary-check string-type? left right) 'string]
-       [(binary-check numeric-type? left right) 
+       [(binary-check numeric-type? left right)
         (binary-promotion left right)]
        [else 'error])]
     [(< > <= >=)
@@ -142,31 +142,31 @@
        'boolean
        'error)]
     [(== !=)
-     (cond 
+     (cond
        [(or (binary-check numeric-type? left right)
             (binary-check boolean-type? left right))
         'boolean]
-     ; [(binary-check reference-or-array-type? left right)
-     ;  (let ((right-to-left (castable? l r type-recs))
-     ;        (left-to-right (castable? r l type-recs)))
-     ;    (cond 
-     ;      ((or right-to-left left-to-right) 'boolean)
-     ;      (else (bin-op-equality-error 'both op l r src))))]
+       ; [(binary-check reference-or-array-type? left right)
+       ;  (let ((right-to-left (castable? l r type-recs))
+       ;        (left-to-right (castable? r l type-recs)))
+       ;    (cond
+       ;      ((or right-to-left left-to-right) 'boolean)
+       ;      (else (bin-op-equality-error 'both op l r src))))]
        [else 'error])]
     [(& ^ or &= ^= or=)
      (cond
-       [(binary-check integral-type? left right) 
+       [(binary-check integral-type? left right)
         (binary-promotion left right)]
        [(binary-check boolean-type? left right) 'boolean]
        [else 'error])]
-    [(&& oror)      
-     (if (binary-check boolean-type? left right) 
+    [(&& oror)
+     (if (binary-check boolean-type? left right)
        'boolean
        'error)]))
-           
+
 ;; binary-promotion: type type -> type
 (define (binary-promotion t1 t2)
-  (cond 
+  (cond
     [(or (eq? 'double t1) (eq? 'double t2))  'double]
     [(or (eq? 'float t1) (eq? 'float t2))  'float]
     [(or (eq? 'long t1) (eq? 'long t2))  'long]

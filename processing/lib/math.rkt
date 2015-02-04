@@ -15,7 +15,7 @@
                      next-gaussian))
 
 (require racket/math
-         (rename-in racket/base 
+         (rename-in racket/base
                     [max orig-max]
                     [min orig-min]
                     [random orig-rand]
@@ -25,14 +25,14 @@
   (ceiling x))
 
 (define (constrain val min max)
-  (cond 
+  (cond
     [(< val min) min]
     [(> val max) max]
     [else val]))
 
 (define-syntax dist
   (syntax-rules ()
-    [(_ x1 y1 x2 y2) 
+    [(_ x1 y1 x2 y2)
      (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2)))]
     [(_ x1 y1 z1 x2 y2 z2)
      (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2) (expt (- z2 z1) 2)))]))
@@ -44,7 +44,7 @@
     [(_ elem elem2 ...)
      (orig-max elem elem2 ...)]))
 
-(define-syntax min 
+(define-syntax min
   (syntax-rules ()
     [(_ array)
      (apply orig-min (vector->list array))]
@@ -74,12 +74,12 @@
     [(_ a b c)
      (sqrt (+ (sq a) (sq b) (sq c)))]))
 
-(define-syntax map 
+(define-syntax map
   (syntax-rules ()
     [(_ value start1 stop1 start2 stop2)
-     (+ start2 
-        (/ (* (- stop2 start2) 
-              (- value start1)) 
+     (+ start2
+        (/ (* (- stop2 start2)
+              (- value start1))
            (- stop1 start1)))]
     [(_ func lst ...)
      (orig-map func lst ...)]))
@@ -91,10 +91,10 @@
   (atan x y))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; random
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-(define current-random-generator 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define current-random-generator
   (lambda () (orig-rand (make-pseudo-random-generator))))
 
 (define (int-generator [i1 null] [i2 null])
@@ -103,14 +103,14 @@
     (define (shift left right)
       (+ (arithmetic-shift left (- right))
          (arithmetic-shift 2 (bitwise-not right))))
-      (let ([z (bitwise-and  (+ (*  36969 (bitwise-and a 65535) (shift a 16)))
-                             #xFFFFFFFF)]
-            [w (bitwise-and  (+ (*  18000 (bitwise-and b 65535) (shift b 16)))
-                             #xFFFFFFFF)])
-        (bitwise-and (bitwise-ior 
-                       (arithmetic-shift (bitwise-and z  #xFFFF) 16) 
-                       (bitwise-and w #xFFFF))
-                     #xFFFFFFFF))))
+    (let ([z (bitwise-and  (+ (*  36969 (bitwise-and a 65535) (shift a 16)))
+                           #xFFFFFFFF)]
+          [w (bitwise-and  (+ (*  18000 (bitwise-and b 65535) (shift b 16)))
+                           #xFFFFFFFF)])
+      (bitwise-and (bitwise-ior
+                     (arithmetic-shift (bitwise-and z  #xFFFF) 16)
+                     (bitwise-and w #xFFFF))
+                   #xFFFFFFFF))))
 
 (define (double-generator [i1 null] [i2 null])
   (lambda ()
@@ -118,16 +118,16 @@
       (if (< i 0) (+ i 1) i))))
 
 (define (random [i1 null] [i2 null])
-  (cond 
+  (cond
     [(null? i1) (current-random-generator)]
     [(null? i2) (* i1 (current-random-generator))]
     [else (+ (* (current-random-generator) (- i2 i1)) i1)]))
 
 (define (randomSeed seed)
   (set! current-random-generator (double-generator seed)))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; randomGaussian
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define next-gaussian null)
 
@@ -153,9 +153,9 @@
             (* x1 w)))))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Perlin Aux procedures
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define octaves 4)
 (define fallout 0.5)
@@ -184,7 +184,7 @@
     (if (bitwise-bit-set? (bitwise-and i #x01) 0) (- x) x))
   (let* ([X  (bitwise-and (exact-floor x) 255)]
          [x  (- x (floor x))])
-    (lerp 
+    (lerp
       (grad1D (vector-ref perm X) x)
       (grad1D (vector-ref perm (+ X 1)) (- x 1))
       (fade x))))
@@ -200,12 +200,12 @@
          [y  (- y (floor y))]
          [p0 (+ (vector-ref perm X) Y)]
          [p1 (+ (vector-ref perm (+ X 1)) Y)])
-    (lerp 
+    (lerp
       (lerp
         (grad2D (vector-ref perm p0) x y)
         (grad2D (vector-ref perm p1) (- x 1) y)
         (fade x))
-      (lerp 
+      (lerp
         (grad2D (vector-ref perm (+ p0 1)) x (- y 1))
         (grad2D (vector-ref perm (+ p1 1)) (- x 1) (- y 1))
         (fade x))
@@ -233,30 +233,30 @@
          [p1  (+ (vector-ref perm (+ X 1)) Y)]
          [p10 (+ (vector-ref perm p1) Z)]
          [p11 (+ (vector-ref perm (+ p1 1)) Z)])
-    (lerp 
-      (lerp 
+    (lerp
+      (lerp
         (lerp
           (grad3D (vector-ref perm p00) x y z)
           (grad3D (vector-ref perm p10) (- x 1) y z)
           (fade x))
-        (lerp 
+        (lerp
           (grad3D (vector-ref perm p01) x (- y 1) z)
           (grad3D (vector-ref perm p11) (- x 1) (- y 1) z)
           (fade x))
         (fade y))
-      (lerp 
-        (lerp 
+      (lerp
+        (lerp
           (grad3D (vector-ref perm (+ 1 p00)) x y (- z 1))
           (grad3D (vector-ref perm (+ 1 p10)) (- x 1) y (- z 1))
           (fade x))
-        (lerp 
+        (lerp
           (grad3D (vector-ref perm (+ 1 p01)) x (- y 1) (- z 1))
           (grad3D (vector-ref perm (+ 1 p11)) (- x 1) (- y 1)(- z 1))
           (fade x))
         (fade y))
       (fade z))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Perlin Noise
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -269,7 +269,7 @@
 
 (define-syntax noise
   (syntax-rules ()
-    [(_ x) 
+    [(_ x)
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
@@ -277,7 +277,7 @@
                  (set! effect (* effect fallout))
                  (set! k (* k 2))
                  (+ sum (* effect (/ (+ 1 (noise1D (* k x)) 2))))))]
-    [(_ x y) 
+    [(_ x y)
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
@@ -285,7 +285,7 @@
                  (set! effect (* effect fallout))
                  (set! k (* k 2))
                  (+ sum (/ (+ 1 (noise2D (* k x) (* k y)) 2)))))]
-    [(_ x y z) 
+    [(_ x y z)
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
