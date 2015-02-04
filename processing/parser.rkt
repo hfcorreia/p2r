@@ -115,8 +115,7 @@
       (<type>
         [(<primitive-type>) 
          (make-object primitive-type% $1)]
-        [(<reference-type>) 
-         (make-object reference-type% $1)])
+        [(<reference-type>) $1])
 
       (<primitive-type>
         [(<numeric-type>) $1]
@@ -142,14 +141,15 @@
         [(void)     (make-object primitive-type% 'void)])
 
       (<reference-type>
-        [(<name>)      (send $1 get-id)]
+        [(<name>)      
+         (make-object reference-type% (send $1 get-list) (send $1 get-id))]
         [(<array-type>) $1])
 
       (<array-type>
         [(<primitive-type> <dims>) 
-         (make-object array-type% $1 $2)]
+         (make-object array-type% $2 null $1)]
         [(<name> <dims>)           
-         (make-object array-type% $1 $2)])
+         (make-object array-type% $2 (send $1 get-list) (send $1 get-id))])
 
       (<class-or-interface-type>
         [(<name>) $1])
