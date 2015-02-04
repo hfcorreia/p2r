@@ -755,7 +755,7 @@
                                    $1 
                                    (make-object identifier% null $3 (build-src 3))
                                    (build-src 1 3))
-                      (reverse $3)
+                      (reverse $5)
                       (build-src 1 6))]
         [(<primary> period identifier l-paren r-paren)
          (make-object method-call% 

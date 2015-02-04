@@ -5,6 +5,7 @@
          racket/undefined
 
          "ast.rkt"
+         "ast-expr.rkt"
          "errors.rkt"
          "bindings.rkt"
          "types.rkt"
@@ -109,7 +110,7 @@
          (define/override (->type-check)  
                           (map (lambda (var)
                                  (node->type-check (cadr var))
-                                 (check-literal (cadr var)))
+                                 (check-node-type (cadr var)))
                                vars))
 
          (define/override (->bindings scope) 
@@ -117,6 +118,15 @@
                           (map (lambda (var)
                                  (add-variable-binding scope modifiers type (car var)))
                                vars))
+
+         ;;; check-node-type: ast-node% -> (or/c any error)
+         ;;; dispatch according to varible type
+         (define (check-node-type node)
+           (cond
+             [(is-a? node literal%) (check-literal node)]
+             ; array
+             ; reference-type
+             [else #t]))
 
          ;; check-literal: type literal% -> (or/c void error)
          ;; checks if types are the same or can be promoted
@@ -226,7 +236,9 @@
                                        (when ,(node->racket test)
                                          (loop))))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) 
+                          (node->type-check test)
+                          (node->type-check body))
 
          (define/override (->bindings scope) 
                           (set-scope! scope)
