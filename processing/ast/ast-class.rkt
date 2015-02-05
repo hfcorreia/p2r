@@ -114,7 +114,8 @@
                                                        parameters)])
 
                             (set-scope! local-scope)
-                            (add-function-binding scope modifiers return-type id
+                            (add-function-binding scope modifiers return-type
+                                                  (send id get-id)
                                                   parameter-types throws)
                             (node->bindings parameters local-scope)
                             (node->bindings body local-scope)))
@@ -136,7 +137,8 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope)
-                          (add-variable-binding scope '(final) type id))
+                          (add-variable-binding scope '(final) type
+                                                (send id get-id)))
 
          (super-instantiate ())))
 

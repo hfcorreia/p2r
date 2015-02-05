@@ -109,6 +109,7 @@
 
          (define/override (->type-check)
                           (map (lambda (var)
+                                 (send (car var) set-type! type)
                                  (node->type-check (cadr var))
                                  (check-node-type (cadr var)))
                                vars))
@@ -116,7 +117,10 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-variable-binding scope modifiers type (car var)))
+                                 (add-variable-binding scope modifiers type
+                                                       (send (car var) get-id))
+                                 (node->bindings (car var) scope)
+                                 (node->bindings (cadr var) scope))
                                vars))
 
          ;;; check-node-type: ast-node% -> (or/c any error)
@@ -188,7 +192,8 @@
                                                          (send x get-type))
                                                        parameters)])
                             (set-scope! local-scope)
-                            (add-function-binding scope modifiers return-type id
+                            (add-function-binding scope modifiers return-type
+                                                  (send id get-id)
                                                   parameter-types throws)
                             (node->bindings parameters local-scope)
                             (node->bindings body local-scope)))
