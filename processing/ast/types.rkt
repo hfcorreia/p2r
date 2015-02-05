@@ -1,10 +1,6 @@
-#lang racket/base
+#lang racket
 
 (provide (all-defined-out))
-
-(require racket/class
-         racket/bool
-         "ast.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type nodes
@@ -125,7 +121,7 @@
 ;; checks if types are correct in binary operators
 ;; return the final type for the operation or
 ;; an error symbol
-(define (binary-operator-type op left right)
+(define (binary-op-type-check? op left right)
   (case op
     [(* / % *= /= %= -= -)
      (if (binary-check numeric-type? left right)

@@ -4,7 +4,10 @@
 
 (require racket/class
          racket/undefined
-         "ast.rkt")
+         "ast.rkt"
+         "types.rkt"
+         "bindings.rkt"
+         "errors.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST expression nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -16,7 +19,8 @@
 
          (define/public (get-type) type-info)
 
-         (define/public (set-type! type) (set! type-info type))
+         (define/public (set-type! type)
+                        (set! type-info type))
 
          (define/override (->racket)
                           (read-error (format "Invalid use of ->racket ~a" this)))
@@ -52,7 +56,9 @@
                           (node->type-check args))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings primary scope)
+                          (node->bindings args scope))
 
          (super-instantiate ())))
 
@@ -73,10 +79,16 @@
                             `(#:send ,(node->racket primary)
                               ,(node->racket id))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (and (not (null? primary))
+                               (node->type-check primary))
+                          (node->type-check id))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (and (not (null? primary))
+                               (node->bindings primary scope))
+                          (node->bindings id scope))
 
          (super-instantiate ())))
 
@@ -84,7 +96,7 @@
   (class expression%
          (init-field id-list identifier)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type! get-scope get-type)
 
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
@@ -99,7 +111,12 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (and (eq? (get-type) undefined)
+                               (set-type!
+                                 (send
+                                 (send (get-scope) get-binding this)
+                                 get-type))))
 
          (define/override (->bindings scope)
                           (set-scope! scope))
@@ -120,24 +137,29 @@
   (class expression%
          (init-field name)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/override (->racket)
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
                                (node->racket name)]
+                              ; awful to support x.lenght
                               [(eq? 'length (send name get-id))
                                `(p-array-length ,(send name get-full-id)
                                                 ,(node->racket name))]
+                              ; call fields
                               [else
                                 `(get-field ,(node->racket name)
                                             ,(send name get-full-id))])))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check name)
+                          (set-type! (send name get-type)))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings name scope))
 
          (super-instantiate ())))
 
@@ -149,7 +171,7 @@
          (inherit ->syntax-object set-scope! set-type! get-type type-error)
 
          (define/override (->racket)
-                          (->syntax-object (build-literal)))
+                          (->syntax-object value))#| (build-literal)))|#
 
          (define/override (->type-check)
                           (set-type! literal-type))
@@ -171,24 +193,32 @@
 
 (define binary-op%
   (class expression%
-         (init-field operator arg1 arg2)
+         (init-field op arg1 arg2)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/override (->racket)
                           (->syntax-object
-                            `(,p-operator ,(node->racket arg1)
-                                          ,(node->racket arg2))))
+                            `(,p-op ,(node->racket arg1)
+                                    ,(node->racket arg2))))
 
          (define/override (->type-check)
                           (node->type-check arg1)
-                          (node->type-check arg2))
+                          (node->type-check arg2)
+                          (let* ([t1 (send arg1 get-type)]
+                                 [t2 (send arg2 get-type)]
+                                 [result (binary-op-type-check? op t1 t2)])
+                            (if (eq? 'error result)
+                              (binary-error this t1 t2)
+                              (set-type! result))))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings arg1 scope)
+                          (node->bindings arg1 scope))
 
-         (define p-operator
-           (case operator
+         (define p-op
+           (case op
              ['+ 'p-add]
              ['- 'p-sub]
              ['* 'p-mul]
@@ -227,7 +257,8 @@
                           (node->type-check arg))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings arg scope))
          (define p-operator
            (case operator
              ['+ 'p-pos]
@@ -258,7 +289,9 @@
                           (node->type-check right-val))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings left-val scope)
+                          (node->bindings right-val scope))
 
          (define assignment-operator
            (case operator
@@ -279,45 +312,42 @@
 
 (define left-value%
   (class expression%
-         (init-field value type)
+         (init-field value left-value-type)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-left-value ,@generate ,key-type)))
+                            `(p-left-value ,@(generate))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check value))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings value scope))
 
          (define (check-type)
-           (set! type
-             (case type
+           (set! left-value-type
+             (case left-value-type
                ['name (if (null? (send value get-list))
                         'name
                         'qual-name)]
-               [else type])))
+               [else left-value-type])))
 
-
-         (define key-type
-           (begin
-             (check-type)
-             (case type
-               ['qual-name  '#:qual-name]
-               ['name       '#:name]
-               ['field      '#:field]
-               ['array      '#:array])))
-
-         (define generate
-           (begin
-             (check-type)
-             (case type
-               ['name       (list (node->racket value))]
-               ['qual-name  (list (send value get-id) (send value get-full-id))]
-               ['field      (list (send value get-id) (send value get-primary))]
-               ['array      (list (send value get-id) (send value get-expr))])))
+         (define (generate)
+           (check-type)
+           (case left-value-type
+             ['name       (list (node->racket value) '#:name)]
+             ['qual-name  (list (send value get-id)
+                                (send value get-full-id)
+                                '#:name)]
+             ['field      (list (send value get-id)
+                                (send value get-primary)
+                                '#:field)]
+             ['array      (list (send value get-id)
+                                (send value get-expr)
+                                '#:array)]))
 
          (super-instantiate ())))
 
@@ -360,10 +390,12 @@
                           (->syntax-object
                             (node->racket expr)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check expr))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings expr scope))
 
          (super-instantiate ())))
 
@@ -381,10 +413,14 @@
                             `(vector-ref ,(node->racket id)
                                          ,(node->racket expr))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check id)
+                          (node->type-check expr))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings id scope)
+                          (node->bindings expr scope))
 
          (super-instantiate ())))
 
@@ -398,9 +434,11 @@
                           (->syntax-object
                             `(vector ,@(node->racket initializers))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (node->type-check initializers))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings initializers scope))
 
          (super-instantiate ())))

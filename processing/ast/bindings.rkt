@@ -2,67 +2,83 @@
 
 (provide (all-defined-out))
 
-(define binding-scope<%>
-  (interface ()
-             add-binding
-             is-bound?
-             is-global?
-             is-local?))
-
 (define global-scope%
-  (class* object% (binding-scope<%>)
-          (define scope '())
+  (class object%
+         (field [child null])
 
-          (define/public (add-binding id)
-                         (set! scope (cons id scope)))
+         (define scope (make-hash))
 
-          (define/public (is-bound? id)
-                         (member id scope))
+         (define/public (get-binding id)
+                        (hash-ref scope (send id get-id)))
 
-          (define/public (is-global? id) #t)
+         (define/public (get-scope) scope)
 
-          (define/public (is-local? id) #f)
+         (define/public (add-binding binding)
+                        (hash-set! scope (send binding get-id) binding))
 
-          (define/public (get-scope) scope)
+         (define/public (is-bound? id)
+                        (hash-has-key? scope id))
 
-          (super-instantiate ())))
+         (define/public (is-global? id)
+                        (hash-has-key? scope id))
 
+         (define/public (is-local? id) #f)
+
+
+         (define/public (get-child-scope) child)
+
+         (define/public (push-new-scope)
+                        (set! child (make-object local-scope% this)))
+
+         (super-instantiate ())))
 
 (define local-scope%
-  (class* object% (binding-scope<%>)
-          (init-field parent-scope)
+  (class global-scope%
+         (init-field parent)
 
-          (define scope '())
+         (define scope (make-hash))
 
-          (define/public (add-binding id)
-                         (set! scope (cons id scope)))
+         (define/override (get-binding id)
+                          (hash-ref scope
+                                    id
+                                    (lambda () (send parent get-binding id))))
 
-          (define/public (is-bound? id)
-                         (or (is-local? id)
-                             (is-global? id)))
+         (define/override (is-bound? id)
+                          (or (is-local? id)
+                              (is-global? id)))
 
-          (define/public (is-global? id)
-                         (send parent-scope is-global? id))
+         (define/override (is-global? id)
+                          (send parent is-global? id))
 
-          (define/public (is-local? id)
-                         (member id scope))
+         (define/override (is-local? id)
+                          (hash-has-key? scope id))
 
-          (define/public (get-scope) scope)
-
-          (super-instantiate ())))
+         (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; add-function:
+;;  (or/c local-scope% global-scope%)
+;;  (list/of mod-symbol)
+;;  type-symbol
+;;  symbol
+;;  (list/of type-symbol)
+;;  type-symbol
 (define-syntax-rule
-  (add-function-binding scope modifiers return-type id parameters throws)
+  (add-function scope modifiers return-type id parameters-types throws)
   (send scope
         add-binding
-        (make-object function-binding% modifiers return-type parameters throws id)))
+        (make-object function-binding% modifiers return-type parameters-types throws id)))
 
+;; add-variable:
+;;  (or/c local-scope% global-scope%)
+;;  (list/of mod-symbol)
+;;  type-symbol
+;;  symbol
 (define-syntax-rule
-  (add-variable-binding scope modifiers type id)
+  (add-variable scope modifiers type id)
   (send scope
         add-binding
         (make-object variable-binding% modifiers type id)))
@@ -91,7 +107,6 @@
          (init-field modifiers type)
 
          (define/public (get-modifiers) modifiers)
-
          (define/public (get-type) type)
 
          (super-instantiate ())))
