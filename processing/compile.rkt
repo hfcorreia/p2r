@@ -18,11 +18,19 @@
       #:mode 'text)
     (parse-processing file input-port)))
 
+;;; type-check : ast -> (or/c #t type-error)
+;;; traverse the ast checking if types are correct
+(define (type-check ast)
+  (node->type-check ast))
+
+;;; bindings-check : ast -> (or/c #t type-error)
+;;; traverse the ast and create the necessary scopes
+(define (bindings-check ast)
+  (node->bindings ast (make-object global-scope%)))
+
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
 (define (compile-processing ast)
-  (node->bindings ast (make-object global-scope%))
-  (node->type-check ast)
   (node->racket ast))
 
 ;;; compile-processing-repl : ast -> (listof syntax-object?)
