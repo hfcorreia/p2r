@@ -7,6 +7,8 @@
          syntax/readerr
          racket/undefined
 
+         "todo.rkt"
+
          "mode.rkt"
          "lexer.rkt"
          "ast/ast.rkt"
@@ -241,11 +243,11 @@
 
       (<single-type-import-declaration>
         [(import <name> semicolon)
-         (make-object todo-node% null 'import (build-src 2))])
+         (make-todo 'import (build-src 2))])
 
       (<type-import-on-demand-declaration>
         [(import <name> period * semicolon)
-         (make-object todo-node% null 'import (build-src 2))])
+         (make-todo 'import (build-src 2))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Requires - extention to support racket modules
@@ -275,19 +277,19 @@
 
       (<class-declaration>
         [(<modifiers> class identifier <super> <interfaces> <class-body>)
-         (make-object todo-node% (list $1 $3 $4 $5) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(<modifiers> class identifier <super> <class-body>)
-         (make-object todo-node% (list $1 $4 $5) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(<modifiers> class identifier <interfaces> <class-body>)
-         (make-object todo-node% (list $1 $4 $5) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(<modifiers> class identifier <class-body>)
-         (make-object todo-node% (list $1 $4) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(class identifier <super> <interfaces> <class-body>)
-         (make-object todo-node% (list $3 $4 $5) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(class identifier <super> <class-body>)
-         (make-object todo-node% (list $3 $4) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(class identifier <interfaces> <class-body>)
-         (make-object todo-node% (list $3 $4) 'class-decl (build-src 1))]
+         (make-todo 'class-decl (build-src 1))]
         [(class identifier <class-body>)
          (make-object class-node%
                       (make-object identifier% null $2 (build-src 2))
@@ -296,11 +298,11 @@
 
       (<super>
         [(extends <class-type>)
-         (make-object todo-node% $2 'super-class-type (build-src 1))])
+         (make-todo 'super-class-type (build-src 1))])
 
       (<interfaces>
         [(implements <interface-type-list>)
-         (make-object todo-node% $2 'implments-types (build-src 1))])
+         (make-todo 'implments-types (build-src 1))])
 
       (<interface-type-list>
         [(<interface-type>) (list $1)]
@@ -378,9 +380,9 @@
         [(identifier l-paren r-paren)
          (cons (make-object identifier% null $1 (build-src 1)) null)]
         [(identifier l-paren <formal-parameter-list> r-paren <dims>)
-         (make-object todo-node% (list $3 $5) 'method-declarator (build-src 2))]
+         (make-todo 'method-declarator (build-src 2))]
         [(identifier l-paren r-paren <dims>)
-         (make-object todo-node% $4 'method-declarator (build-src 2))])
+         (make-todo 'method-declarator (build-src 2))])
 
       (<formal-parameter-list>
         [(<formal-parameter>) (list $1)]
@@ -394,7 +396,7 @@
 
       (<throws>
         [(throws <class-type-list>)
-         (make-object todo-node% $2 'throws (build-src 2))])
+         (make-todo 'throws (build-src 2))])
 
       (<class-type-list>
         [(<class-type>) (list $1)]
@@ -408,39 +410,39 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<constructor-declaration>
         [(<modifiers> <constructor-declarator> <throws> <constructor-body>)
-         (make-object todo-node% (list $1 $2 $3 $4) 'construct-decl (build-src 1))]
+         (make-todo 'construct-decl (build-src 1))]
         [(<modifiers> <constructor-declarator> <constructor-body>)
-         (make-object todo-node% (list $1 $2 $3) 'construct-decl (build-src 1))]
+         (make-todo 'construct-decl (build-src 1))]
         [(<constructor-declarator> <throws> <constructor-body>)
-         (make-object todo-node% (list $1 $2 $3) 'construct-decl (build-src 1))]
+         (make-todo 'construct-decl (build-src 1))]
         [(<constructor-declarator> <constructor-body>)
-         (make-object todo-node% (list $1 $2) 'construct-decl (build-src 1))])
+         (make-todo 'construct-decl (build-src 1))])
 
       (<constructor-declarator>
         [(identifier l-paren <formal-parameter-list> r-paren)
-         (make-object todo-node% $3 'construct-declarator (build-src 1))]
+         (make-todo 'construct-declarator (build-src 1))]
         [(identifier l-paren r-paren)
-         (make-object todo-node% null 'construct-declarator (build-src 1))])
+         (make-todo 'construct-declarator (build-src 1))])
 
       (<constructor-body>
         [(l-cbrack <explicit-constructor-invocation> <block-stmts> r-cbrack)
-         (make-object todo-node% (list $2 $3) 'construct-body (build-src 2))]
+         (make-todo 'construct-body (build-src 2))]
         [(l-cbrack <explicit-constructor-invocation> r-cbrack)
-         (make-object todo-node% $2 'construct-body (build-src 2))]
+         (make-todo 'construct-body (build-src 2))]
         [(l-cbrack <block-stmts> r-cbrack)
-         (make-object todo-node% $2 'construct-body (build-src 2))]
+         (make-todo 'construct-body (build-src 2))]
         [(l-cbrack r-cbrack)
-         (make-object todo-node% null 'construct-body (build-src 2))])
+         (make-todo 'construct-body (build-src 2))])
 
       (<explicit-constructor-invocation>
         [(this l-paren <args> r-paren semicolon)
-         (make-object todo-node% $3 'constrct-invocation (build-src 1))]
+         (make-todo 'constrct-invocation (build-src 1))]
         [(this l-paren r-paren semicolon)
-         (make-object todo-node% null 'constrct-invocation (build-src 1))]
+         (make-todo 'constrct-invocation (build-src 1))]
         [(super l-paren <args> r-paren semicolon)
-         (make-object todo-node% $3 'constrct-super-invocation (build-src 1))]
+         (make-todo 'constrct-super-invocation (build-src 1))]
         [(super l-paren r-paren semicolon)
-         (make-object todo-node% null 'constrct-super-invocation (build-src 1))])
+         (make-todo 'constrct-super-invocation (build-src 1))])
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Array init
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -482,7 +484,7 @@
         [(identifier)
          (make-object identifier% null $1 (build-src 1))]
         [(identifier <dims>)
-         (make-object todo-node% $1 'var-declartor-id (build-src 1))])
+         (make-todo 'var-declartor-id (build-src 1))])
 
       (<var-initializer>
         [(<expr>) $1]
@@ -616,25 +618,25 @@
 
       (<labeled-stmt>
         [(identifier : <stmt>)
-         (make-object todo-node% $3 'labeld-stmt (build-src 1))])
+         (make-todo 'labeld-stmt (build-src 1))])
 
       (<labeled-stmt-no-short-if>
         [(identifier : <stmt-no-short-if>)
-         (make-object todo-node% $3 'labeld-stmt-no-if (build-src 1))])
+         (make-todo 'labeld-stmt-no-if (build-src 1))])
 
       (<switch-stmt>
         [(switch l-paren <expr> r-paren <switch-block>)
-         (make-object todo-node% (list $3 $5) 'switch-stmt (build-src 1))])
+         (make-todo 'switch-stmt (build-src 1))])
 
       (<switch-block>
         [(l-cbrack <switch-block-stmt-groups> <switch-labels> r-cbrack)
-         (make-object todo-node% (list $2 $3) 'switch-block (build-src 2))]
+         (make-todo 'switch-block (build-src 2))]
         [(l-cbrack <switch-block-stmt-groups> r-cbrack)
-         (make-object todo-node% $2 'switch-block (build-src 2))]
+         (make-todo 'switch-block (build-src 2))]
         [(l-cbrack <switch-labels> r-cbrack)
-         (make-object todo-node% $2 'switch-block (build-src 2))]
+         (make-todo 'switch-block (build-src 2))]
         [(l-cbrack r-cbrack)
-         (make-object todo-node% null 'switch-block (build-src 2))])
+         (make-todo 'switch-block (build-src 2))])
 
       (<switch-block-stmt-groups>
         [(<switch-block-stmt-group>) (list $1)]
@@ -642,7 +644,7 @@
 
       (<switch-block-stmt-group>
         [(<switch-labels> <block-stmts>)
-         (make-object todo-node% (list $1 $2) 'switch-block-stmt-group (build-src 1))])
+         (make-todo 'switch-block-stmt-group (build-src 1))])
 
       (<switch-labels>
         [(<switch-label>) $1]
@@ -650,19 +652,19 @@
 
       (<switch-label>
         [(case <constant-expr> :)
-         (make-object todo-node% $2 'switch-case (build-src 1))]
+         (make-todo 'switch-case (build-src 1))]
         [(default :)
-         (make-object todo-node% null 'switch-default (build-src 1))])
+         (make-todo 'switch-default (build-src 1))])
 
       (<break-stmt>
         [(break identifier semicolon)
-         (make-object todo-node% null 'break (build-src 1))]
+         (make-todo 'break (build-src 1))]
         [(break semicolon)
          (make-object break% (build-src 1))])
 
       (<continue-stmt>
         [(continue identifier semicolon)
-         (make-object todo-node% null 'continue (build-src 1))]
+         (make-todo 'continue (build-src 1))]
         [(continue semicolon)
          (make-object continue% (build-src 1))])
 
@@ -674,19 +676,19 @@
 
       (<synchronized-stmt>
         [(synchronized l-paren <expr> r-paren <block>)
-         (make-object todo-node% (list $3 $5) 'synchronized (build-src 1))])
+         (make-todo 'synchronized (build-src 1))])
 
       (<throw-stmt>
         [(throw <expr> semicolon)
-         (make-object todo-node% $2 'throw (build-src 1))])
+         (make-todo 'throw (build-src 1))])
 
       (<try-stmt>
         [(try <block> <catches>)
-         (make-object todo-node% (list $2 $3) 'try (build-src 1))]
+         (make-todo 'try (build-src 1))]
         [(try <block> <catches> <finally-stmt>)
-         (make-object todo-node% (list $2 $3 $4) 'try (build-src 1))]
+         (make-todo 'try (build-src 1))]
         [(try <block> <finally-stmt>)
-         (make-object todo-node% (list $2 $3) 'try (build-src 1))])
+         (make-todo 'try (build-src 1))])
 
       (<catches>
         [(<catch-clause>) (list $1)]
@@ -694,11 +696,11 @@
 
       (<catch-clause>
         [(catch l-paren <formal-parameter> r-paren <block>)
-         (make-object todo-node% (list $3 $5) 'catch (build-src 1))])
+         (make-todo 'catch (build-src 1))])
 
       (<finally-stmt>
         [(finally <block>)
-         (make-object todo-node% $2 'finally-stmt (build-src 1))])
+         (make-todo 'finally-stmt (build-src 1))])
 
       (<primary>
         [(<primary-no-new-array>) $1]
@@ -722,9 +724,9 @@
                       (make-object identifier% null $3 (build-src 3))
                       (build-src 1 3))]
         [(super period identifier)
-         (make-object todo-node% null 'super-field-access (build-src 1))]
+         (make-todo 'super-field-access (build-src 1))]
         [(<name> period super period identifier)
-         (make-object todo-node% $1 'name-super-field-access (build-src 1))])
+         (make-todo 'name-super-field-access (build-src 1))])
 
       (<array-access>
         [(<name> l-sbrack <expr> r-sbrack)
@@ -767,13 +769,13 @@
                       (build-src 1 5))]
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         [(super period identifier l-paren <args> r-paren)
-         (make-object todo-node% $5 'super-method-call (build-src 1))]
+         (make-todo 'super-method-call (build-src 1))]
         [(super period identifier l-paren r-paren)
-         (make-object todo-node% null 'super-method-call (build-src 1))]
+         (make-todo 'super-method-call (build-src 1))]
         [(<name> period super period identifier l-paren <args> r-paren)
-         (make-object todo-node% (list $1 $7) 'method-call (build-src 1))]
+         (make-todo 'method-call (build-src 1))]
         [(<name> period super period identifier l-paren r-paren)
-         (make-object todo-node% $1 'method-call (build-src 1))])
+         (make-todo 'method-call (build-src 1))])
 
       (<data-conversion>
         [(int)     (make-object identifier% null "int"     (build-src 1))]
@@ -790,28 +792,28 @@
 
         ;; TODO
         [(new <class-or-interface-type> l-paren <args> r-paren <class-body>)
-         (make-object todo-node% (list $2 $4 $6) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(new <class-or-interface-type> l-paren r-paren <class-body>)
-         (make-object todo-node% (list $2 $5) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
 
 
         [(<primary> period new identifier l-paren <args> r-paren <class-body>)
-         (make-object todo-node% (list $1 $6 $8) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<primary> period new identifier l-paren r-paren <class-body>)
-         (make-object todo-node% (list $1 $7) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<primary> period new identifier l-paren <args> r-paren)
-         (make-object todo-node% (list $1 $6) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<primary> period new identifier l-paren r-paren)
-         (make-object todo-node% $1 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
 
         [(<name> period new identifier l-paren <args> r-paren <class-body>)
-         (make-object todo-node% (list $1 $6 $8) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<name> period new identifier l-paren r-paren <class-body>)
-         (make-object todo-node% (list $1 $7) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<name> period new identifier l-paren <args> r-paren)
-         (make-object todo-node% (list $1 $6) 'new (build-src 1))]
+         (make-todo 'new (build-src 1))]
         [(<name> period new identifier l-paren r-paren)
-         (make-object todo-node% $1 'new (build-src 1))])
+         (make-todo 'new (build-src 1))])
 
       (<color-instance-creation>
         [(color l-paren <args> r-paren)
@@ -893,13 +895,13 @@
 
       (<cast-expr>
         [(l-paren <primitive-type> <dims> r-paren <unary-expr>)
-         (make-object todo-node% (list $2 $3 $5) 'cast-expr (build-src 2))]
+         (make-todo 'cast-expr (build-src 2))]
         [(l-paren <primitive-type> r-paren <unary-expr>)
-         (make-object todo-node% (list $2 $4) 'cast-expr (build-src 2))]
+         (make-todo 'cast-expr (build-src 2))]
         [(l-paren <expr> r-paren <unary-expr-not-plus-minus>)
-         (make-object todo-node% (list $2 $4) 'cast-expr (build-src 2))]
+         (make-todo 'cast-expr (build-src 2))]
         [(l-paren <name> <dims> r-paren <unary-expr-not-plus-minus>)
-         (make-object todo-node% (list $2 $3 $5) 'cast-expr (build-src 2))])
+         (make-todo 'cast-expr (build-src 2))])
 
       (<multiplicative-expr>
         [(<unary-expr>) $1]
@@ -974,7 +976,7 @@
       (<conditional-expr>
         [(<conditional-or-expr>) $1]
         [(<conditional-or-expr> ? <expr> : <conditional-expr>)
-         (make-object todo-node% (list $1 $3 $5) 'ternary-op (build-src 1))])
+         (make-todo 'ternary-op (build-src 1))])
 
       (<assignment-expr>
         [(<conditional-expr>) $1]

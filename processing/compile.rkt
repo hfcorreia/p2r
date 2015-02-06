@@ -2,6 +2,8 @@
 
 (provide compile-processing
          compile-processing-repl
+         type-check
+         bindings-check
          build-ast)
 
 (require "ast/ast.rkt"

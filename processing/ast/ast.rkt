@@ -118,33 +118,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Debug stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define todo? #f)
-(define (clear-todo)
-  (set! todo? #f))
-
 (define todo-node%
   (class ast-node%
-         (init-field child msg)
+         (init-field msg)
 
          (inherit ->syntax-object read-error)
 
          (define/override (->racket)
-                          (clear-todo)
-                          (->syntax-object
-                            (aux child)))
+                          (read-error (format "TODO: ~a" msg)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) #f)
 
-         ;; aux funtion
-         (define (aux child)
-           (cond
-             [(list? child) (map (lambda (node)
-                                   (aux node))
-                                 child)]
-             [(is-a? child ast-node%) (send child ->racket)]
-             [else child]))
-
-         (define/override (->bindings scope) #t)
-
+         (define/override (->bindings scope) #f)
 
          (super-instantiate ())))

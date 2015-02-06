@@ -17,7 +17,7 @@ void setup() {
   }
 
   do {
-   println("once");
-    } while( i == 0 );
+    println("once");
+  } while( i == 0 );
 
 }

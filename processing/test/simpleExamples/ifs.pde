@@ -1,4 +1,5 @@
 #lang processing
+
 void foo() {
   if ( true )
     println("foo",true);
