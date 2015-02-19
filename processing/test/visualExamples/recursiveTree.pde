@@ -1,7 +1,7 @@
 #lang processing
 
-float fmax = 0.75;
-float fmin = 0.7;
+float fmax = 0.79;
+float fmin = 0.69;
 float da = PI/6;
 float db = PI/5; 
 
@@ -21,7 +21,6 @@ void tree(float x, float y, float len, float ang) {
 }
 
 void setup(){
-    backend(tikz);
+    backend(autocad);
     tree(0,0,100,PI/2);
-    generateTikz("tree");
 }
