@@ -1,33 +1,15 @@
 #lang racket
 
-(provide (all-defined-out)
-         (all-from-out "environment.rkt"
-                       "operators.rkt"
-                       "data.rkt"
-                       "shapes.rkt"
-                       "color.rkt"
-                       "math.rkt"
-                       "constants.rkt"
-                       "objects.rkt"
-                       "output.rkt"))
+(provide (all-defined-out))
 
 (require racket/undefined
          racket/require
          syntax/readerr
-         "../mode.rkt"
-         "../name-mangling.rkt"
-         (for-syntax "../name-mangling.rkt")
+         "mode.rkt"
+         "name-mangling.rkt"
+         (for-syntax "name-mangling.rkt")
 
-         ;; Processing API
-         "environment.rkt"
-         "operators.rkt"
-         "data.rkt"
-         "shapes.rkt"
-         "color.rkt"
-         "math.rkt"
-         "constants.rkt"
-         "objects.rkt"
-         "output.rkt")
+         "processing/api.rkt")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -138,6 +120,7 @@
   (syntax-case stx ()
     [(_ id args ...)
      #'(make-object id args ...)]))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; require racket modules
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

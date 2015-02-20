@@ -9,7 +9,7 @@
          "errors.rkt"
          "bindings.rkt"
          "types.rkt"
-         "../lib/runtime.rkt")
+         "../macros.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes

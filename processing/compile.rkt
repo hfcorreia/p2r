@@ -33,6 +33,8 @@
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
 (define (compile-processing ast)
+  (bindings-check ast)
+  (node->type-check ast)
   (node->racket ast))
 
 ;;; compile-processing-repl : ast -> (listof syntax-object?)

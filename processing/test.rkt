@@ -44,10 +44,11 @@
   (test-suite
     (format "Testing ~a" path)
     (test-parser      path)
-    (test-bindings    path)
-    ;; (test-types       path)
+    ;;(test-bindings    path)
+    ;;(test-types       path)
     (test-compilation path)
-    (test-runtime     path)))
+ ;  (test-runtime     path)
+  ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils

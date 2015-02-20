@@ -1,6 +1,8 @@
 #lang racket
 
 (provide  (all-from-out racket)
-          (all-from-out "../lib/runtime.rkt"))
+          (all-from-out "../processing/api.rkt")
+          (all-from-out "../macros.rkt"))
 
-(require "../lib/runtime.rkt")
+(require "../processing/api.rkt"
+         "../macros.rkt")
