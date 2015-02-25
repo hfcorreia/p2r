@@ -93,23 +93,23 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<literal>
         [(int-lit)
-         (make-object literal% $1 'int (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'int) (build-src 1))]
         [(long-lit)
-         (make-object literal% $1 'long (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'long) (build-src 1))]
         [(float-lit)
-         (make-object literal% $1 'float (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'float) (build-src 1))]
         [(double-lit)
-         (make-object literal% $1 'double (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'double) (build-src 1))]
         [(boolean-lit)
-         (make-object literal% $1 'boolean (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'boolean) (build-src 1))]
         [(string-lit)
-         (make-object literal% $1 'String (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'String) (build-src 1))]
         [(char-lit)
-         (make-object literal% $1 'char (build-src 1))]
+         (make-object literal% $1 (make-object primitive-type% 'char) (build-src 1))]
         [(null-lit)
-         (make-object literal% null 'null (build-src 1))]
+         (make-object literal% null (make-object primitive-type% 'null) (build-src 1))]
         [(color-lit)
-         (make-object literal% $1 'color (build-src 1))])
+         (make-object literal% $1 (make-object primitive-type% 'color) (build-src 1))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Types
@@ -121,23 +121,23 @@
 
       (<primitive-type>
         [(<numeric-type>) $1]
-        [(color) 'color]
-        [(boolean) 'boolean])
+        [(color)   (make-object primitive-type% 'color)]
+        [(boolean) (make-object primitive-type% 'boolean)])
 
       (<numeric-type>
         [(<integral-type>) $1]
         [(<floating-type>) $1])
 
       (<integral-type>
-        [(byte)   'byte]
-        [(short)  'short]
-        [(int)    'int]
-        [(long)   'long]
-        [(char)   'char])
+        [(byte)   (make-object primitive-type% 'byte)]
+        [(short)  (make-object primitive-type% 'short)]
+        [(int)    (make-object primitive-type% 'int)]
+        [(long)   (make-object primitive-type% 'long)]
+        [(char)   (make-object primitive-type% 'char)])
 
       (<floating-type>
-        [(float)  'float]
-        [(double) 'double])
+        [(float)  (make-object primitive-type% 'float)]
+        [(double) (make-object primitive-type% 'double)])
 
       (<void>
         [(void)     (make-object primitive-type% 'void)])

@@ -109,7 +109,7 @@
 
          (define/override (->type-check)
                           (map (lambda (var)
-                                 (send (car var) set-type! type)
+                                 (send (car var) set-type! type) ; set types 
                                  (node->type-check (cadr var))
                                  (check-node-type (cadr var)))
                                vars))
@@ -117,8 +117,7 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-variable scope modifiers type
-                                                     (send (car var) get-id))
+                                 (add-variable scope modifiers type (send (car var) get-id))
                                  (node->bindings (car var) scope)
                                  (node->bindings (cadr var) scope))
                                vars))
@@ -193,8 +192,8 @@
                                                        parameters)])
                             (set-scope! local-scope)
                             (add-function scope modifiers return-type
-                                                  (send id get-id)
-                                                  parameter-types throws)
+                                          (send id get-id)
+                                          parameter-types throws)
                             (node->bindings parameters local-scope)
                             (node->bindings body local-scope)))
 

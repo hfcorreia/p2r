@@ -5,7 +5,6 @@ int int_b = 'c';
 int int_c = 0x1111;
 int int_d = 077;
 
-
 float float_a = 100;
 float float_b = 1.0;
 float float_c = 1.0f;
@@ -20,8 +19,4 @@ long long_c = 1000L;
 long long_d = 1000l;
 
 char char_a = '0';
-char char_b = 10;
-
-int foo() {
-  return 2;
-}
+char char_b = 40;

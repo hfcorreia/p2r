@@ -112,11 +112,10 @@
                           (->syntax-object (identifier->symbol)))
 
          (define/override (->type-check)
-                          (and (eq? (get-type) undefined)
-                               (set-type!
-                                 (send
-                                 (send (get-scope) get-binding this)
-                                 get-type))))
+                          (set-type! (send (send (get-scope)
+                                                 get-binding
+                                                 (get-id))
+                                           get-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope))
@@ -171,7 +170,7 @@
          (inherit ->syntax-object set-scope! set-type! get-type type-error)
 
          (define/override (->racket)
-                          (->syntax-object value))#| (build-literal)))|#
+                          (->syntax-object (build-literal)))
 
          (define/override (->type-check)
                           (set-type! literal-type))
@@ -180,10 +179,11 @@
                           (set-scope! scope))
 
          (define (build-literal)
-           (let ([type (get-type)])
+           (let ([type (send (get-type) get-type)])
              (case type
                [(float double) (exact->inexact value)]
-               [(undef char int long boolean short byte) value]
+               [(char) (if (eq? literal-type 'int) (integer->char value) value)]
+               [(undef int long boolean short byte) value]
                [(String color) value] ;maybe should not be here
                [(null) 'null]
                [else (type-error "Unknown type!")])))

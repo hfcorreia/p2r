@@ -9,7 +9,7 @@
          (define scope (make-hash))
 
          (define/public (get-binding id)
-                        (hash-ref scope (send id get-id)))
+                        (hash-ref scope id))
 
          (define/public (get-scope) scope)
 
