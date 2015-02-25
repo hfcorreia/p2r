@@ -38,16 +38,16 @@
   (test-case
     "Requiring module"
     (check-not-exn
-      (lambda () (dynamic-require path 0)))))
+      (lambda () (system (string-append "racket " (path->string path)))))))
 
 (define (full-tests path)
   (test-suite
     (format "Testing ~a" path)
     (test-parser      path)
-    ;;(test-bindings    path)
-    ;;(test-types       path)
+    (test-bindings    path)
+    (test-types       path)
     (test-compilation path)
- ;  (test-runtime     path)
+    (test-runtime     path)
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

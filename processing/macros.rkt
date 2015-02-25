@@ -5,24 +5,31 @@
 (require racket/undefined
          racket/require
          syntax/readerr
-         "mode.rkt"
+
          "name-mangling.rkt"
          (for-syntax "name-mangling.rkt")
 
          "processing/api.rkt")
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Macro transformations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; Checks if a function id is bound and calls it
+;;; Checks if setup and draw functions are bound and calls them if so
 (define-syntax (p-initialize stx)
   (syntax-case stx ()
-    [(_ id)
-     (if (identifier-binding #'id 0)
-       #'(id)
-       #'(void))]))
+    [(_)
+     (with-syntax
+       ([setup (datum->syntax stx 'setup)]
+        [draw  (datum->syntax stx 'draw)])
+       (cond
+         [(and (identifier-binding #'setup 0)  (identifier-binding #'draw 0))
+          #'(begin (setup) (draw))]
+         [(identifier-binding #'setup 0) #'(setup)]
+         [(identifier-binding #'draw 0)  #'(draw)]
+         [else #'(void)]))]))
 
 ;;; Call a global method
 (define-syntax p-call
@@ -74,7 +81,7 @@
 ;;; Global Stmt
 ;;;   If in active mode, global stmts are not allowed
 (define-syntax-rule
-  (p-active-mode? node src-loc)
+  (p-active-mode? node active-mode? src-loc)
   (if (active-mode?)
     (apply raise-read-error (cons "Mixing Static and Active Mode" src-loc))
     (void node)))

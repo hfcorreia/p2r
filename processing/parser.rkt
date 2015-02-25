@@ -8,8 +8,8 @@
          racket/undefined
 
          "todo.rkt"
-
          "mode.rkt"
+
          "lexer.rkt"
          "ast/ast.rkt"
          "ast/types.rkt"

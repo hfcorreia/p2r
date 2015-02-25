@@ -1,12 +1,10 @@
-#lang racket/base
+#lang racket
 
 (provide (all-defined-out))
 
 (require racket/class
          syntax/readerr
          "../mode.rkt"
-         "../macros.rkt"
-
          "bindings.rkt")
 
 ;;; node->racket : (or/c (listof ast-node%) ast-node%)
@@ -102,8 +100,7 @@
                             (append
                               (node->racket ast)
                               (list
-                                (->syntax-object `(p-initialize setup))
-                                (->syntax-object `(p-initialize draw))))
+                                (->syntax-object `(p-initialize))))
                             (node->racket ast)))
 
          (define/override (->type-check)

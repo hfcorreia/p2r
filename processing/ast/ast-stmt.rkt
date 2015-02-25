@@ -9,7 +9,7 @@
          "errors.rkt"
          "bindings.rkt"
          "types.rkt"
-         "../macros.rkt")
+         "../mode.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -64,6 +64,7 @@
                                     (is-a? stmt block%))
                               `(void ,(node->racket stmt))
                               `(p-active-mode? ,(node->racket stmt)
+                                               ,active-mode?
                                                ',(get-src-info)))))
 
          (define/override (->type-check)
@@ -109,7 +110,7 @@
 
          (define/override (->type-check)
                           (map (lambda (var)
-                                 (send (car var) set-type! type) ; set types 
+                                 (send (car var) set-type! type) ; set types
                                  (node->type-check (cadr var))
                                  (check-node-type (cadr var)))
                                vars))
@@ -138,8 +139,8 @@
            (let ([type (send type get-type)]
                  [literal-type (send literal get-type)])
              (cond
-               [(eq? 'undef literal-type)
-                (send literal set-type! 'undef)]
+            ;; [(send literal-type undef-type?)
+            ;;  (send literal set-type! literal-type)]
                [(or (type=? type literal-type)
                     (widening-primitive-conversion? type literal-type))
                 (send literal set-type! type)]

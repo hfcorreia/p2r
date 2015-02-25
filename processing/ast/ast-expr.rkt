@@ -111,11 +111,12 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check)
-                          (set-type! (send (send (get-scope)
-                                                 get-binding
-                                                 (get-id))
-                                           get-type)))
+         (define/override (->type-check) #f)
+                         ;(display (send (get-scope) get-binding (get-id)))
+                          ;(set-type! (send (send (get-scope)
+                          ;                      get-binding
+                          ;                      (get-id))
+                          ;                get-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope))
@@ -182,7 +183,7 @@
            (let ([type (send (get-type) get-type)])
              (case type
                [(float double) (exact->inexact value)]
-               [(char) (if (eq? literal-type 'int) (integer->char value) value)]
+               [(char) (if (send literal-type char-type?) value (integer->char value))]
                [(undef int long boolean short byte) value]
                [(String color) value] ;maybe should not be here
                [(null) 'null]
