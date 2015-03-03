@@ -95,13 +95,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type Structure:
 ;;;
-;;; symbol-type = 'null   | 'String | 'boolean
+;;; symbol-type = 'null   | 'boolean
 ;;;             | 'char   | 'byte   | 'short
 ;;;             | 'int    | 'long   | 'float
 ;;;             | 'double | 'void   | 'color
 ;;;
 ;;; reference-type = 'null
-;;;                | 'string
+;;;                | 'String
 ;;;                | reference-type%
 ;;;
 ;;; array-type = array-type%
@@ -111,7 +111,7 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; type=? : symbol symbol -> boolean
+;; type=? : type type -> boolean
 ;; checks if two type symbols are the same
 (define (type=? to-type from-type)
   (symbol=? (send to-type get-type)
@@ -145,7 +145,7 @@
 (define (binary-check predicate? t1 t2)
   (case predicate?
     ['numeric  (and (send t1 numeric-type?) (send t2 numeric-type?))]
-    ['String   (and (send t1 string-type?) (send  t2 string-type?))]
+    ['String   (or  (send t1 string-type?) (send  t2 string-type?))]
     ['boolean  (and (send t1 boolean-type?) (send t2 boolean-type?))]
     ['integral (and (send t1 integral-type?) (send t2 integral-type?))]))
 
@@ -161,7 +161,7 @@
        'error)]
     [(+ +=)
      (cond
-       [(binary-check 'String left right) (make-object primitive-type% 'String)]
+       [(binary-check 'String left right) (make-object reference-type% null 'String)]
        [(binary-check 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]
@@ -181,16 +181,21 @@
        ;      ((or right-to-left left-to-right) 'boolean)
        ;      (else (bin-op-equality-error 'both op l r src))))]
        [else 'error])]
-    [(& ^ or &= ^= or=)
+    [(<<  >> >>> <<= >>= >>>=)
+     (if (binary-check 'integral left right)
+       (unary-promotion left)
+       'error)]
+    [(& ^ pipe &= ^= or=)
      (cond
        [(binary-check 'integral left right)
         (binary-promotion left right)]
        [(binary-check 'boolean left right) (make-object primitive-type% 'boolean)]
        [else 'error])]
-    [(&& oror)
+    [(&& or)
      (if (binary-check 'boolean left right)
        (make-object primitive-type% 'boolean)
-       'error)]))
+       'error)]
+    [else 'error]))
 
 ;; binary-promotion: type type -> type
 (define (binary-promotion t1 t2)
@@ -201,3 +206,9 @@
       [(or (eq? 'float t1) (eq? 'float t2))  (make-object primitive-type% 'float)]
       [(or (eq? 'long t1) (eq? 'long t2))  (make-object primitive-type% 'long)]
       [else (make-object primitive-type% 'int)])))
+
+;; unary-promotion: type -> type
+(define (unary-promotion t)
+  (case t
+    [(byte shor char) t]
+    [else t]))

@@ -128,6 +128,7 @@
          (define (check-node-type node)
            (cond
              [(is-a? node literal%) (check-literal node)]
+             [(is-a? node binary-op%) (check-literal node)]
              ; array
              ; reference-type
              [else #t]))
@@ -136,8 +137,7 @@
          ;; checks if types are the same or can be promoted
          ;; produces type-error otherwise
          (define (check-literal literal)
-           (let ([type (send type get-type)]
-                 [literal-type (send literal get-type)])
+           (let ([literal-type (send literal get-type)])
              (cond
             ;; [(send literal-type undef-type?)
             ;;  (send literal set-type! literal-type)]

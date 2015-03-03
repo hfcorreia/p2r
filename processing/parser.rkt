@@ -103,7 +103,7 @@
         [(boolean-lit)
          (make-object literal% $1 (make-object primitive-type% 'boolean) (build-src 1))]
         [(string-lit)
-         (make-object literal% $1 (make-object primitive-type% 'String) (build-src 1))]
+         (make-object literal% $1 (make-object reference-type% null 'String) (build-src 1))]
         [(char-lit)
          (make-object literal% $1 (make-object primitive-type% 'char) (build-src 1))]
         [(null-lit)
@@ -115,8 +115,7 @@
       ;; Types
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<type>
-        [(<primitive-type>)
-         (make-object primitive-type% $1)]
+        [(<primitive-type>) $1]
         [(<reference-type>) $1])
 
       (<primitive-type>
@@ -906,77 +905,77 @@
       (<multiplicative-expr>
         [(<unary-expr>) $1]
         [(<multiplicative-expr> * <unary-expr>)
-         (make-object binary-op% '* $1 $3 (build-src 1))]
+         (make-object binary-op% '* $1 $3 (build-src 1 3))]
         [(<multiplicative-expr> / <unary-expr>)
-         (make-object binary-op% '/ $1 $3 (build-src 1))]
+         (make-object binary-op% '/ $1 $3 (build-src 1 3))]
         [(<multiplicative-expr> % <unary-expr>)
-         (make-object binary-op% '% $1 $3 (build-src 1))])
+         (make-object binary-op% '% $1 $3 (build-src 1 3))])
 
       (<additive-expr>
         [(<multiplicative-expr>) $1]
         [(<additive-expr> + <multiplicative-expr>)
-         (make-object binary-op% '+ $1 $3 (build-src 1))]
+         (make-object binary-op% '+ $1 $3 (build-src 1 3))]
         [(<additive-expr> - <multiplicative-expr>)
-         (make-object binary-op% '- $1 $3 (build-src 1))])
+         (make-object binary-op% '- $1 $3 (build-src 1 3))])
 
       (<shift-expr>
         [(<additive-expr>) $1]
         [(<shift-expr> << <additive-expr>)
-         (make-object binary-op% '<< $1 $3 (build-src 1))]
+         (make-object binary-op% '<< $1 $3 (build-src 1 3))]
         [(<shift-expr> >> <additive-expr>)
-         (make-object binary-op% '>> $1 $3 (build-src 1))]
+         (make-object binary-op% '>> $1 $3 (build-src 1 3))]
         [(<shift-expr> >>> <additive-expr>)
-         (make-object binary-op% '>>> $1 $3 (build-src 1))])
+         (make-object binary-op% '>>> $1 $3 (build-src 1 3))])
 
       (<relational-expr>
         [(<shift-expr>) $1]
         [(<shift-expr> < <shift-expr>)
-         (make-object binary-op% '< $1 $3 (build-src 1))]
+         (make-object binary-op% '< $1 $3 (build-src 1 3))]
         [(<relational-expr> > <shift-expr>)
-         (make-object binary-op% '> $1 $3 (build-src 1))]
+         (make-object binary-op% '> $1 $3 (build-src 1 3))]
         [(<relational-expr> <= <shift-expr>)
-         (make-object binary-op% '<= $1 $3 (build-src 1))]
+         (make-object binary-op% '<= $1 $3 (build-src 1 3))]
         [(<relational-expr> >= <shift-expr>)
-         (make-object binary-op% '>= $1 $3 (build-src 1))]
+         (make-object binary-op% '>= $1 $3 (build-src 1 3))]
         [(<relational-expr> instanceof <reference-type>)
-         (make-object binary-op% 'instanceof $1 $3 (build-src 1))])
+         (make-object binary-op% 'instanceof $1 $3 (build-src 1 3))])
 
       (<equality-expr>
         [(<relational-expr>) $1]
         [(<equality-expr> == <relational-expr>)
-         (make-object binary-op% '== $1 $3 (build-src 1))]
+         (make-object binary-op% '== $1 $3 (build-src 1 3))]
         [(<equality-expr> != <relational-expr>)
-         (make-object binary-op% '!= $1 $3 (build-src 1))])
+         (make-object binary-op% '!= $1 $3 (build-src 1 3))])
 
       (<and-expr>
         [(<equality-expr>) $1]
         [(<and-expr> & <equality-expr>)
-         (make-object binary-op% '& $1 $3 (build-src 1))])
+         (make-object binary-op% '& $1 $3 (build-src 1 3))])
 
       (<exclusive-or-expr>
         [(<and-expr>) $1]
         [(<exclusive-or-expr> ^ <and-expr>)
-         (make-object binary-op% '^ $1 $3 (build-src 1))])
+         (make-object binary-op% '^ $1 $3 (build-src 1 3))])
 
       (<inclusive-or-expr>
         [(<exclusive-or-expr>) $1]
         [(<inclusive-or-expr> PIPE <exclusive-or-expr>)
-         (make-object binary-op% 'pipe $1 $3 (build-src 1))])
+         (make-object binary-op% 'pipe $1 $3 (build-src 1 3))])
 
       (<conditional-and-expr>
         [(<inclusive-or-expr>) $1]
         [(<conditional-and-expr> && <inclusive-or-expr>)
-         (make-object binary-op% '&& $1 $3 (build-src 1))])
+         (make-object binary-op% '&& $1 $3 (build-src 1 3))])
 
       (<conditional-or-expr>
         [(<conditional-and-expr>) $1]
         [(<conditional-or-expr> OR <conditional-and-expr>)
-         (make-object binary-op% 'or $1 $3 (build-src 1))])
+         (make-object binary-op% 'or $1 $3 (build-src 1 3))])
 
       (<conditional-expr>
         [(<conditional-or-expr>) $1]
         [(<conditional-or-expr> ? <expr> : <conditional-expr>)
-         (make-todo 'ternary-op (build-src 1))])
+         (make-todo 'ternary-op (build-src 1 3))])
 
       (<assignment-expr>
         [(<conditional-expr>) $1]

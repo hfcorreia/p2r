@@ -157,6 +157,7 @@
                           (node->type-check name)
                           (set-type! (send name get-type)))
 
+
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings name scope))
@@ -210,7 +211,7 @@
                                  [t2 (send arg2 get-type)]
                                  [result (binary-op-type-check? op t1 t2)])
                             (if (eq? 'error result)
-                              (binary-error this t1 t2)
+                              (binary-error this op t1 t2)
                               (set-type! result))))
 
          (define/override (->bindings scope)
