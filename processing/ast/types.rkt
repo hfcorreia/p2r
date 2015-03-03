@@ -59,7 +59,6 @@
          (define/public (boolean-type?)
                         (eq? type 'boolean))
 
-
          (super-instantiate ())))
 
 (define primitive-type%
@@ -141,38 +140,38 @@
 ;;; Binary Operations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; binary-check: symbol type type -> boolean
-(define (binary-check predicate? t1 t2)
+;; binary-check?: symbol type type -> boolean
+(define (binary-check? predicate? t1 t2)
   (case predicate?
     ['numeric  (and (send t1 numeric-type?) (send t2 numeric-type?))]
     ['String   (or  (send t1 string-type?) (send  t2 string-type?))]
     ['boolean  (and (send t1 boolean-type?) (send t2 boolean-type?))]
     ['integral (and (send t1 integral-type?) (send t2 integral-type?))]))
 
-;; binary-op-type-check?: operator type type -> type
+;; binary-op-type-check?: operator type type -> (or/c type 'error)
 ;; checks if types are correct in binary operators
 ;; return the final type for the operation or
 ;; an error symbol
-(define (binary-op-type-check? op left right)
+(define (binary-op-type-check op left right)
   (case op
     [(* / % *= /= %= -= -)
-     (if (binary-check 'numeric left right)
+     (if (binary-check? 'numeric left right)
        (binary-promotion left right)
        'error)]
     [(+ +=)
      (cond
-       [(binary-check 'String left right) (make-object reference-type% null 'String)]
-       [(binary-check 'numeric left right)
+       [(binary-check? 'String left right) (make-object reference-type% null 'String)]
+       [(binary-check? 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]
     [(< > <= >=)
-     (if (binary-check 'numeric left right)
+     (if (binary-check? 'numeric left right)
        (make-object primitive-type% 'boolean)
        'error)]
     [(== !=)
      (cond
-       [(or (binary-check 'numeric left right)
-            (binary-check 'boolean left right))
+       [(or (binary-check? 'numeric left right)
+            (binary-check? 'boolean left right))
         (make-object primitive-type% 'boolean)]
        ; [(binary-check reference-or-array-type? left right)
        ;  (let ((right-to-left (castable? l r type-recs))
@@ -182,17 +181,17 @@
        ;      (else (bin-op-equality-error 'both op l r src))))]
        [else 'error])]
     [(<<  >> >>> <<= >>= >>>=)
-     (if (binary-check 'integral left right)
+     (if (binary-check? 'integral left right)
        (unary-promotion left)
        'error)]
     [(& ^ pipe &= ^= or=)
      (cond
-       [(binary-check 'integral left right)
+       [(binary-check? 'integral left right)
         (binary-promotion left right)]
-       [(binary-check 'boolean left right) (make-object primitive-type% 'boolean)]
+       [(binary-check? 'boolean left right) (make-object primitive-type% 'boolean)]
        [else 'error])]
     [(&& or)
-     (if (binary-check 'boolean left right)
+     (if (binary-check? 'boolean left right)
        (make-object primitive-type% 'boolean)
        'error)]
     [else 'error]))
@@ -207,8 +206,25 @@
       [(or (eq? 'long t1) (eq? 'long t2))  (make-object primitive-type% 'long)]
       [else (make-object primitive-type% 'int)])))
 
+;; unary-check: op type -> (or/c type 'error)
+(define (unary-op-type-check op t)
+  (case op
+    [(+ - pre++ pre-- pos++ pos--)
+     (if (send t numeric-type?)
+       (unary-promotion t)
+       'error)]
+    [(~)
+     (if (send t integral-type?)
+       (unary-promotion t)
+       'error)]
+    [(!)
+     (if (send t boolean-type?)
+       (make-object primitive-type% 'boolean)
+       'error)]
+    [else 'error]))
+
 ;; unary-promotion: type -> type
 (define (unary-promotion t)
   (case t
-    [(byte shor char) t]
+    [(byte shor char) (make-object primitive-type% 'int)]
     [else t]))

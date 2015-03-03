@@ -887,7 +887,7 @@
       (<unary-expr-not-plus-minus>
         [(<postfix-expr>) $1]
         [(~ <unary-expr>)
-         (make-object unary-op% 'not $2  (build-src 2))]
+         (make-object unary-op% '~ $2  (build-src 2))]
         [(! <unary-expr>)
          (make-object unary-op% '! $2  (build-src 2))]
         [(<cast-expr>) $1])

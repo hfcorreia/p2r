@@ -13,4 +13,12 @@
         [t2 (send t2 get-type)])
     (send obj
           type-error
-          (format "The operator ~a is undefined for argument types(s) ~a,~a" op t1 t2))))
+          (format "The operator ~a is undefined for argument types(s) ~a,~a"
+                  op t1 t2))))
+
+(define (unary-error obj op t)
+  (let ([t (send t get-type)])
+    (send obj
+          type-error
+          (format "The operator ~a is undefined for argument types(s) ~a"
+                  op t))))

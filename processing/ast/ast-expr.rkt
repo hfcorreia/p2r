@@ -112,11 +112,11 @@
                           (->syntax-object (identifier->symbol)))
 
          (define/override (->type-check) #f)
-                         ;(display (send (get-scope) get-binding (get-id)))
-                          ;(set-type! (send (send (get-scope)
-                          ;                      get-binding
-                          ;                      (get-id))
-                          ;                get-type)))
+         ;(display (send (get-scope) get-binding (get-id)))
+         ;(set-type! (send (send (get-scope)
+         ;                      get-binding
+         ;                      (get-id))
+         ;                get-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope))
@@ -209,7 +209,7 @@
                           (node->type-check arg2)
                           (let* ([t1 (send arg1 get-type)]
                                  [t2 (send arg2 get-type)]
-                                 [result (binary-op-type-check? op t1 t2)])
+                                 [result (binary-op-type-check op t1 t2)])
                             (if (eq? 'error result)
                               (binary-error this op t1 t2)
                               (set-type! result))))
@@ -247,25 +247,31 @@
 
 (define unary-op%
   (class expression%
-         (init-field operator arg)
+         (init-field op arg)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/override (->racket)
                           (->syntax-object
                             `(,p-operator ,(node->racket arg))))
 
          (define/override (->type-check)
-                          (node->type-check arg))
+                          (node->type-check arg)
+                          (let* ([t (send arg get-type)]
+                                 [result (unary-op-type-check op t)])
+                            (if (eq? 'error result)
+                              (unary-error this op t)
+                              (set-type! result))))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings arg scope))
+
          (define p-operator
-           (case operator
+           (case op
              ['+ 'p-pos]
              ['- 'p-neg]
-             ['not 'p-bit-not]
+             ['~ 'p-bit-not]
              ['! 'p-not]
              ['pre++ 'p-pre-inc]
              ['pre-- 'p-pre-dec]
