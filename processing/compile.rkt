@@ -10,6 +10,8 @@
          "parser.rkt"
          "ast/bindings.rkt")
 
+(define global-scope (make-object global-scope%))
+
 ;;; build-ast: file input-port= #f -> (listof ast-node%)
 ;;; parses the input file and constructs an ast of ast-node%
 (define (build-ast file #:input-port [input-port #f])
@@ -28,7 +30,7 @@
 ;;; bindings-check : ast -> (or/c #t type-error)
 ;;; traverse the ast and create the necessary scopes
 (define (bindings-check ast)
-  (node->bindings ast (make-object global-scope%)))
+  (node->bindings ast global-scope))
 
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
@@ -40,4 +42,4 @@
 ;;; compile-processing-repl : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast consumed by the repl
 (define (compile-processing-repl ast)
-  (send ast ->repl))
+  (send ast ->repl global-scope))

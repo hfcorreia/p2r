@@ -48,6 +48,11 @@
          (define/public (integral-type?)
                         (memq type '(byte short int long char)))
 
+         ;; long-or-int-type?:  -> boolean
+         ;; checks if the type is an int or long
+         (define/public (long-or-int-type?)
+                        (memq type '(short int long)))
+
          ;; numeric-type?:  -> boolean
          ;; checks if the type is an numeric type
          (define/public (numeric-type?)

@@ -89,8 +89,9 @@
 
          (inherit ->syntax-object set-scope!)
 
-         (define/public (->repl)
+         (define/public (->repl scope)
                         (set-active-mode! #f)
+                        (node->bindings ast scope)
                         (node->type-check ast)
                         (node->racket ast))
 

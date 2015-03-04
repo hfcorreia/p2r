@@ -713,8 +713,7 @@
         [(<field-access>) $1]
         [(<method-call>) $1]
         [(<color-instance-creation>) $1]
-        [(<array-access>)  $1]
-        [(<name> period this) (error "parser: Not Implemented")])
+        [(<array-access>)  $1])
 
       (<field-access>
         [(<primary> period identifier)

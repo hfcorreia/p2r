@@ -129,6 +129,7 @@
            (cond
              [(is-a? node literal%) (check-literal node)]
              [(is-a? node binary-op%) (check-literal node)]
+             [(is-a? node name%) (check-literal node)]
              ; array
              ; reference-type
              [else #t]))

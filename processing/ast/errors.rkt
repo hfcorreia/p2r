@@ -22,3 +22,6 @@
           type-error
           (format "The operator ~a is undefined for argument types(s) ~a"
                   op t))))
+
+(define (binding-not-found obj id)
+  (send obj read-error (format "Cannot find anything named \"~\"" id)))

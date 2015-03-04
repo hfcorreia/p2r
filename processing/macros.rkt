@@ -91,6 +91,11 @@
   (p-vector (dim ...) init-val)
   (make-n-vector (list dim ...) init-val))
 
+;;; Build an identifier
+(define-syntax-rule
+  (p-build-identifier func id)
+  (func id))
+
 ;;; check if a identifier is a vector, if true get the vector's length else
 ;;; get field length of the identifier
 (define-syntax-rule

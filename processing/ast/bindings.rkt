@@ -24,7 +24,6 @@
 
          (define/public (is-local? id) #f)
 
-
          (define/public (get-child-scope) child)
 
          (define/public (push-new-scope)
@@ -82,6 +81,21 @@
   (send scope
         add-binding
         (make-object variable-binding% modifiers type id)))
+
+(define-syntax-rule
+  (format-binding binding)
+  (if (is-a? binding variable-binding%)
+    (format "id: ~a, type: ~a, mod: ~a"
+          (send binding get-id)
+          (send (send binding get-type) get-type)
+          (send binding get-modifiers))
+    (format "id: ~a, args: ~a, mod: ~a, ret: ~a"
+            (send binding get-id)
+            (map (lambda (x)
+                   (send x get-type))
+                   (send binding get-args))
+            (send binding get-modifiers)
+            (send (send binding get-return-type) get-type))))
 
 (define binding%
   (class object%

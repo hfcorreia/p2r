@@ -1,9 +1,8 @@
-#lang racket/base
+#lang racket
 
 (provide (all-defined-out))
 
-(require racket/class
-         racket/undefined
+(require racket/undefined
          "ast.rkt"
          "types.rkt"
          "bindings.rkt"
@@ -96,7 +95,7 @@
   (class expression%
          (init-field id-list identifier)
 
-         (inherit ->syntax-object set-scope! set-type! get-scope get-type)
+         (inherit ->syntax-object set-scope! set-type! get-type get-scope)
 
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
@@ -111,15 +110,23 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check) #f)
-         ;(display (send (get-scope) get-binding (get-id)))
-         ;(set-type! (send (send (get-scope)
-         ;                      get-binding
-         ;                      (get-id))
-         ;                get-type)))
+         (define/override (->type-check)
+                          (set-type! (get-id-type)))
+
 
          (define/override (->bindings scope)
                           (set-scope! scope))
+
+         ;;; lookup the id in current scope a get the defined type
+         (define/public (get-id-type)
+           (let ([binding (send (get-scope) get-binding (get-id))])
+             (cond
+               [(is-a? binding variable-binding%)
+                (send binding get-type)]
+               [(is-a? binding function-binding%)
+                (send binding get-return-type)]
+               [else (binding-not-found this (get-id))])))
+
 
          ;; build-full-id : (listof string?) -> string?
          ;; Receives a list of strings corresponding to the full qualified
@@ -137,17 +144,14 @@
   (class expression%
          (init-field name)
 
-         (inherit ->syntax-object set-scope! set-type!)
+         (inherit ->syntax-object set-scope! set-type! get-type)
 
          (define/override (->racket)
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               (node->racket name)]
-                              ; awful to support x.lenght
-                              [(eq? 'length (send name get-id))
-                               `(p-array-length ,(send name get-full-id)
-                                                ,(node->racket name))]
+                               `(p-build-identifier ,(build-id)
+                                                    ,(node->racket name))]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)
@@ -161,6 +165,19 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings name scope))
+
+         ;; transforms the itentifier's value to the corret type
+         (define (build-id)
+           (let ([defined-id-type (send name get-id-type)]
+                 [type (get-type)])
+           (cond
+             [(and (send defined-id-type char-type?)
+                   (send type long-or-int-type?))
+              char->integer]
+             [(and (send type char-type?)
+                   (send defined-id-type long-or-int-type?))
+              integer->char]
+             [else identity])))
 
          (super-instantiate ())))
 
@@ -185,7 +202,8 @@
              (case type
                [(float double) (exact->inexact value)]
                [(char) (if (send literal-type char-type?) value (integer->char value))]
-               [(undef int long boolean short byte) value]
+               [(int long) (if (send literal-type char-type?) (char->integer value) value)]
+               [(undef boolean short byte) value]
                [(String color) value] ;maybe should not be here
                [(null) 'null]
                [else (type-error "Unknown type!")])))
@@ -212,7 +230,10 @@
                                  [result (binary-op-type-check op t1 t2)])
                             (if (eq? 'error result)
                               (binary-error this op t1 t2)
-                              (set-type! result))))
+                              (begin
+                                (set-type! result)
+                                (send arg1 set-type! result)
+                                (send arg2 set-type! result)))))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
@@ -261,7 +282,9 @@
                                  [result (unary-op-type-check op t)])
                             (if (eq? 'error result)
                               (unary-error this op t)
-                              (set-type! result))))
+                              (begin
+                                (send arg set-type! result)
+                                (set-type! result)))))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
