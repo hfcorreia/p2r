@@ -4,14 +4,12 @@
 
 (define global-scope%
   (class object%
-         (field [child null])
-
-         (define scope (make-hash))
+         (field [scope (make-hash)])
 
          (define/public (get-binding id)
                         (hash-ref scope id))
 
-         (define/public (get-scope) scope)
+         (define/public (get-scope) (hash->list scope))
 
          (define/public (add-binding binding)
                         (hash-set! scope (send binding get-id) binding))
@@ -24,18 +22,16 @@
 
          (define/public (is-local? id) #f)
 
-         (define/public (get-child-scope) child)
-
-         (define/public (push-new-scope)
-                        (set! child (make-object local-scope% this)))
-
          (super-instantiate ())))
 
 (define local-scope%
   (class global-scope%
          (init-field parent)
+         (inherit-field scope)
 
-         (define scope (make-hash))
+         (define/override (get-scope)
+                          (append (send parent get-scope)
+                                  (hash->list scope)))
 
          (define/override (get-binding id)
                           (hash-ref scope

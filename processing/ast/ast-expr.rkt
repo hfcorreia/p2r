@@ -59,6 +59,10 @@
                           (node->bindings primary scope)
                           (node->bindings args scope))
 
+         (define/override (->print)
+                          `(method-call% ,(node->print primary)
+                                         ,(node->print args)))
+
          (super-instantiate ())))
 
 (define primary%
@@ -88,6 +92,10 @@
                           (and (not (null? primary))
                                (node->bindings primary scope))
                           (node->bindings id scope))
+
+         (define/override (->print)
+                          `(primary% ,(node->print primary)
+                                     ,(node->print id)))
 
          (super-instantiate ())))
 
@@ -138,6 +146,9 @@
              [(eq? (length lst) 1) (format "~a" (car lst))]
              [else (format "~a-~a" (car lst) (build-full-id (cdr lst)))]))
 
+         (define/override (->print)
+                          `(identifier% ,identifier))
+
          (super-instantiate ())))
 
 (define name%
@@ -145,6 +156,8 @@
          (init-field name)
 
          (inherit ->syntax-object set-scope! set-type! get-type)
+
+         (define/public (get-name) name)
 
          (define/override (->racket)
                           (->syntax-object
@@ -179,6 +192,8 @@
               integer->char]
              [else identity])))
 
+         (define/override (->print)
+                          `(name% ,(node->print name)))
          (super-instantiate ())))
 
 
@@ -207,6 +222,9 @@
                [(String color) value] ;maybe should not be here
                [(null) 'null]
                [else (type-error "Unknown type!")])))
+
+         (define/override (->print)
+                          `(literal% ,(send literal-type get-type) ,value))
 
          (super-instantiate ())))
 
@@ -238,7 +256,7 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings arg1 scope)
-                          (node->bindings arg1 scope))
+                          (node->bindings arg2 scope))
 
          (define p-op
            (case op
@@ -264,6 +282,8 @@
              ['>>> 'p-shiftr-zero]
              ['instanceof 'p-instanceof]))
 
+         (define/override (->print)
+                          `(binary-op% ,op ,(node->print arg1) ,(node->print arg2)))
          (super-instantiate ())))
 
 (define unary-op%
@@ -274,7 +294,10 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(,p-operator ,(node->racket arg))))
+                            (case op
+                            [(pre++ pre-- pos++ pos--)
+                             `(,p-operator ,(node->racket (send arg get-name)))]
+                            [else `(,p-operator ,(node->racket arg))])))
 
          (define/override (->type-check)
                           (node->type-check arg)
@@ -301,6 +324,8 @@
              ['pos++ 'p-pos-inc]
              ['pos-- 'p-pos-dec]))
 
+         (define/override (->print)
+                          `(unary-op%))
          (super-instantiate ())))
 
 (define assignment%
@@ -339,6 +364,8 @@
              ['>>>= 'p-shiftr-zero]
              ['or=  'p-bit-or]))
 
+         (define/override (->print)
+                          `(assignment%))
          (super-instantiate ())))
 
 (define left-value%
@@ -380,6 +407,8 @@
                                 (send value get-expr)
                                 '#:array)]))
 
+         (define/override (->print)
+                          `(left-value%))
          (super-instantiate ())))
 
 (define new-array%
@@ -408,6 +437,8 @@
              ['char       #\space]
              [else        undefined]))
 
+         (define/override (->print)
+                          `(new-array%))
 
          (super-instantiate ())))
 
@@ -428,6 +459,8 @@
                           (set-scope! scope)
                           (node->bindings expr scope))
 
+         (define/override (->print)
+                          `(array-dim%))
          (super-instantiate ())))
 
 (define array-acces%
@@ -453,6 +486,8 @@
                           (node->bindings id scope)
                           (node->bindings expr scope))
 
+         (define/override (->print)
+                          `(array-acces%))
          (super-instantiate ())))
 
 (define array-initializer%
@@ -471,5 +506,8 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings initializers scope))
+
+         (define/override (->print)
+                          `(array-initializer%))
 
          (super-instantiate ())))

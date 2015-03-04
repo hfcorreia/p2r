@@ -47,7 +47,7 @@
     (test-bindings    path)
     (test-types       path)
     (test-compilation path)
-    (test-runtime     path)
+    ;(test-runtime     path)
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

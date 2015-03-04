@@ -50,6 +50,9 @@
          (define/override (->bindings scope)
                           (set-scope! scope))
 
+         (define/override (->print)
+                          `(require% ,(node->print name)))
+
          (super-instantiate ())))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define global-stmt%
@@ -74,6 +77,9 @@
                           (set-scope! scope)
                           (node->bindings stmt scope))
 
+         (define/override (->print)
+                          `(global-stmt% ,(node->print stmt)))
+
          (super-instantiate ())))
 
 (define global-decl%
@@ -91,6 +97,9 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings decl scope))
+
+         (define/override (->print)
+                          `(global-decl% ,(node->print decl)))
 
          (super-instantiate ())))
 
@@ -140,13 +149,20 @@
          (define (check-literal literal)
            (let ([literal-type (send literal get-type)])
              (cond
-            ;; [(send literal-type undef-type?)
-            ;;  (send literal set-type! literal-type)]
+               ;; [(send literal-type undef-type?)
+               ;;  (send literal set-type! literal-type)]
                [(or (type=? type literal-type)
                     (widening-primitive-conversion? type literal-type))
                 (send literal set-type! type)]
                [else (type-conversion-error literal literal-type type)])))
 
+         (define/override (->print)
+                          `(var-decl% ,modifiers ,type
+                                      ,@(map (lambda (x)
+                                               (list
+                                                 (node->print (car x))
+                                                 (node->print (cadr x))))
+                                             vars)))
          (super-instantiate ())))
 
 (define block%
@@ -169,6 +185,9 @@
                             (set-scope! local-scope)
                             (node->bindings stmts local-scope)))
 
+         (define/override (->print)
+                          `(block% ,@(node->print stmts)))
+
          (super-instantiate ())))
 
 (define function-decl%
@@ -185,19 +204,26 @@
                                           ,(node->racket body))))))
 
          (define/override (->type-check)
+                          (node->type-check parameters)
                           (node->type-check body))
 
          (define/override (->bindings scope)
-                          (let ([local-scope      (make-object local-scope% scope)]
+                          (let ([local-scope (make-object local-scope% scope)]
                                 [parameter-types  (map (lambda (x)
                                                          (send x get-type))
                                                        parameters)])
-                            (set-scope! local-scope)
+                            (set-scope! scope)
                             (add-function scope modifiers return-type
                                           (send id get-id)
                                           parameter-types throws)
                             (node->bindings parameters local-scope)
                             (node->bindings body local-scope)))
+
+         (define/override (->print)
+                          `(function% ,modifiers ,(send return-type get-type)
+                                      ,(node->print id)
+                                      ,(node->print parameters) ,throws
+                                      ,(node->print body)))
 
          (super-instantiate ())))
 
@@ -205,7 +231,7 @@
   (class stmt%
          (init-field test then else)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -222,9 +248,17 @@
                                (node->type-check else)))
 
          (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings test scope)
                           (node->bindings then scope)
                           (and (not (null? else))
                                (node->bindings else scope)))
+
+         (define/override (->print)
+                          `(if% ,(node->print test)
+                                ,(node->print then)
+                                ,(and (not (null? else))
+                                      (node->print else))))
 
          (super-instantiate ())))
 
@@ -250,6 +284,9 @@
                           (set-scope! scope)
                           (node->bindings body scope))
 
+         (define/override (->print)
+                          `(do-while%))
+
          (super-instantiate ())))
 
 (define while%
@@ -273,6 +310,9 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings body scope))
+
+         (define/override (->print)
+                          `(while%))
 
          (super-instantiate ())))
 
@@ -305,13 +345,16 @@
                             (node->bindings initialization local-scope)
                             (node->bindings body local-scope)))
 
+         (define/override (->print)
+                          `(for%))
+
          (super-instantiate ())))
 
 (define expr-list%
   (class stmt%
          (init-field exprs)
 
-         (inherit ->syntax-object)
+         (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -319,6 +362,13 @@
 
          (define/override (->type-check)
                           (node->type-check exprs))
+
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings exprs scope))
+
+         (define/override (->print)
+                          `(expr-list%))
 
          (super-instantiate ())))
 
@@ -334,10 +384,14 @@
                               `(return (void))
                               `(return ,(node->racket expr)))))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check) (node->type-check expr))
 
          (define/override (->bindings scope)
-                          (set-scope! scope))
+                          (set-scope! scope)
+                          (node->bindings expr scope))
+
+         (define/override (->print)
+                          `(return% ,(node->print expr)))
 
          (super-instantiate ())))
 
@@ -354,6 +408,9 @@
          (define/override (->bindings scope)
                           (set-scope! scope))
 
+         (define/override (->print)
+                          `(break%))
+
          (super-instantiate ())))
 
 (define continue%
@@ -369,6 +426,9 @@
          (define/override (->bindings scope)
                           (set-scope! scope))
 
+         (define/override (->print)
+                          `(continue%))
+
          (super-instantiate ())))
 
 (define empty-stmt%
@@ -381,6 +441,9 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope))
+
+         (define/override (->print)
+                          `(empty-stmt%))
 
          (super-instantiate ())))
 

@@ -43,6 +43,8 @@
                           (set-scope! scope)
                           (node->bindings body scope))
 
+         (define/override (->print)
+                          `(class-node%))
          (super-instantiate ())))
 
 (define new-node%
@@ -64,6 +66,8 @@
                           (node->bindings name scope)
                           (node->bindings args scope))
 
+         (define/override (->print)
+                          `(new-node%))
          (super-instantiate ())))
 
 (define class-field%
@@ -90,6 +94,8 @@
                                  (node->bindings (cadr var) scope))
                                vars))
 
+         (define/override (->print)
+                          `(class-field%))
          (super-instantiate ())))
 
 (define method-decl%
@@ -107,19 +113,10 @@
 
          (define/override (->type-check) #t)
 
-         (define/override (->bindings scope)
-                          (let ([local-scope      (make-object local-scope% scope)]
-                                [parameter-types  (map (lambda (x)
-                                                         (send x get-type))
-                                                       parameters)])
+         (define/override (->bindings scope) #t)
 
-                            (set-scope! local-scope)
-                            (add-function scope modifiers return-type
-                                                  (send id get-id)
-                                                  parameter-types throws)
-                            (node->bindings parameters local-scope)
-                            (node->bindings body local-scope)))
-
+         (define/override (->print)
+                          `(method-decl%))
          (super-instantiate ())))
 
 (define formal-parameter%
@@ -133,13 +130,19 @@
          (define/override (->racket)
                           (->syntax-object (node->racket id)))
 
-         (define/override (->type-check) #t)
+         (define/override (->type-check)
+                          (send id set-type! type))
 
          (define/override (->bindings scope)
+                          (add-variable scope `(,final) type
+                                                (send id get-id))
                           (set-scope! scope)
-                          (add-variable scope '(final) type
-                                                (send id get-id)))
+                          (node->bindings id scope))
 
+         (define/override (->print)
+                          `(formal-parameter% ,final
+                                              ,(send type get-type)
+                                              ,(node->print id)))
          (super-instantiate ())))
 
 (define this-node%
@@ -156,6 +159,8 @@
          (define/override (->bindings scope)
                           (set-scope! scope))
 
+         (define/override (->print)
+                          `(this-node%))
          (super-instantiate ())))
 
 (define field-acces%
@@ -179,4 +184,6 @@
                           (node->bindings primary scope)
                           (node->bindings id scope))
 
+         (define/override (->print)
+                          `(field-acces%))
          (super-instantiate ())))

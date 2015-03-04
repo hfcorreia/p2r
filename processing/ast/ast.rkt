@@ -17,22 +17,23 @@
     (map (lambda (elem) (send elem ->racket)) node)
     (send node ->racket)))
 
-(define-syntax node->type-check
-  (syntax-rules ()
-    [(_ node)
-     (if (list? node)
-       (map (lambda (x) (send x ->type-check)) node)
-       (send node ->type-check))]
-    [(_ node type)
-     (if (list? node)
-       (map (lambda (x) (send x ->type-check type)) node)
-       (send node ->type-check type))]))
+(define-syntax-rule
+  (node->type-check node)
+  (if (list? node)
+    (map (lambda (x) (send x ->type-check)) node)
+    (send node ->type-check)))
 
 (define-syntax-rule
   (node->bindings node scope)
   (if (list? node)
     (map (lambda (elem) (send elem ->bindings scope)) node)
     (send node ->bindings scope)))
+
+(define-syntax-rule
+  (node->print node)
+  (if (list? node)
+    (map (lambda (elem) (send elem ->print)) node)
+    (send node ->print)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST struct definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,6 +81,9 @@
          (define/public (->bindings scope)
                         (read-error (format "Invalid use of ->bindings ~a" this)))
 
+         (define/public (->print)
+                        `(ast%))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,7 +115,11 @@
          (define/override (->bindings scope)
                           (add-function scope '() 'void 'println '() '())
                           (set-scope! scope)
+                          ;; (pretty-display (->print))
                           (node->bindings ast scope))
+
+         (define/override (->print)
+                          `(compilation-unit% ,(node->print ast)))
 
          (super-instantiate ())))
 
@@ -130,5 +138,8 @@
          (define/override (->type-check) #f)
 
          (define/override (->bindings scope) #f)
+
+         (define/override (->print)
+                          `(todo% ,msg))
 
          (super-instantiate ())))
