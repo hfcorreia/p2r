@@ -22,6 +22,7 @@
 
 (define (test-types path)
   (let ([ast (build-ast path)])
+    (bindings-check ast)
     (test-case
       "Checking Types"
       (check-not-exn
