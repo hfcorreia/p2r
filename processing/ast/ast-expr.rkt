@@ -43,7 +43,7 @@
   (class expression%
          (init-field primary args)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -52,6 +52,7 @@
 
          (define/override (->type-check)
                           (node->type-check primary)
+                          (set-type! (send primary get-type))
                           (node->type-check args))
 
          (define/override (->bindings scope)
@@ -69,7 +70,7 @@
   (class expression%
          (init-field primary id)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/public (is-method?) (null? (send id get-list)))
 
@@ -85,7 +86,8 @@
          (define/override (->type-check)
                           (and (not (null? primary))
                                (node->type-check primary))
-                          (node->type-check id))
+                          (node->type-check id)
+                          (set-type! (send id get-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope)

@@ -132,29 +132,17 @@
                                  (node->bindings (cadr var) scope))
                                vars))
 
-         ;;; check-node-type: ast-node% -> (or/c any error)
-         ;;; dispatch according to varible type
-         (define (check-node-type node)
-           (cond
-             [(is-a? node literal%) (check-literal node)]
-             [(is-a? node binary-op%) (check-literal node)]
-             [(is-a? node name%) (check-literal node)]
-             ; array
-             ; reference-type
-             [else #t]))
 
-         ;; check-literal: type literal% -> (or/c void error)
+         ;; check-node-type: ast-node% -> (or/c any error)
          ;; checks if types are the same or can be promoted
          ;; produces type-error otherwise
-         (define (check-literal literal)
-           (let ([literal-type (send literal get-type)])
+         (define (check-node-type node)
+           (let ([node-type (send node get-type)])
              (cond
-               ;; [(send literal-type undef-type?)
-               ;;  (send literal set-type! literal-type)]
-               [(or (type=? type literal-type)
-                    (widening-primitive-conversion? type literal-type))
-                (send literal set-type! type)]
-               [else (type-conversion-error literal literal-type type)])))
+               [(or (type=? type node-type)
+                    (widening-primitive-conversion? type node-type))
+                (send node set-type! type)]
+               [else (type-conversion-error node node-type type)])))
 
          (define/override (->print)
                           `(var-decl% ,modifiers ,type

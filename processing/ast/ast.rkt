@@ -5,7 +5,8 @@
 (require racket/class
          syntax/readerr
          "../mode.rkt"
-         "bindings.rkt")
+         "bindings.rkt"
+         "types.rkt")
 
 ;;; node->racket : (or/c (listof ast-node%) ast-node%)
 ;;;     -> (or/c (listof ast-node%) ast-node%)
@@ -113,7 +114,7 @@
                             (node->type-check ast)))
 
          (define/override (->bindings scope)
-                          (add-function scope '() 'void 'println '() '())
+                          (add-function scope '() (make-object primitive-type% 'void) 'println '() '())
                           (set-scope! scope)
                           ;; (pretty-display (->print))
                           (node->bindings ast scope))
