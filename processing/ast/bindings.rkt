@@ -6,6 +6,8 @@
   (class object%
          (field [scope (make-hash)])
 
+         (define/public (return-type) #f)
+
          (define/public (get-binding id)
                         (hash-ref scope id))
 
@@ -14,19 +16,19 @@
          (define/public (add-binding binding)
                         (hash-set! scope (send binding get-id) binding))
 
-         (define/public (is-bound? id)
+         (define/public (bound? id)
                         (hash-has-key? scope id))
 
-         (define/public (is-global? id)
+         (define/public (global? id)
                         (hash-has-key? scope id))
 
-         (define/public (is-local? id) #f)
+         (define/public (local? id) #f)
 
          (super-instantiate ())))
 
 (define local-scope%
   (class global-scope%
-         (init-field parent)
+         (init-field parent [ret-type #f])
          (inherit-field scope)
 
          (define/override (get-scope)
@@ -38,14 +40,16 @@
                                     id
                                     (lambda () (send parent get-binding id))))
 
-         (define/override (is-bound? id)
-                          (or (is-local? id)
-                              (is-global? id)))
+         (define/override (return-type) ret-type)
 
-         (define/override (is-global? id)
+         (define/override (bound? id)
+                          (or (local? id)
+                              (global? id)))
+
+         (define/override (global? id)
                           (send parent is-global? id))
 
-         (define/override (is-local? id)
+         (define/override (local? id)
                           (hash-has-key? scope id))
 
          (super-instantiate ())))

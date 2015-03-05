@@ -169,7 +169,9 @@
                           (node->type-check stmts))
 
          (define/override (->bindings scope)
-                          (let ([local-scope (make-object local-scope% scope)])
+                          (let ([local-scope (make-object local-scope%
+                                                          scope
+                                                          (send scope return-type))])
                             (set-scope! local-scope)
                             (node->bindings stmts local-scope)))
 
@@ -196,7 +198,7 @@
                           (node->type-check body))
 
          (define/override (->bindings scope)
-                          (let ([local-scope (make-object local-scope% scope)]
+                          (let ([local-scope (make-object local-scope% scope return-type)]
                                 [parameter-types  (map (lambda (x)
                                                          (send x get-type))
                                                        parameters)])
@@ -328,7 +330,9 @@
                           (node->type-check body))
 
          (define/override (->bindings scope)
-                          (let ([local-scope (make-object local-scope% scope)])
+                          (let ([local-scope (make-object local-scope%
+                                                          scope
+                                                          (send scope return-type))])
                             (set-scope! local-scope)
                             (node->bindings initialization local-scope)
                             (node->bindings body local-scope)))
@@ -364,7 +368,7 @@
   (class stmt%
          (init-field expr)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! get-scope)
 
          (define/override (->racket)
                           (->syntax-object
@@ -372,66 +376,83 @@
                               `(return (void))
                               `(return ,(node->racket expr)))))
 
-         (define/override (->type-check) (node->type-check expr))
+         (define/override (->type-check)
+                          (let ([return-type (get-return-type)])
+                            (node->type-check expr)
+                            (if (or (type=? (send expr get-type)
+                                            return-type)
+                                    (widening-primitive-conversion?
+                                      return-type
+                                      (send expr get-type)))
+                              (send expr set-type! return-type)
+                              (type-conversion-error expr
+                                                     (send expr get-type)
+                                                     return-type))))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (node->bindings expr scope))
 
-         (define/override (->print)
-                          `(return% ,(node->print expr)))
+         (define (get-return-type)
+           (let ([return-type (send (get-scope) return-type)])
+             (if (not (false? return-type))
+               return-type
+               (return-error this))))
 
-         (super-instantiate ())))
+           (define/override (->print)
+                            `(return% ,(node->print expr)))
 
-(define break%
-  (class stmt%
-         (inherit ->syntax-object set-scope!)
+           (super-instantiate ())))
 
-         (define/override (->racket)
-                          (->syntax-object
-                            `(break (void))))
+  (define break%
+    (class stmt%
+           (inherit ->syntax-object set-scope!)
 
-         (define/override (->type-check) #t)
+           (define/override (->racket)
+                            (->syntax-object
+                              `(break (void))))
 
-         (define/override (->bindings scope)
-                          (set-scope! scope))
+           (define/override (->type-check) #t)
 
-         (define/override (->print)
-                          `(break%))
+           (define/override (->bindings scope)
+                            (set-scope! scope))
 
-         (super-instantiate ())))
+           (define/override (->print)
+                            `(break%))
 
-(define continue%
-  (class stmt%
-         (inherit ->syntax-object set-scope!)
+           (super-instantiate ())))
 
-         (define/override (->racket)
-                          (->syntax-object
-                            `(continue (void))))
+  (define continue%
+    (class stmt%
+           (inherit ->syntax-object set-scope!)
 
-         (define/override (->type-check) #t)
+           (define/override (->racket)
+                            (->syntax-object
+                              `(continue (void))))
 
-         (define/override (->bindings scope)
-                          (set-scope! scope))
+           (define/override (->type-check) #t)
 
-         (define/override (->print)
-                          `(continue%))
+           (define/override (->bindings scope)
+                            (set-scope! scope))
 
-         (super-instantiate ())))
+           (define/override (->print)
+                            `(continue%))
 
-(define empty-stmt%
-  (class stmt%
-         (inherit ->syntax-object set-scope!)
+           (super-instantiate ())))
 
-         (define/override (->racket) (void))
+  (define empty-stmt%
+    (class stmt%
+           (inherit ->syntax-object set-scope!)
 
-         (define/override (->type-check) #t)
+           (define/override (->racket) (void))
 
-         (define/override (->bindings scope)
-                          (set-scope! scope))
+           (define/override (->type-check) #t)
 
-         (define/override (->print)
-                          `(empty-stmt%))
+           (define/override (->bindings scope)
+                            (set-scope! scope))
 
-         (super-instantiate ())))
+           (define/override (->print)
+                            `(empty-stmt%))
+
+           (super-instantiate ())))
 

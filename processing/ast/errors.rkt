@@ -28,3 +28,6 @@
 
 (define (method-not-applicable obj id arg-types app-args)
   (send obj read-error (format "The method ~a ~a is not applicable for arguments ~a" id arg-types app-args)))
+
+(define (return-error obj)
+  (send obj read-error (format "Unreachable code")))
