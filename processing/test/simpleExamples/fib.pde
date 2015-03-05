@@ -9,6 +9,5 @@ int fib(int n) {
                    
 void draw(){
   int x = fib(10); 
-  println(x);
 }
 

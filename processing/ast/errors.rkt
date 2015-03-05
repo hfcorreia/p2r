@@ -25,3 +25,6 @@
 
 (define (binding-not-found obj id)
   (send obj read-error (format "Cannot find anything named \"~\"" id)))
+
+(define (method-not-applicable obj id arg-types app-args)
+  (send obj read-error (format "The method ~a ~a is not applicable for arguments ~a" id arg-types app-args)))
