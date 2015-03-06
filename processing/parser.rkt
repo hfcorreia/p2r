@@ -93,23 +93,23 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<literal>
         [(int-lit)
-         (make-object literal% $1 (make-object primitive-type% 'int) (build-src 1))]
+         (make-object literal% $1 (create-type 'int) (build-src 1))]
         [(long-lit)
-         (make-object literal% $1 (make-object primitive-type% 'long) (build-src 1))]
+         (make-object literal% $1 (create-type 'long) (build-src 1))]
         [(float-lit)
-         (make-object literal% $1 (make-object primitive-type% 'float) (build-src 1))]
+         (make-object literal% $1 (create-type 'float) (build-src 1))]
         [(double-lit)
-         (make-object literal% $1 (make-object primitive-type% 'double) (build-src 1))]
+         (make-object literal% $1 (create-type 'double) (build-src 1))]
         [(boolean-lit)
-         (make-object literal% $1 (make-object primitive-type% 'boolean) (build-src 1))]
+         (make-object literal% $1 (create-type 'boolean) (build-src 1))]
         [(string-lit)
-         (make-object literal% $1 (make-object reference-type% null 'String) (build-src 1))]
+         (make-object literal% $1 (create-type null 'String) (build-src 1))]
         [(char-lit)
-         (make-object literal% $1 (make-object primitive-type% 'char) (build-src 1))]
+         (make-object literal% $1 (create-type 'char) (build-src 1))]
         [(null-lit)
-         (make-object literal% null (make-object primitive-type% 'null) (build-src 1))]
+         (make-object literal% null (create-type 'null) (build-src 1))]
         [(color-lit)
-         (make-object literal% $1 (make-object primitive-type% 'color) (build-src 1))])
+         (make-object literal% $1 (create-type 'color) (build-src 1))])
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       ;; Types
@@ -120,37 +120,37 @@
 
       (<primitive-type>
         [(<numeric-type>) $1]
-        [(color)   (make-object primitive-type% 'color)]
-        [(boolean) (make-object primitive-type% 'boolean)])
+        [(color)   (create-type 'color)]
+        [(boolean) (create-type 'boolean)])
 
       (<numeric-type>
         [(<integral-type>) $1]
         [(<floating-type>) $1])
 
       (<integral-type>
-        [(byte)   (make-object primitive-type% 'byte)]
-        [(short)  (make-object primitive-type% 'short)]
-        [(int)    (make-object primitive-type% 'int)]
-        [(long)   (make-object primitive-type% 'long)]
-        [(char)   (make-object primitive-type% 'char)])
+        [(byte)   (create-type 'byte)]
+        [(short)  (create-type 'short)]
+        [(int)    (create-type 'int)]
+        [(long)   (create-type 'long)]
+        [(char)   (create-type 'char)])
 
       (<floating-type>
-        [(float)  (make-object primitive-type% 'float)]
-        [(double) (make-object primitive-type% 'double)])
+        [(float)  (create-type 'float)]
+        [(double) (create-type 'double)])
 
       (<void>
-        [(void)     (make-object primitive-type% 'void)])
+        [(void)     (create-type 'void)])
 
       (<reference-type>
         [(<name>)
-         (make-object reference-type% (send $1 get-list) (send $1 get-id))]
+         (create-type (send $1 get-list) (send $1 get-id))]
         [(<array-type>) $1])
 
       (<array-type>
         [(<primitive-type> <dims>)
-         (make-object array-type% $2 null $1)]
+         (create-type $2 null $1)]
         [(<name> <dims>)
-         (make-object array-type% $2 (send $1 get-list) (send $1 get-id))])
+         (create-type $2 (send $1 get-list) (send $1 get-id))])
 
       (<class-or-interface-type>
         [(<name>) $1])

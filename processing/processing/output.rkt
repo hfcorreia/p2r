@@ -4,14 +4,16 @@
          println)
 
 (require racket/class
+         "../bindings.rkt"
+         "../ast/types.rkt"
          "objects.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (print . args)
-  (display (build-seperated-string (map arg->string args)
-                                   #\space)))
+(define-types (print null (create-type 'void) null [(create-type 'int) . args])
+              (display (build-seperated-string (map arg->string args)
+                                  #\space)))
 
 (define (println . args)
   (displayln (build-seperated-string (map arg->string args)

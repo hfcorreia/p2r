@@ -115,6 +115,14 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; create-type: symbol -> type%
+;; Simplyfies the type creation
+(define-syntax create-type
+  (syntax-rules ()
+    [(_ symbol) (make-object primitive-type% symbol)]
+    [(_ pack symbol) (make-object reference-type% pack symbol)]
+    [(_ dim pack symbol) (make-object array-type% dim pack symbol)]))
+
 ;; type=? : type type -> boolean
 ;; checks if two type symbols are the same
 (define (type=? to-type from-type)

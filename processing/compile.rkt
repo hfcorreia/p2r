@@ -8,9 +8,8 @@
 
 (require "ast/ast.rkt"
          "parser.rkt"
-         "ast/bindings.rkt")
+         "bindings.rkt")
 
-(define global-scope (make-object global-scope%))
 
 ;;; build-ast: file input-port= #f -> (listof ast-node%)
 ;;; parses the input file and constructs an ast of ast-node%

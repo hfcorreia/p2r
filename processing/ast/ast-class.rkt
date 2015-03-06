@@ -5,7 +5,7 @@
 (require racket/class
          "ast.rkt"
          "ast-expr.rkt"
-         "bindings.rkt"
+         "../bindings.rkt"
          )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST class nodes

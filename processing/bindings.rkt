@@ -2,6 +2,7 @@
 
 (provide (all-defined-out))
 
+
 (define global-scope%
   (class object%
          (field [scope (make-hash)])
@@ -54,6 +55,33 @@
 
          (super-instantiate ())))
 
+;; Create the global enviroment
+(define global-scope (make-object global-scope%))
+
+;; Add bindings to the global scope
+(define-syntax (define-types stx)
+  (syntax-case stx ()
+    [(_ (id modifiers ret-type throws [type . arg]) body ...)
+     #'(begin
+         (add-function global-scope modifiers ret-type 'id (list type) throws)
+         (define (id . arg)
+           body ...))]
+    [(_ (id modifiers ret-type throws type-arg ...) body ...)
+     (with-syntax
+       ([(args ...)
+         (datum->syntax
+           stx
+           (map (lambda (x) (cadr (syntax-e x)))
+                (syntax->list #'(type-arg ...))))]
+        [(types ...)
+         (datum->syntax
+           stx
+           (map (lambda (x) (car (syntax-e x)))
+                (syntax->list #'(type-arg ...))))])
+       #'(begin
+           (add-function global-scope modifiers ret-type 'id (list types ...) throws)
+           (define (id args ...)
+             body ...)))]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -61,7 +89,7 @@
 ;; add-function:
 ;;  (or/c local-scope% global-scope%)
 ;;  (list/of mod-symbol)
-;;  type-symbol
+;;  type%
 ;;  symbol
 ;;  (list/of type-symbol)
 ;;  type-symbol
@@ -74,7 +102,7 @@
 ;; add-variable:
 ;;  (or/c local-scope% global-scope%)
 ;;  (list/of mod-symbol)
-;;  type-symbol
+;;  type%
 ;;  symbol
 (define-syntax-rule
   (add-variable scope modifiers type id)
@@ -86,14 +114,14 @@
   (format-binding binding)
   (if (is-a? binding variable-binding%)
     (format "id: ~a, type: ~a, mod: ~a"
-          (send binding get-id)
-          (send (send binding get-type) get-type)
-          (send binding get-modifiers))
+            (send binding get-id)
+            (send (send binding get-type) get-type)
+            (send binding get-modifiers))
     (format "id: ~a, args: ~a, mod: ~a, ret: ~a"
             (send binding get-id)
             (map (lambda (x)
                    (send x get-type))
-                   (send binding get-args))
+                 (send binding get-args))
             (send binding get-modifiers)
             (send (send binding get-return-type) get-type))))
 

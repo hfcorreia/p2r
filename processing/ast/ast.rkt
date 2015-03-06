@@ -5,7 +5,7 @@
 (require racket/class
          syntax/readerr
          "../mode.rkt"
-         "bindings.rkt"
+         "../bindings.rkt"
          "types.rkt")
 
 ;;; node->racket : (or/c (listof ast-node%) ast-node%)

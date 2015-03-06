@@ -5,7 +5,7 @@
 (require racket/undefined
          "ast.rkt"
          "types.rkt"
-         "bindings.rkt"
+         "../bindings.rkt"
          "errors.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST expression nodes

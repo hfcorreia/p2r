@@ -7,7 +7,7 @@
          "ast.rkt"
          "ast-expr.rkt"
          "errors.rkt"
-         "bindings.rkt"
+         "../bindings.rkt"
          "types.rkt"
          "../mode.rkt")
 
