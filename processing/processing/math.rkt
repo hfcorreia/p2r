@@ -15,27 +15,37 @@
                      next-gaussian))
 
 (require racket/math
+         "../bindings.rkt"
+         "../ast/types.rkt"
          (rename-in racket/base
+                    [abs orig-abs]
                     [max orig-max]
                     [min orig-min]
                     [random orig-rand]
                     [map orig-map]))
 
-(define (ceil x)
-  (ceiling x))
 
-(define (constrain val min max)
-  (cond
-    [(< val min) min]
-    [(> val max) max]
-    [else val]))
+(define-types (abs null (create-type 'float) null [(create-type 'float) n])
+  (orig-abs n))
 
-(define-syntax dist
-  (syntax-rules ()
-    [(_ x1 y1 x2 y2)
-     (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2)))]
-    [(_ x1 y1 z1 x2 y2 z2)
-     (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2) (expt (- z2 z1) 2)))]))
+(define-types (ceil null (create-type 'int) null [(create-type 'float) x])
+  (inexact->exact (ceiling x)))
+
+(define-types (constrain null (create-type 'float) null
+                         [(create-type 'float) val]
+                         [(create-type 'float) min]
+                         [(create-type 'float) max])
+              (cond
+                [(< val min) min]
+                [(> val max) max]
+                [else val]))
+
+(define-types (dist null (create-type 'float) null
+                    [(create-type 'float) x1]
+                    [(create-type 'float) y1]
+                    [(create-type 'float) x2]
+                    [(create-type 'float) y2])
+                (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
 
 (define-syntax max
   (syntax-rules ()
