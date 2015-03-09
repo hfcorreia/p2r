@@ -60,6 +60,10 @@
 ;; Add bindings to the global scope
 (define-syntax (define-types stx)
   (syntax-case stx ()
+    [(_ modifiers type id value)
+     #'(begin
+         (add-variable global-scope modifiers type 'id)
+         (define id value))]
     [(_ (id modifiers ret-type throws [type . arg]) body ...)
      #'(begin
          (add-function global-scope modifiers ret-type 'id (list type) throws)

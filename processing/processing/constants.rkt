@@ -2,10 +2,12 @@
 
 (provide (all-defined-out))
 
-(require racket/math)
+(require racket/math
+         "../bindings.rkt"
+         "../ast/types.rkt")
 
-(define HALF_PI (/ pi 2))
-(define PI pi)
-(define QUARTER_PI (/ pi 4))
-(define TAU (* pi 2))
-(define TWO_PI (* pi 2))
+(define-types null (create-type 'float) HALF_PI (/ pi 2))
+(define-types null (create-type 'float) PI pi)
+(define-types null (create-type 'float) QUARTER_PI (/ pi 4))
+(define-types null (create-type 'float) TAU (* pi 2))
+(define-types null (create-type 'float) TWO_PI (* pi 2))
