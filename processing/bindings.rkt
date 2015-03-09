@@ -2,7 +2,6 @@
 
 (provide (all-defined-out))
 
-
 (define global-scope%
   (class object%
          (field [scope (make-hash)])

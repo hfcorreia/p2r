@@ -8,8 +8,10 @@
 
 (require "ast/ast.rkt"
          "parser.rkt"
-         "bindings.rkt")
+         "bindings.rkt"
 
+         ;; needed to load the runtime bindings
+         "processing/api.rkt")
 
 ;;; build-ast: file input-port= #f -> (listof ast-node%)
 ;;; parses the input file and constructs an ast of ast-node%

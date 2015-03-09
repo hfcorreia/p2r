@@ -140,6 +140,7 @@
            (let ([node-type (send node get-type)])
              (cond
                [(or (type=? type node-type)
+                    (object-type? type node-type)
                     (widening-primitive-conversion? type node-type))
                 (send node set-type! type)]
                [else (type-conversion-error node node-type type)])))
@@ -381,6 +382,8 @@
                             (node->type-check expr)
                             (if (or (type=? (send expr get-type)
                                             return-type)
+                                    (object-type? (send expr get-type)
+                                                  return-type)
                                     (widening-primitive-conversion?
                                       return-type
                                       (send expr get-type)))

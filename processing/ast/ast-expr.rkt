@@ -73,6 +73,7 @@
                [(and (eq? (length args-types) (send binding get-arity))
                      (andmap (lambda (t1 t2)
                                (or (type=? t1 t2)
+                                   (object-type? t1 t2)
                                    (widening-primitive-conversion? t1 t2)))
                              (send binding get-args)
                              args-types))
@@ -246,7 +247,7 @@
                                [(char) (if (send literal-type char-type?) value (integer->char value))]
                                [(int long) (if (send literal-type char-type?) (char->integer value) value)]
                                [(undef boolean short byte) value]
-                               [(String color) value] ;maybe should not be here
+                               [(Object String color) value] ;maybe should not be here
                                [(null) 'null]
                                [else (type-error "Unknown type!")])))
 

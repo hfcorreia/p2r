@@ -114,7 +114,6 @@
                             (node->type-check ast)))
 
          (define/override (->bindings scope)
-                          (add-function scope '() (make-object primitive-type% 'void) 'println '() '())
                           (set-scope! scope)
                           ;; (pretty-display (->print))
                           (node->bindings ast scope))

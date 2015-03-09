@@ -115,7 +115,7 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; create-type: symbol -> type%
+;; create-type: -> type%
 ;; Simplyfies the type creation
 (define-syntax create-type
   (syntax-rules ()
@@ -123,11 +123,19 @@
     [(_ pack symbol) (make-object reference-type% pack symbol)]
     [(_ dim pack symbol) (make-object array-type% dim pack symbol)]))
 
-;; type=? : type type -> boolean
+;; type=? : type% type% -> boolean
 ;; checks if two type symbols are the same
 (define (type=? to-type from-type)
   (symbol=? (send to-type get-type)
             (send from-type get-type)))
+
+;; object-type?: type% type% -> boolean
+;; checks if from-type or to-type are of type object-type?
+;; allowing the type-checker to skip the type-checking
+(define (object-type? to-type from-type)
+  (let ([to-type (send to-type get-type)]
+        [from-type (send from-type get-type)])
+    (or (symbol=? to-type 'Object) (symbol=? from-type 'Object))))
 
 ;; widening-primitive-conversion? type% type% -> boolean
 ;; checks if from-type can be converted to to-type
@@ -173,19 +181,19 @@
        'error)]
     [(+ +=)
      (cond
-       [(binary-check? 'String left right) (make-object reference-type% null 'String)]
+       [(binary-check? 'String left right) (create-type null 'String)]
        [(binary-check? 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]
     [(< > <= >=)
      (if (binary-check? 'numeric left right)
-       (make-object primitive-type% 'boolean)
+       (create-type 'boolean)
        'error)]
     [(== !=)
      (cond
        [(or (binary-check? 'numeric left right)
             (binary-check? 'boolean left right))
-        (make-object primitive-type% 'boolean)]
+        (create-type 'boolean)]
        ; [(binary-check reference-or-array-type? left right)
        ;  (let ((right-to-left (castable? l r type-recs))
        ;        (left-to-right (castable? r l type-recs)))
@@ -201,11 +209,11 @@
      (cond
        [(binary-check? 'integral left right)
         (binary-promotion left right)]
-       [(binary-check? 'boolean left right) (make-object primitive-type% 'boolean)]
+       [(binary-check? 'boolean left right) (create-type 'boolean)]
        [else 'error])]
     [(&& or)
      (if (binary-check? 'boolean left right)
-       (make-object primitive-type% 'boolean)
+       (create-type 'boolean)
        'error)]
     [else 'error]))
 
@@ -214,10 +222,10 @@
   (let ([t1 (send t1 get-type)]
         [t2 (send t2 get-type)])
     (cond
-      [(or (eq? 'double t1) (eq? 'double t2))  (make-object primitive-type% 'double)]
-      [(or (eq? 'float t1) (eq? 'float t2))  (make-object primitive-type% 'float)]
-      [(or (eq? 'long t1) (eq? 'long t2))  (make-object primitive-type% 'long)]
-      [else (make-object primitive-type% 'int)])))
+      [(or (eq? 'double t1) (eq? 'double t2))  (create-type 'double)]
+      [(or (eq? 'float t1) (eq? 'float t2))  (create-type 'float)]
+      [(or (eq? 'long t1) (eq? 'long t2))  (create-type 'long)]
+      [else (create-type 'int)])))
 
 ;; unary-check: op type -> (or/c type 'error)
 (define (unary-op-type-check op t)
@@ -232,12 +240,12 @@
        'error)]
     [(!)
      (if (send t boolean-type?)
-       (make-object primitive-type% 'boolean)
+       (create-type 'boolean)
        'error)]
     [else 'error]))
 
 ;; unary-promotion: type -> type
 (define (unary-promotion t)
   (case t
-    [(byte shor char) (make-object primitive-type% 'int)]
+    [(byte shor char) (create-type 'int)]
     [else t]))
