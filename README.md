@@ -1,2 +1,2 @@
 #Processing 2 Racket
-Implementation of the Processing Language in DrRacket.
+Implementation of the Processing Language in Racket
