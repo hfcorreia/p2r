@@ -1,7 +1,6 @@
 #lang racket/base
 
-(provide print
-         println)
+(provide (all-defined-out))
 
 (require racket/class
          "../bindings.rkt"
@@ -11,16 +10,19 @@
 ;;; Print procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-types (print null (create-type 'void) null
-                     [(create-type null 'Object) . args])
-              (display (build-seperated-string (map arg->string args)
-                                  #\space)))
+;; (define-types (print ['Object . args] -> 'void)
+              ;; (display
+                ;; (build-seperated-string (map arg->string args) #\space)))
 
-(define-types (println null (create-type 'void) null
-                       [(create-type null 'Object) . args])
-  (displayln (build-seperated-string (map arg->string args)
-                                     #\space)))
+;; (define-types (println ['Object . args] -> 'void)
+              ;; (displayln
+                ;; (build-seperated-string (map arg->string args) #\space)))
 
+(define-types (print [Object x]-> void)
+               (display x))
+
+(define-types (println [Object x] -> void)
+              (displayln x))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Aux procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

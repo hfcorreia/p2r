@@ -22,8 +22,8 @@
   (syntax-case stx ()
     [(_)
      (with-syntax
-       ([setup (datum->syntax stx 'setup)]
-        [draw  (datum->syntax stx 'draw)])
+       ([setup (datum->syntax stx 'setup-fn)]
+        [draw  (datum->syntax stx 'draw-fn)])
        (cond
          [(and (identifier-binding #'setup 0)  (identifier-binding #'draw 0))
           #'(begin (setup) (draw))]

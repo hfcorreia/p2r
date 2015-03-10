@@ -97,6 +97,17 @@
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; create-type: symbol -> type%
+;; Simplyfies the type creation
+(define (create-type symbol)
+   ;; need to add other types
+    (make-object primitive-type% symbol))
+
+;; create-types: (listof symbol) -> type%
+;; Simplyfies of a list of types
+(define (create-types types)
+  (map create-type types))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type Structure:
 ;;;
 ;;; symbol-type = 'null   | 'boolean
@@ -115,13 +126,6 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; create-type: -> type%
-;; Simplyfies the type creation
-(define-syntax create-type
-  (syntax-rules ()
-    [(_ symbol) (make-object primitive-type% symbol)]
-    [(_ pack symbol) (make-object reference-type% pack symbol)]
-    [(_ dim pack symbol) (make-object array-type% dim pack symbol)]))
 
 ;; type=? : type% type% -> boolean
 ;; checks if two type symbols are the same
@@ -181,7 +185,7 @@
        'error)]
     [(+ +=)
      (cond
-       [(binary-check? 'String left right) (create-type null 'String)]
+       [(binary-check? 'String left right) (create-type [null 'String])]
        [(binary-check? 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]

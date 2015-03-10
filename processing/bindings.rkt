@@ -2,6 +2,11 @@
 
 (provide (all-defined-out))
 
+(require "ast/types.rkt"
+         (for-syntax "ast/types.rkt")
+         "name-mangling.rkt"
+         (for-syntax "name-mangling.rkt"))
+
 (define global-scope%
   (class object%
          (field [scope (make-hash)])
@@ -57,33 +62,39 @@
 ;; Create the global enviroment
 (define global-scope (make-object global-scope%))
 
+
 ;; Add bindings to the global scope
 (define-syntax (define-types stx)
   (syntax-case stx ()
-    [(_ modifiers type id value)
+    [(_ type id value)
      #'(begin
-         (add-variable global-scope modifiers type 'id)
+         (add-variable global-scope '() (create-type 'type) 'id)
          (define id value))]
-    [(_ (id modifiers ret-type throws [type . arg]) body ...)
-     #'(begin
-         (add-function global-scope modifiers ret-type 'id (list type) throws)
-         (define (id . arg)
-           body ...))]
-    [(_ (id modifiers ret-type throws type-arg ...) body ...)
+    ;  [(_ (id [type . arg] -> ret-type) body ...)
+    ;   (with-syntax
+    ;     ([new-id (datum->syntax stx (mangle-function-id (syntax->datum #'id)
+    ;                                                #'type))])
+    ;     #'(begin
+    ;         (add-function global-scope modifiers ret-type 'id (list type) throws)
+    ;         (define (new-id . arg)
+    ;           body ...)))]
+    [(_ (id [type arg] ... -> ret-type) body ...)
      (with-syntax
-       ([(args ...)
-         (datum->syntax
-           stx
-           (map (lambda (x) (cadr (syntax-e x)))
-                (syntax->list #'(type-arg ...))))]
-        [(types ...)
-         (datum->syntax
-           stx
-           (map (lambda (x) (car (syntax-e x)))
-                (syntax->list #'(type-arg ...))))])
+       ([new-id
+          (datum->syntax stx
+                         (mangle-function-id
+                           (syntax-e #'id)
+                           (map (lambda (x)
+                                  (syntax-e x))
+                                (syntax->list #'(type ...)))))])
        #'(begin
-           (add-function global-scope modifiers ret-type 'id (list types ...) throws)
-           (define (id args ...)
+           (add-function global-scope
+                         null
+                         (create-type 'ret-type)
+                         'id
+                         (create-types (list 'type ...))
+                         null)
+           (define (new-id arg ...)
              body ...)))]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
@@ -94,13 +105,16 @@
 ;;  (list/of mod-symbol)
 ;;  type%
 ;;  symbol
-;;  (list/of type-symbol)
+;;  (list/of types)
 ;;  type-symbol
 (define-syntax-rule
   (add-function scope modifiers return-type id parameters-types throws)
   (send scope
         add-binding
-        (make-object function-binding% modifiers return-type parameters-types throws id)))
+        (make-object function-binding% modifiers return-type parameters-types throws
+                     (mangle-function-id id (map (lambda (x)
+                                                   (send x get-type))
+                                                 parameters-types)))))
 
 ;; add-variable:
 ;;  (or/c local-scope% global-scope%)
@@ -113,8 +127,7 @@
         add-binding
         (make-object variable-binding% modifiers type id)))
 
-(define-syntax-rule
-  (format-binding binding)
+(define (format-binding binding)
   (if (is-a? binding variable-binding%)
     (format "id: ~a, type: ~a, mod: ~a"
             (send binding get-id)
@@ -155,3 +168,5 @@
          (define/public (get-type) type)
 
          (super-instantiate ())))
+
+

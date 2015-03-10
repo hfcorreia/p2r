@@ -3,10 +3,13 @@
 (provide (all-defined-out))
 
 (require racket/undefined
+
          "ast.rkt"
          "types.rkt"
+         "errors.rkt"
+
          "../bindings.rkt"
-         "errors.rkt")
+         "../name-mangling.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST expression nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,7 +17,7 @@
 (define expression%
   (class ast-node%
          (inherit read-error)
-         (field [type-info (create-type null 'Object)])
+         (field [type-info (create-type 'Object)])
 
          (define/public (get-type) type-info)
 
@@ -43,7 +46,7 @@
   (class expression%
          (init-field primary args)
 
-         (inherit ->syntax-object set-scope! set-type! get-scope)
+         (inherit ->syntax-object set-scope! set-type! get-scope get-type)
 
          (define/override (->racket)
                           (->syntax-object
@@ -51,10 +54,14 @@
                                      ,@(node->racket args))))
 
          (define/override (->type-check)
-                          (node->type-check primary)
-                          (set-type! (send primary get-type))
                           (node->type-check args)
-                          (type-check-args (send primary get-id) args))
+                          (set-type! (send primary get-type))
+                          (let ([args-types (map (lambda (x)
+                                                   (send x get-type)) args)])
+                            (send primary mangle-id! args-types)
+                            (node->type-check primary)
+                            (type-check-args (send primary get-id)
+                                             args-types)))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
@@ -65,10 +72,9 @@
                           `(method-call% ,(node->print primary)
                                          ,(node->print args)))
 
-         (define (type-check-args id args-node)
-           (let ([binding (send (get-scope) get-binding (send id get-id))]
-                 ; unpack each arg from their ast-node%
-                 [args-types    (map (lambda (x) (send x get-type)) args)])
+         (define (type-check-args id args-types)
+           (let* ([binding (send (get-scope) get-binding (send id get-id))])
+             ; unpack each arg from their ast-node%
              (cond
                [(and (eq? (length args-types) (send binding get-arity))
                      (andmap (lambda (t1 t2)
@@ -78,7 +84,7 @@
                              (send binding get-args)
                              args-types))
                 (map (lambda (node type) (send node set-type! type))
-                     args-node
+                     args
                      (send binding get-args))]
                [else
                  (method-not-applicable this
@@ -99,6 +105,8 @@
 
          (define/public (is-method?) (null? (send id get-list)))
          (define/public (get-id) id)
+         (define/public (mangle-id! arg-types)
+                        (send id mangle-id! arg-types))
 
          (define/override (->racket)
                           (if (null? primary)
@@ -133,8 +141,16 @@
 
          (inherit ->syntax-object set-scope! set-type! get-type get-scope)
 
+         (define/public (set-id! id)   (set! identifier id))
          (define/public (get-id)   (string->symbol identifier))
          (define/public (get-list) (reverse id-list))
+         (define/public (mangle-id! arg-types)
+                        (set! identifier
+                          (symbol->string
+                            (mangle-function-id (get-id)
+                                                (map (lambda (x)
+                                                       (send x get-type))
+                                                     arg-types)))))
 
          (define/public (get-full-id)
                         (string->symbol

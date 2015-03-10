@@ -115,8 +115,10 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope)
+                          (node->bindings ast scope)
                           ;; (pretty-display (->print))
-                          (node->bindings ast scope))
+                          ;; (pretty-display (send scope get-scope))
+                          )
 
          (define/override (->print)
                           `(compilation-unit% ,(node->print ast)))

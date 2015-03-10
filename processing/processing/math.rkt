@@ -25,27 +25,27 @@
                     [map orig-map]))
 
 
-(define-types (abs null (create-type 'float) null [(create-type 'float) n])
-  (orig-abs n))
+;; (define-types (abs null (create-type 'float) null [(create-type 'float) n])
+  ;; (orig-abs n))
 
-(define-types (ceil null (create-type 'int) null [(create-type 'float) x])
-  (inexact->exact (ceiling x)))
+;; (define-types (ceil null (create-type 'int) null [(create-type 'float) x])
+  ;; (inexact->exact (ceiling x)))
 
-(define-types (constrain null (create-type 'float) null
-                         [(create-type 'float) val]
-                         [(create-type 'float) min]
-                         [(create-type 'float) max])
-              (cond
-                [(< val min) min]
-                [(> val max) max]
-                [else val]))
+;; (define-types (constrain null (create-type 'float) null
+                         ;; [(create-type 'float) val]
+                         ;; [(create-type 'float) min]
+                         ;; [(create-type 'float) max])
+              ;; (cond
+                ;; [(< val min) min]
+                ;; [(> val max) max]
+                ;; [else val]))
 
-(define-types (dist null (create-type 'float) null
-                    [(create-type 'float) x1]
-                    [(create-type 'float) y1]
-                    [(create-type 'float) x2]
-                    [(create-type 'float) y2])
-                (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
+;; (define-types (dist null (create-type 'float) null
+                    ;; [(create-type 'float) x1]
+                    ;; [(create-type 'float) y1]
+                    ;; [(create-type 'float) x2]
+                    ;; [(create-type 'float) y2])
+                ;; (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
 
 (define-syntax max
   (syntax-rules ()

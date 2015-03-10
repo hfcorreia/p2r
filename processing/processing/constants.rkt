@@ -6,8 +6,8 @@
          "../bindings.rkt"
          "../ast/types.rkt")
 
-(define-types null (create-type 'float) HALF_PI (/ pi 2))
-(define-types null (create-type 'float) PI pi)
-(define-types null (create-type 'float) QUARTER_PI (/ pi 4))
-(define-types null (create-type 'float) TAU (* pi 2))
-(define-types null (create-type 'float) TWO_PI (* pi 2))
+(define-types float HALF_PI (/ pi 2))
+(define-types float PI pi)
+(define-types float QUARTER_PI (/ pi 4))
+(define-types float TAU (* pi 2))
+(define-types float TWO_PI (* pi 2))

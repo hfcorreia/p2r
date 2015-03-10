@@ -1,6 +1,6 @@
 #lang racket
 
-(provide racket->java)
+(provide racket->java mangle-function-id)
 
 ;;; Converts a racket name to a java name
 (define (racket->java name)
@@ -44,3 +44,20 @@
                       (cons (char-upcase (first others))
                             (rest others)))))
                 (cons c (iter (+ 1 i)))))))))))
+
+;;; mangle-function-id symbol (list/of symbols) -> symbol
+;;; Mangles a function identifier using argument type information
+(define (mangle-function-id id args)
+  (define (build-seperated-string lst char)
+    (cond
+      [(null? lst) ""]
+      [(eq? (length lst) 1) (car lst)]
+      [else (format "~a~a~a" (car lst) char (build-seperated-string (cdr lst) char))]))
+  (string->symbol
+    (string-append*
+      `(,(symbol->string id)
+         "-"
+         ,(if (not (null? args))
+            (string-append* (list (build-seperated-string (map symbol->string args) "-") "-fn"))
+            "fn")))))
+
