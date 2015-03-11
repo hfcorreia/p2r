@@ -9,7 +9,8 @@
          "errors.rkt"
          "../bindings.rkt"
          "types.rkt"
-         "../mode.rkt")
+         "../mode.rkt"
+         "../name-mangling.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -43,12 +44,34 @@
                           (->syntax-object
                             `(p-require ,(read (open-input-string name)))))
 
-         ;; Everything from racket is an Object?
          (define/override (->type-check) #t)
 
-         ;; Possibly introduces bindings
          (define/override (->bindings scope)
+                          (add-exported-bindings scope (read (open-input-string name)))
                           (set-scope! scope))
+
+
+         (define (add-exported-bindings scope mod)
+           ;; get the aritiy of a given binding
+           (define (arity binding)
+             (let ([p (dynamic-require mod binding)])
+               (if (procedure? p) (procedure-arity p) 0)))
+
+           ;; generate list of Object types
+           (define (object-list n)
+             (build-list n (lambda (x) (create-type 'Object))))
+
+           (define (add-binding binding)
+             (let ([id (string->symbol (racket->java (symbol->string binding)))]
+                   [arity (arity binding)]
+                   [type (create-type 'Object)])
+               (if (equal? arity 0)
+                 (add-variable scope '() type id)
+                 (add-function scope '() type id (object-list arity) '()))))
+
+           (dynamic-require mod #f)
+           (let-values ([(vars syntax) (module->exports mod)])
+             (map add-binding (map car (cdar vars)))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))
