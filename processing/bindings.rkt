@@ -70,14 +70,22 @@
      #'(begin
          (add-variable global-scope '() (create-type 'type) 'id)
          (define id value))]
-    ;  [(_ (id [type . arg] -> ret-type) body ...)
-    ;   (with-syntax
-    ;     ([new-id (datum->syntax stx (mangle-function-id (syntax->datum #'id)
-    ;                                                #'type))])
-    ;     #'(begin
-    ;         (add-function global-scope modifiers ret-type 'id (list type) throws)
-    ;         (define (new-id . arg)
-    ;           body ...)))]
+    [(_ (id [type . arg] -> ret-type) body ...)
+     (with-syntax
+       ([new-id
+          (datum->syntax stx
+                         (mangle-function-id
+                           (syntax-e #'id)
+                           (list (syntax-e #'type))))])
+       #'(begin
+           (add-function global-scope
+                         null
+                         (create-type 'ret-type)
+                         'id
+                         (create-types (list 'type))
+                         null)
+           (define (new-id . arg)
+             body ...)))]
     [(_ (id [type arg] ... -> ret-type) body ...)
      (with-syntax
        ([new-id

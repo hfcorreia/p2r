@@ -185,7 +185,7 @@
        'error)]
     [(+ +=)
      (cond
-       [(binary-check? 'String left right) (create-type [null 'String])]
+       [(binary-check? 'String left right) (create-type 'String)]
        [(binary-check? 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]

@@ -10,19 +10,20 @@
 ;;; Print procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (define-types (print ['Object . args] -> 'void)
-              ;; (display
-                ;; (build-seperated-string (map arg->string args) #\space)))
+(define-types (print [int . args] -> void)
+              (display
+                (build-seperated-string (map arg->string args) #\space)))
 
-;; (define-types (println ['Object . args] -> 'void)
-              ;; (displayln
-                ;; (build-seperated-string (map arg->string args) #\space)))
+(define-types (println [int . args] -> void)
+              (displayln
+              (build-seperated-string (map arg->string args) #\space)))
 
-(define-types (print [Object x]-> void)
-               (display x))
 
-(define-types (println [Object x] -> void)
-              (displayln x))
+;; (define-types (print [Object x]-> void)
+               ;; (display x))
+
+;; (define-types (println [Object x] -> void)
+              ;; (displayln x))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Aux procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

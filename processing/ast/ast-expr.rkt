@@ -55,11 +55,11 @@
 
          (define/override (->type-check)
                           (node->type-check args)
-                          (set-type! (send primary get-type))
                           (let ([args-types (map (lambda (x)
                                                    (send x get-type)) args)])
-                            (send primary mangle-id! args-types)
                             (node->type-check primary)
+                            (send primary mangle-id! args-types)
+                            (set-type! (send primary get-type))
                             (type-check-args (send primary get-id)
                                              args-types)))
 
@@ -93,8 +93,6 @@
                                              (send binding get-args))
                                         (map (lambda (x) (send x get-type))
                                              args-types))])))
-
-
          (super-instantiate ())))
 
 (define primary%
