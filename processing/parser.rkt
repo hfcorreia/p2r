@@ -143,7 +143,7 @@
 
       (<reference-type>
         [(<name>)
-         (create-type (send $1 get-list) (send $1 get-id))]
+         (create-type (send $1 get-id))]
         [(<array-type>) $1])
 
       (<array-type>

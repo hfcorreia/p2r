@@ -1,0 +1,142 @@
+#lang racket
+
+(provide (all-defined-out))
+
+(require "ast/ast-expr.rkt"
+         (for-syntax "util.rkt")
+         (for-syntax racket/class)
+
+         "ast/errors.rkt"
+         "ast/types.rkt"
+         "bindings.rkt"
+         "util.rkt")
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Scopes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define global-scope%
+  (class object%
+         (define scope (make-hash))
+
+         (define/public (return-type) #f)
+
+         (define/public (get-binding id)
+                        (hash-ref scope id))
+
+         (define/public (get-variable id)
+                        (let ([id-sym (send id get-id)])
+                          (filter variable-binding? (get-binding id-sym))))
+
+         (define/public (get-functions id)
+                        (let ([id-sym (send id get-id)])
+                          (filter function-binding? (get-binding id-sym))))
+
+
+         (define/public (get-scope) (hash->list scope))
+
+         (define/public (add-binding bind)
+                        (let ([id-sym (send (send bind get-id) get-id)])
+                          (if (not (global? id-sym))
+                            (hash-set! scope id-sym (list bind))
+                            (hash-update! scope
+                                          id-sym
+                                          (lambda (bindings)
+                                            (check-binds bind
+                                                         bindings))))))
+
+         (define/public (bound? id)
+                        (hash-has-key? scope id))
+
+         (define/public (global? id)
+                        (hash-has-key? scope id))
+
+         (define/public (local? id) #f)
+
+         (super-instantiate ())))
+
+(define local-scope%
+  (class global-scope%
+         (init-field parent [ret-type #f])
+         (define scope (make-hash))
+
+         (define/override (add-binding binding)
+                          (let ([id (send binding get-id)])
+                            (if (not (local? id))
+                              (hash-set! scope (send id get-id) (list binding))
+                              (duplicate-variable id (send id get-id)))))
+
+         (define/override (get-functions id)
+                          (send parent get-functions id))
+
+         (define/override (get-scope)
+                          (append (send parent get-scope)
+                                  (hash->list scope)))
+
+         (define/override (get-binding id)
+                          (hash-ref scope
+                                    id
+                                    (lambda () (send parent get-binding id))))
+
+         (define/override (return-type) ret-type)
+
+         (define/override (bound? id)
+                          (or (local? id)
+                              (global? id)))
+
+         (define/override (global? id)
+                          (send parent global? id))
+
+         (define/override (local? id)
+                          (hash-has-key? scope id))
+
+         (super-instantiate ())))
+
+;; Create the global enviroment
+(define global-scope (make-object global-scope%))
+
+;; Add bindings to the global scope
+(define-syntax (define-types stx)
+  (syntax-case stx ()
+    [(_ type id value)
+     #'(begin
+         (add-binding global-scope ('() (create-type 'type) : (build-id #'id)))
+         (define id value))]
+    [(_ (id [type . arg] -> ret-type) body ...)
+     (with-syntax
+       ([new-id
+          (datum->syntax stx
+                         (mangle-function-id
+                           (syntax-e #'id)
+                           (list (syntax-e #'type))))])
+       #'(begin
+           (add-binding global-scope
+                        (null (build-id #'id) (create-types (list 'type)))
+                        ->
+                        ((create-type 'ret-type) null))
+           (define (new-id . arg)
+             body ...)))]
+    [(_ (id [type arg] ... -> ret-type) body ...)
+     (with-syntax
+       ([new-id
+          (datum->syntax stx
+                         (mangle-function-id
+                           (syntax-e #'id)
+                           (map (lambda (x)
+                                  (syntax-e x))
+                                (syntax->list #'(type ...)))))])
+       #'(begin
+           (add-binding global-scope
+                        (null (build-id #'id) (create-types (list 'type ...)))
+                        ->
+                        ((create-type 'ret-type) null))
+           (define (new-id arg ...)
+             body ...)))]))
+
+(define-syntax-rule
+  (build-id id)
+  (make-object identifier% null (symbol->string (syntax-e id))
+               (list (syntax-source-module id)
+                     (syntax-line id)
+                     (syntax-column id)
+                     (syntax-position id)
+                     (syntax-span id))))

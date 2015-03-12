@@ -126,7 +126,6 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; type=? : type% type% -> boolean
 ;; checks if two type symbols are the same
 (define (type=? to-type from-type)
@@ -253,3 +252,15 @@
   (case t
     [(byte shor char) (create-type 'int)]
     [else t]))
+
+;; signature-equals? (list/of type) (list/of type) -> bool
+;; checks the type signatures are the same
+(define (signature-equals? args1 args2)
+  (and (equal? (length args1) (length args2))
+       (andmap type=? args1 args2)))
+
+;; signature-equals? (list/of type) (list/of type) -> bool
+;; checks the type signatures are compatible
+(define (signature-promotable? args1 args2)
+  (and (equal? (length args1) (length args2))
+       (andmap widening-primitive-conversion? args2 args1)))

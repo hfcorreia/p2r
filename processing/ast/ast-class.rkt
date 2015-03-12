@@ -5,8 +5,7 @@
 (require racket/class
          "ast.rkt"
          "ast-expr.rkt"
-         "../bindings.rkt"
-         )
+         "../bindings.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST class nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -134,8 +133,7 @@
                           (send id set-type! type))
 
          (define/override (->bindings scope)
-                          (add-variable scope `(,final) type
-                                                (send id get-id))
+                          (add-binding scope (`(,final) type : id))
                           (set-scope! scope)
                           (node->bindings id scope))
 

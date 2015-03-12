@@ -8,7 +8,7 @@
 
 (require "ast/ast.rkt"
          "parser.rkt"
-         "bindings.rkt"
+         "scopes.rkt"
 
          ;; needed to load the runtime bindings
          "processing/api.rkt")

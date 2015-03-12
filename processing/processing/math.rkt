@@ -15,8 +15,7 @@
                      next-gaussian))
 
 (require racket/math
-         "../bindings.rkt"
-         "../ast/types.rkt"
+         "../scopes.rkt"
          (rename-in racket/base
                     [abs orig-abs]
                     [max orig-max]
@@ -46,6 +45,12 @@
                     ;; [(create-type 'float) x2]
                     ;; [(create-type 'float) y2])
                 ;; (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
+
+(define-types (cos [float val] -> float)
+              (cos val))
+
+(define-types (sin [float val] -> float)
+              (sin val))
 
 (define-syntax max
   (syntax-rules ()

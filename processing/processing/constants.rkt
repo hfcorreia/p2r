@@ -3,8 +3,7 @@
 (provide (all-defined-out))
 
 (require racket/math
-         "../bindings.rkt"
-         "../ast/types.rkt")
+         "../scopes.rkt")
 
 (define-types float HALF_PI (/ pi 2))
 (define-types float PI pi)

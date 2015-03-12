@@ -6,8 +6,8 @@
          racket/require
          syntax/readerr
 
-         "name-mangling.rkt"
-         (for-syntax "name-mangling.rkt")
+         "util.rkt"
+         (for-syntax "util.rkt")
 
          "processing/api.rkt")
 

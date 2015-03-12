@@ -1,6 +1,6 @@
 #lang racket
 
-(provide racket->java mangle-function-id)
+(provide (all-defined-out))
 
 ;;; Converts a racket name to a java name
 (define (racket->java name)
@@ -48,11 +48,6 @@
 ;;; mangle-function-id symbol (list/of symbols) -> symbol
 ;;; Mangles a function identifier using argument type information
 (define (mangle-function-id id args)
-  (define (build-seperated-string lst char)
-    (cond
-      [(null? lst) ""]
-      [(eq? (length lst) 1) (car lst)]
-      [else (format "~a~a~a" (car lst) char (build-seperated-string (cdr lst) char))]))
   (string->symbol
     (string-append*
       `(,(symbol->string id)
@@ -61,3 +56,12 @@
             (string-append* (list (build-seperated-string (map symbol->string args) "-") "-fn"))
             "fn")))))
 
+;;; Given a list of strings generates a string seprated by char
+(define (build-seperated-string lst char)
+  (cond
+    [(null? lst) ""]
+    [(eq? (length lst) 1) (car lst)]
+    [else (format "~a~a~a"
+                  (car lst)
+                  char
+                  (build-seperated-string (cdr lst) char))]))

@@ -3,8 +3,8 @@
 (provide (all-defined-out))
 
 (require racket/class
-         "../bindings.rkt"
-         "../ast/types.rkt"
+         "../util.rkt"
+         "../scopes.rkt"
          "objects.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print procedures
@@ -18,12 +18,6 @@
               (displayln
               (build-seperated-string (map arg->string args) #\space)))
 
-
-;; (define-types (print [Object x]-> void)
-               ;; (display x))
-
-;; (define-types (println [Object x] -> void)
-              ;; (displayln x))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Aux procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -38,13 +32,3 @@
             [(is-a? arg PVector) (send arg toString)]
             [(not (null? arg)) arg]
             [else ""])))
-
-;;; Given a list of strings generates a string seprated by char
-(define (build-seperated-string lst char)
-  (cond
-    [(null? lst) ""]
-    [(eq? (length lst) 1) (car lst)]
-    [else (format "~a~a~a"
-                  (car lst)
-                  char
-                  (build-seperated-string (cdr lst) char))]))

@@ -7,10 +7,11 @@
          "ast.rkt"
          "ast-expr.rkt"
          "errors.rkt"
-         "../bindings.rkt"
          "types.rkt"
+         "../bindings.rkt"
+         "../scopes.rkt"
          "../mode.rkt"
-         "../name-mangling.rkt")
+         "../util.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -38,7 +39,7 @@
   (class stmt%
          (init-field name)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! get-src-info)
 
          (define/override (->racket)
                           (->syntax-object
@@ -52,26 +53,33 @@
 
 
          (define (add-exported-bindings scope mod)
-           ;; get the aritiy of a given binding
-           (define (arity binding)
-             (let ([p (dynamic-require mod binding)])
-               (if (procedure? p) (procedure-arity p) 0)))
 
-           ;; generate list of Object types
-           (define (object-list n)
+           ;; arity: symbol -> or/c int #f
+           ;; given the exported binding symbol determines the arity
+           (define (arity sym)
+             (let ([p (dynamic-require mod sym)])
+               (and (procedure? p) (procedure-arity p))))
+
+           ;; types: int -> list/of type%
+           (define (types n)
              (build-list n (lambda (x) (create-type 'Object))))
 
-           (define (add-binding binding)
-             (let ([id (string->symbol (racket->java (symbol->string binding)))]
-                   [arity (arity binding)]
+           ;; add-exported-bindings: sym
+           ;; given and exported symbol generates the respective binding%
+           ;; and adds it to the current scope
+           (define (add-exported-binding sym)
+             (let ([id (make-object identifier% null
+                                    (string->symbol (racket->java (symbol->string sym)))
+                                    (get-src-info))]
+                   [arity (arity sym)]
                    [type (create-type 'Object)])
-               (if (equal? arity 0)
-                 (add-variable scope '() type id)
-                 (add-function scope '() type id (object-list arity) '()))))
+               (if (not arity)
+                 (add-binding scope ('() type : id))
+                 (add-binding scope ('() id (types arity)) -> (type '())))))
 
            (dynamic-require mod #f)
            (let-values ([(vars syntax) (module->exports mod)])
-             (map add-binding (map car (cdar vars)))))
+             (map add-exported-binding (map car (cdar vars)))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))
@@ -150,7 +158,7 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-variable scope modifiers type (send (car var) get-id))
+                                 (add-binding scope (modifiers type : (car var)))
                                  (node->bindings (car var) scope)
                                  (node->bindings (cadr var) scope))
                                vars))
@@ -206,44 +214,45 @@
 
 (define function-decl%
   (class stmt%
-         (init-field modifiers return-type id parameters throws body)
+         (init-field mods ret-type id args throws body)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
-                            `(define (,(node->racket id)
-                                       ,@(node->racket parameters))
+                            `(define (,(build-mangled-id)
+                                       ,@(node->racket args))
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
          (define/override (->type-check)
-                          (node->type-check parameters)
+                          (node->type-check args)
                           (node->type-check body))
 
          (define/override (->bindings scope)
-                          (let ([local-scope (make-object local-scope% scope return-type)]
-                                [parameter-types  (map (lambda (x)
-                                                         (send x get-type))
-                                                       parameters)])
+                          (let ([local-scope (make-object local-scope% scope ret-type)]
+                                [args-types  (map (lambda (x) (send x get-type)) args)])
                             (set-scope! scope)
-                            (add-function scope
-                                          modifiers
-                                          return-type
-                                          (send id get-id)
-                                          parameter-types
-                                          throws)
-                            (send id mangle-id! parameter-types)
-                            (node->bindings parameters local-scope)
+                            (add-binding scope
+                                         (mods id args-types)
+                                         ->
+                                         (ret-type throws))
+                            (node->bindings args local-scope)
                             (node->bindings body local-scope)))
+
+         (define (build-mangled-id)
+           (send id
+                 mangled-id
+                 (mangle-function-id
+                   (send id get-id)
+                   (map (lambda (x) (send (send x get-type) get-type)) args))))
 
 
          (define/override (->print)
-                          `(function% ,modifiers ,(send return-type get-type)
+                          `(function% ,mods ,(send ret-type get-type)
                                       ,(node->print id)
-                                      ,(node->print parameters) ,throws
+                                      ,(node->print args) ,throws
                                       ,(node->print body)))
-
 
          (super-instantiate ())))
 
