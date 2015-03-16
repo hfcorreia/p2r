@@ -4,4 +4,4 @@ require "foo.rkt";
 
 int x = 2;
 
-//fooBar(x);
+fooBar(f);

@@ -137,6 +137,12 @@
 ;;; require racket modules
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-syntax-rule
-  (p-require require-spec)
-  (require (filtered-in racket->java require-spec)))
+(define-syntax p-require
+  (syntax-rules ()
+    [(_ require-spec [bindings ...])
+     (require
+       (filtered-in
+         (lambda (s)
+           (cadar (filter (lambda (x) (equal? (car x) s))
+                          `(bindings ...))))
+         require-spec))]))

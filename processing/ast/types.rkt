@@ -146,6 +146,9 @@
   (let ([to-type (send to-type get-type)]
         [from-type (send from-type get-type)])
     (cond
+      [(symbol=? to-type 'Object) #t]
+      [(symbol=? from-type 'Object) #t]
+
       [(symbol=? to-type 'char)
        (memq from-type '(int))]
       [(symbol=? to-type 'short)

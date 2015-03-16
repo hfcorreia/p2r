@@ -41,9 +41,12 @@
 
          (inherit ->syntax-object set-scope! get-src-info)
 
+         (define bindings (list))
+
          (define/override (->racket)
                           (->syntax-object
-                            `(p-require ,(read (open-input-string name)))))
+                            `(p-require ,(read (open-input-string name))
+                                        ,(mangle-bindings bindings))))
 
          (define/override (->type-check) #t)
 
@@ -51,6 +54,22 @@
                           (add-exported-bindings scope (read (open-input-string name)))
                           (set-scope! scope))
 
+         (define (mangle-bindings bindings)
+           (map (lambda (x)
+                  (let ([mangled (racket->java (symbol->string (car x)))])
+                    (list (symbol->string (car x))
+                          (if (cdr x)
+                            (symbol->string (mangle-function-id
+                                              (string->symbol mangled)
+                                              (build-list (cdr x)
+                                                          (lambda (y)
+                                                            'Object))))
+                            mangled))))
+                bindings))
+
+         ;; types: int -> list/of type%
+         (define (types n)
+           (build-list n (lambda (x) (create-type 'Object))))
 
          (define (add-exported-bindings scope mod)
 
@@ -60,19 +79,18 @@
              (let ([p (dynamic-require mod sym)])
                (and (procedure? p) (procedure-arity p))))
 
-           ;; types: int -> list/of type%
-           (define (types n)
-             (build-list n (lambda (x) (create-type 'Object))))
 
            ;; add-exported-bindings: sym
            ;; given and exported symbol generates the respective binding%
            ;; and adds it to the current scope
            (define (add-exported-binding sym)
              (let ([id (make-object identifier% null
-                                    (string->symbol (racket->java (symbol->string sym)))
+                                    (racket->java (symbol->string sym))
                                     (get-src-info))]
                    [arity (arity sym)]
                    [type (create-type 'Object)])
+               (set! bindings
+                 (append (list (cons sym arity)) bindings))
                (if (not arity)
                  (add-binding scope ('() type : id))
                  (add-binding scope ('() id (types arity)) -> (type '())))))

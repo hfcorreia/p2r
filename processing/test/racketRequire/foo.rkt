@@ -5,7 +5,7 @@
 
 (require "boo.rkt")
 
-(define f "lol")
+(define f "My name is f")
 (define (foo-bar foo)
   (displayln foo))
 
