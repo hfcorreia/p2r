@@ -356,6 +356,7 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope)
+                          (node->bindings test scope)
                           (node->bindings body scope))
 
          (define/override (->print)
@@ -392,6 +393,8 @@
                                                           (send scope return-type))])
                             (set-scope! local-scope)
                             (node->bindings initialization local-scope)
+                            (node->bindings test local-scope)
+                            (node->bindings increment local-scope)
                             (node->bindings body local-scope)))
 
          (define/override (->print)
