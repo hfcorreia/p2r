@@ -6,8 +6,8 @@
          racket/require
          syntax/readerr
 
-         "name-mangling.rkt"
-         (for-syntax "name-mangling.rkt")
+         "util.rkt"
+         (for-syntax "util.rkt")
 
          "processing/api.rkt")
 
@@ -22,8 +22,8 @@
   (syntax-case stx ()
     [(_)
      (with-syntax
-       ([setup (datum->syntax stx 'setup)]
-        [draw  (datum->syntax stx 'draw)])
+       ([setup (datum->syntax stx 'setup-fn)]
+        [draw  (datum->syntax stx 'draw-fn)])
        (cond
          [(and (identifier-binding #'setup 0)  (identifier-binding #'draw 0))
           #'(begin (setup) (draw))]
@@ -137,6 +137,12 @@
 ;;; require racket modules
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-syntax-rule
-  (p-require require-spec)
-  (require (filtered-in racket->java require-spec)))
+(define-syntax p-require
+  (syntax-rules ()
+    [(_ require-spec [bindings ...])
+     (require
+       (filtered-in
+         (lambda (s)
+           (cadar (filter (lambda (x) (equal? (car x) s))
+                          `(bindings ...))))
+         require-spec))]))

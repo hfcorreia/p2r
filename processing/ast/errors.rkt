@@ -24,10 +24,16 @@
                   op t))))
 
 (define (binding-not-found obj id)
-  (send obj read-error (format "Cannot find anything named \"~\"" id)))
+  (send obj read-error (format "Cannot find anything named \"~a\"" id)))
 
-(define (method-not-applicable obj id arg-types app-args)
-  (send obj read-error (format "The method ~a ~a is not applicable for arguments ~a" id arg-types app-args)))
+(define (method-not-applicable obj id types)
+  (send obj read-error (format "The method ~a is not applicable for arguments ~a" id types)))
 
 (define (return-error obj)
   (send obj read-error (format "Unreachable code")))
+
+(define (duplicate-variable obj id)
+  (send obj read-error (format "Duplicate local variable ~a" id)))
+
+(define (duplicate-method obj id args)
+  (send obj read-error (format "Duplicate method ~a~a" id args)))

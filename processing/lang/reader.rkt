@@ -7,7 +7,9 @@ processing/lang/processing
 #:whole-body-readers? #t
 
 (require syntax/strip-context
-         "../compile.rkt")
+         racket/class
+         "../compile.rkt"
+         "../processing/runtime-bindings.rkt")
 
 (provide processing-read
          processing-read-syntax
@@ -16,8 +18,11 @@ processing/lang/processing
 (define (processing-read input-port)
   (map syntax->datum (processing-read-syntax #f input-port)))
 
+(define scope (new-scope))
+
 (define (processing-read-syntax src input-port)
-  (define compiled (compile-processing (build-ast src #:input-port input-port)))
+  (define compiled
+    (compile-processing (build-ast src input-port) scope))
   (map strip-context compiled))
 
 (define (processing-read-syntax-repl src input-port)
@@ -30,8 +35,7 @@ processing/lang/processing
           (apply string (reverse chars))))))
   (let ([code (map strip-context
                    (compile-processing-repl
-                     (build-ast src #:input-port
-                                (filter-unready-port input-port))))])
+                     (build-ast src (filter-unready-port input-port))))])
     (if (null? code)
       eof
       #`(begin #,@code))))

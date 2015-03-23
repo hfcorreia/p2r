@@ -19,10 +19,10 @@
     (send node ->racket)))
 
 (define-syntax-rule
-  (node->type-check node)
+  (node->type-check node arg ...)
   (if (list? node)
-    (map (lambda (x) (send x ->type-check)) node)
-    (send node ->type-check)))
+    (map (lambda (x) (send x ->type-check arg ...)) node)
+    (send node ->type-check arg ...)))
 
 (define-syntax-rule
   (node->bindings node scope)
@@ -115,7 +115,6 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope)
-                          ;; (pretty-display (->print))
                           (node->bindings ast scope))
 
          (define/override (->print)

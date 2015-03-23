@@ -57,12 +57,18 @@
          ;; checks if the type is an numeric type
          (define/public (numeric-type?)
                         (or (integral-type?)
+                            (object-type?)
                             (memq type '(float double))))
 
          ;; boolean-type?:  -> boolean
          ;; checks if the type is an boolean type
          (define/public (boolean-type?)
                         (eq? type 'boolean))
+
+         ;; object-type?:  -> boolean
+         ;; checks if the type is an boolean type
+         (define/public (object-type?)
+                        (eq? type 'Object))
 
          (super-instantiate ())))
 
@@ -97,6 +103,17 @@
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; create-type: symbol -> type%
+;; Simplyfies the type creation
+(define (create-type symbol)
+   ;; need to add other types
+    (make-object primitive-type% symbol))
+
+;; create-types: (listof symbol) -> type%
+;; Simplyfies of a list of types
+(define (create-types types)
+  (map create-type types))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type Structure:
 ;;;
 ;;; symbol-type = 'null   | 'boolean
@@ -115,14 +132,6 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; create-type: -> type%
-;; Simplyfies the type creation
-(define-syntax create-type
-  (syntax-rules ()
-    [(_ symbol) (make-object primitive-type% symbol)]
-    [(_ pack symbol) (make-object reference-type% pack symbol)]
-    [(_ dim pack symbol) (make-object array-type% dim pack symbol)]))
-
 ;; type=? : type% type% -> boolean
 ;; checks if two type symbols are the same
 (define (type=? to-type from-type)
@@ -143,6 +152,9 @@
   (let ([to-type (send to-type get-type)]
         [from-type (send from-type get-type)])
     (cond
+      [(symbol=? to-type 'Object) #t]
+      [(symbol=? from-type 'Object) #t]
+
       [(symbol=? to-type 'char)
        (memq from-type '(int))]
       [(symbol=? to-type 'short)
@@ -181,7 +193,7 @@
        'error)]
     [(+ +=)
      (cond
-       [(binary-check? 'String left right) (create-type null 'String)]
+       [(binary-check? 'String left right) (create-type 'String)]
        [(binary-check? 'numeric left right)
         (binary-promotion left right)]
        [else 'error])]
@@ -249,3 +261,15 @@
   (case t
     [(byte shor char) (create-type 'int)]
     [else t]))
+
+;; signature-equals? (list/of type) (list/of type) -> bool
+;; checks the type signatures are the same
+(define (signature-equals? args1 args2)
+  (and (equal? (length args1) (length args2))
+       (andmap type=? args1 args2)))
+
+;; signature-equals? (list/of type) (list/of type) -> bool
+;; checks the type signatures are compatible
+(define (signature-promotable? args1 args2)
+  (and (equal? (length args1) (length args2))
+       (andmap widening-primitive-conversion? args2 args1)))

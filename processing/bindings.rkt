@@ -2,136 +2,33 @@
 
 (provide (all-defined-out))
 
-(define global-scope%
-  (class object%
-         (field [scope (make-hash)])
+(require "ast/errors.rkt"
+         "ast/types.rkt"
+         "util.rkt")
 
-         (define/public (return-type) #f)
-
-         (define/public (get-binding id)
-                        (hash-ref scope id))
-
-         (define/public (get-scope) (hash->list scope))
-
-         (define/public (add-binding binding)
-                        (hash-set! scope (send binding get-id) binding))
-
-         (define/public (bound? id)
-                        (hash-has-key? scope id))
-
-         (define/public (global? id)
-                        (hash-has-key? scope id))
-
-         (define/public (local? id) #f)
-
-         (super-instantiate ())))
-
-(define local-scope%
-  (class global-scope%
-         (init-field parent [ret-type #f])
-         (inherit-field scope)
-
-         (define/override (get-scope)
-                          (append (send parent get-scope)
-                                  (hash->list scope)))
-
-         (define/override (get-binding id)
-                          (hash-ref scope
-                                    id
-                                    (lambda () (send parent get-binding id))))
-
-         (define/override (return-type) ret-type)
-
-         (define/override (bound? id)
-                          (or (local? id)
-                              (global? id)))
-
-         (define/override (global? id)
-                          (send parent is-global? id))
-
-         (define/override (local? id)
-                          (hash-has-key? scope id))
-
-         (super-instantiate ())))
-
-;; Create the global enviroment
-(define global-scope (make-object global-scope%))
-
-;; Add bindings to the global scope
-(define-syntax (define-types stx)
-  (syntax-case stx ()
-    [(_ modifiers type id value)
-     #'(begin
-         (add-variable global-scope modifiers type 'id)
-         (define id value))]
-    [(_ (id modifiers ret-type throws [type . arg]) body ...)
-     #'(begin
-         (add-function global-scope modifiers ret-type 'id (list type) throws)
-         (define (id . arg)
-           body ...))]
-    [(_ (id modifiers ret-type throws type-arg ...) body ...)
-     (with-syntax
-       ([(args ...)
-         (datum->syntax
-           stx
-           (map (lambda (x) (cadr (syntax-e x)))
-                (syntax->list #'(type-arg ...))))]
-        [(types ...)
-         (datum->syntax
-           stx
-           (map (lambda (x) (car (syntax-e x)))
-                (syntax->list #'(type-arg ...))))])
-       #'(begin
-           (add-function global-scope modifiers ret-type 'id (list types ...) throws)
-           (define (id args ...)
-             body ...)))]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; add-function:
-;;  (or/c local-scope% global-scope%)
-;;  (list/of mod-symbol)
-;;  type%
-;;  symbol
-;;  (list/of type-symbol)
-;;  type-symbol
-(define-syntax-rule
-  (add-function scope modifiers return-type id parameters-types throws)
-  (send scope
-        add-binding
-        (make-object function-binding% modifiers return-type parameters-types throws id)))
-
-;; add-variable:
-;;  (or/c local-scope% global-scope%)
-;;  (list/of mod-symbol)
-;;  type%
-;;  symbol
-(define-syntax-rule
-  (add-variable scope modifiers type id)
-  (send scope
-        add-binding
-        (make-object variable-binding% modifiers type id)))
-
-(define-syntax-rule
-  (format-binding binding)
-  (if (is-a? binding variable-binding%)
-    (format "id: ~a, type: ~a, mod: ~a"
-            (send binding get-id)
-            (send (send binding get-type) get-type)
-            (send binding get-modifiers))
-    (format "id: ~a, args: ~a, mod: ~a, ret: ~a"
-            (send binding get-id)
-            (map (lambda (x)
-                   (send x get-type))
-                 (send binding get-args))
-            (send binding get-modifiers)
-            (send (send binding get-return-type) get-type))))
-
+(define-syntax add-binding
+  (syntax-rules ()
+    ;; scope% (list/of symbol) symbol (list/of type%) -> type% exn%
+    [(_ scope (mods id types) -> (ret-type throws))
+     (send scope
+           add-binding
+           (make-object function-binding% mods ret-type types throws id))]
+    ;; scope% (list/of symbol) type% symbol
+    [(_ scope (mods type : id))
+     (send scope
+           add-binding
+           (make-object variable-binding% mods type id))]))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Binding object
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define binding%
   (class object%
          (init-field id)
 
+         ;; get-id: -> symbol
          (define/public (get-id) id)
 
          (super-instantiate ())))
@@ -139,11 +36,18 @@
 (define function-binding%
   (class binding%
          (init-field modifiers return-type args throws)
+         (inherit get-id)
 
          (define/public (get-modifiers) modifiers)
          (define/public (get-return-type) return-type)
          (define/public (get-arity) (length args))
          (define/public (get-args) args)
+         (define/public (get-mangled-id)
+                        (send (get-id)
+                              mangled-id
+                              (mangle-function-id
+                                (send (get-id) get-id)
+                                (map (lambda (x) (send x get-type)) args))))
 
          (super-instantiate ())))
 
@@ -155,3 +59,54 @@
          (define/public (get-type) type)
 
          (super-instantiate ())))
+
+(define (variable-binding? binding)
+  (is-a? binding variable-binding%))
+
+(define (function-binding? binding)
+  (is-a? binding function-binding%))
+
+;; variable? : list/of binding -> boolean
+;; check if a variable binding exists in the binding list
+(define (exists-variable? lst)
+  (andmap variable-binding? lst))
+
+;; check-binds : binding% list/of binding%
+;; checks if the binding can be added to the bindings list
+;; returning the appended list
+(define (check-binds bind lst)
+  (let ([id (send bind get-id)])
+    (cond
+      [(and (function-binding? bind)
+            (duplicate-function? bind lst))
+       (duplicate-method id
+                         (send id get-id)
+                         (map (lambda (x)
+                                (send x get-type))
+                              (send bind get-args)))]
+      [(and (variable-binding? bind)
+            (exists-variable? lst))
+       (duplicate-variable id (send id get-id))]
+      [else (append `(,bind) lst)])))
+
+(define (duplicate-function? binding binding-list)
+  (ormap (lambda (x)
+           (and (not (variable-binding? x))
+                (equal? (send binding get-arity) (send x get-arity))
+                (andmap type=? (send binding get-args) (send x get-args))))
+         binding-list))
+
+
+;; applicable-function: list/of type% list/of bindings
+;; recevies a function's arg types and a list of possible applicable function
+(define (applicable-function args bindings)
+  (filter (lambda (binding)
+            (signature-equals? args (send binding get-args)))
+          bindings))
+
+;; promotable-function: list/of type% list/of bindings
+;; recevies a function's arg types and a list of possible promotable function
+(define (promotable-function args bindings)
+  (filter (lambda (binding)
+            (signature-promotable? args (send binding get-args)))
+          bindings))

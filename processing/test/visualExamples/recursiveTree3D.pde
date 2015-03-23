@@ -9,14 +9,14 @@ void tree(float x, float y, float z, float len, float lat, float coLat, float ra
   float z2 = z + len * cos(coLat);
   float narrowRadius = radius * narrow;
 
-  cone(x, y, z, radius , x2, y2, z2, narrowRadius);
+  //cone(x, y, z, radius , x2, y2, z2, narrowRadius);
  
   if (len < 7) {
-    centeredBox(x2,y2,z2,6,6,1);   
+   // centeredBox(x2,y2,z2,6,6,1);   
   }
   else {
-    int a1 = lat + PI/4;;
-    int a2 = PI/4;
+    float a1 = lat + PI/4;;
+    float a2 = PI/4;
 
     tree(x2, y2, z2, f * len, a1, a2, narrowRadius);
     tree(x2, y2, z2, f * len, (a1 + PI * 1/2), a2, narrowRadius);
@@ -26,6 +26,6 @@ void tree(float x, float y, float z, float len, float lat, float coLat, float ra
 }
 
 void setup(){
-    backend(autocad);
+   // backend(autocad);
     tree(0,0,0, 20, 0, 0, 3);
 }

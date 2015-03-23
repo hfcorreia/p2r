@@ -5,8 +5,9 @@
 (require racket/undefined
          "ast.rkt"
          "types.rkt"
-         "../bindings.rkt"
-         "errors.rkt")
+         "errors.rkt"
+
+         "../bindings.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST expression nodes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,7 +15,7 @@
 (define expression%
   (class ast-node%
          (inherit read-error)
-         (field [type-info (create-type null 'Object)])
+         (field [type-info (create-type 'Object)])
 
          (define/public (get-type) type-info)
 
@@ -43,7 +44,7 @@
   (class expression%
          (init-field primary args)
 
-         (inherit ->syntax-object set-scope! set-type! get-scope)
+         (inherit ->syntax-object set-scope! set-type! get-scope get-type)
 
          (define/override (->racket)
                           (->syntax-object
@@ -51,10 +52,9 @@
                                      ,@(node->racket args))))
 
          (define/override (->type-check)
-                          (node->type-check primary)
-                          (set-type! (send primary get-type))
                           (node->type-check args)
-                          (type-check-args (send primary get-id) args))
+                          (type-check-args (send primary get-id))
+                          (node->type-check primary (get-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
@@ -65,35 +65,35 @@
                           `(method-call% ,(node->print primary)
                                          ,(node->print args)))
 
-         (define (type-check-args id args-node)
-           (let ([binding (send (get-scope) get-binding (send id get-id))]
-                 ; unpack each arg from their ast-node%
-                 [args-types    (map (lambda (x) (send x get-type)) args)])
+         (define (type-check-args id)
+           (let* ([fn-bindings   (send (get-scope) get-functions id)]
+                  [types         (map (lambda (x) (send x get-type)) args)]
+                  [applicable-fn (applicable-function types fn-bindings)]
+                  [promotable-fn (promotable-function types fn-bindings)])
              (cond
-               [(and (eq? (length args-types) (send binding get-arity))
-                     (andmap (lambda (t1 t2)
-                               (or (type=? t1 t2)
-                                   (object-type? t1 t2)
-                                   (widening-primitive-conversion? t1 t2)))
-                             (send binding get-args)
-                             args-types))
-                (map (lambda (node type) (send node set-type! type))
-                     args-node
-                     (send binding get-args))]
+               [(and (null? applicable-fn) (null? promotable-fn))
+                (method-not-applicable this
+                                       (send id get-id)
+                                       (map (lambda (x) (send x get-type))
+                                            types))]
+               [(null? applicable-fn)
+                (begin
+                  (set-type! (send (car promotable-fn) get-return-type))
+                  (build-mangled-id (car promotable-fn)))]
                [else
-                 (method-not-applicable this
-                                        (send id get-id)
-                                        (map (lambda (x) (send x get-type))
-                                             (send binding get-args))
-                                        (map (lambda (x) (send x get-type))
-                                             args-types))])))
+                 (begin
+                   (set-type! (send (car applicable-fn) get-return-type))
+                   (build-mangled-id (car applicable-fn)))])))
 
+         (define (build-mangled-id binding)
+           (send primary build-mangled-id binding))
 
          (super-instantiate ())))
 
 (define primary%
   (class expression%
          (init-field primary id)
+         (field [mangled-id null])
 
          (inherit ->syntax-object set-scope! set-type!)
 
@@ -103,17 +103,17 @@
          (define/override (->racket)
                           (if (null? primary)
                             (if (is-method?)
-                              `(#:call ,(node->racket id))
+                              `(#:call ,mangled-id)
                               `(#:send ,(send id get-full-id)
-                                ,(node->racket id)))
+                                ,mangled-id))
                             `(#:send ,(node->racket primary)
-                              ,(node->racket id))))
+                              ,mangled-id)))
 
-         (define/override (->type-check)
+         (define/override (->type-check type)
                           (and (not (null? primary))
                                (node->type-check primary))
-                          (node->type-check id)
-                          (set-type! (send id get-type)))
+                          (node->type-check id type)
+                          (set-type! type))
 
          (define/override (->bindings scope)
                           (set-scope! scope)
@@ -125,6 +125,9 @@
                           `(primary% ,(node->print primary)
                                      ,(node->print id)))
 
+         (define/public (build-mangled-id binding)
+                        (set! mangled-id (send binding get-mangled-id)))
+
          (super-instantiate ())))
 
 (define identifier%
@@ -133,8 +136,8 @@
 
          (inherit ->syntax-object set-scope! set-type! get-type get-scope)
 
-         (define/public (get-id)   (string->symbol identifier))
-         (define/public (get-list) (reverse id-list))
+         (define/public (get-id)       (string->symbol identifier))
+         (define/public (get-list)     (reverse id-list))
 
          (define/public (get-full-id)
                         (string->symbol
@@ -146,22 +149,24 @@
          (define/override (->racket)
                           (->syntax-object (identifier->symbol)))
 
-         (define/override (->type-check)
-                          (set-type! (get-id-type)))
-
+         (define/override (->type-check [ret-type null])
+                          (if (null? ret-type)
+                            (set-type! (get-id-type))
+                            (set-type! ret-type)))
 
          (define/override (->bindings scope)
                           (set-scope! scope))
 
          ;;; lookup the id in current scope a get the defined type
          (define/public (get-id-type)
-                        (let ([binding (send (get-scope) get-binding (get-id))])
-                          (cond
-                            [(is-a? binding variable-binding%)
-                             (send binding get-type)]
-                            [(is-a? binding function-binding%)
-                             (send binding get-return-type)]
-                            [else (binding-not-found this (get-id))])))
+                        (let ([variable (send (get-scope) get-variable this)])
+                          (if (null? variable)
+                              (binding-not-found this (get-id))
+                              (send (car variable) get-type))))
+
+         ;;; generates a syntax object with mangled info
+         (define/public (mangled-id mangled-id)
+                        (->syntax-object mangled-id))
 
 
          ;; build-full-id : (listof string?) -> string?
@@ -191,8 +196,7 @@
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               `(p-build-identifier ,(build-id)
-                                                    ,(node->racket name))]
+                               (node->racket name)]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)

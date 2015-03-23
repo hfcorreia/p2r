@@ -15,37 +15,47 @@
                      next-gaussian))
 
 (require racket/math
-         "../bindings.rkt"
-         "../ast/types.rkt"
+         "runtime-bindings.rkt"
          (rename-in racket/base
-                    [abs orig-abs]
                     [max orig-max]
                     [min orig-min]
                     [random orig-rand]
                     [map orig-map]))
 
 
-(define-types (abs null (create-type 'float) null [(create-type 'float) n])
-  (orig-abs n))
+(define/types (abs [float n] -> float)
+              (abs n))
 
-(define-types (ceil null (create-type 'int) null [(create-type 'float) x])
-  (inexact->exact (ceiling x)))
+(define/types (abs [int n] -> int)
+              (abs n))
 
-(define-types (constrain null (create-type 'float) null
-                         [(create-type 'float) val]
-                         [(create-type 'float) min]
-                         [(create-type 'float) max])
+(define/types (ceil [float n] -> int)
+   (inexact->exact (ceiling n)))
+
+(define/types (dist [float x1] [float y1] [float x2] [float y2] -> float)
+              (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
+
+(define/types (dist [float x1] [float y1] [float z1] [float x2] [float y2] [float z2]-> float)
+              (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2) (expt (- z2 z1) 2))))
+
+(define/types (constrain [float amt] [float low] [float high] -> float)
               (cond
-                [(< val min) min]
-                [(> val max) max]
-                [else val]))
+                [(< amt low) low]
+                [(> amt high) high]
+                [else amt]))
 
-(define-types (dist null (create-type 'float) null
-                    [(create-type 'float) x1]
-                    [(create-type 'float) y1]
-                    [(create-type 'float) x2]
-                    [(create-type 'float) y2])
-                (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
+(define/types (constrain [int amt] [int low] [int high] -> int)
+              (cond
+                [(< amt low) low]
+                [(> amt high) high]
+                [else amt]))
+
+(define/types (cos [float val] -> float)
+              (cos val))
+
+(define/types (sin [float val] -> float)
+              (sin val))
+
 
 (define-syntax max
   (syntax-rules ()

@@ -103,7 +103,7 @@
         [(boolean-lit)
          (make-object literal% $1 (create-type 'boolean) (build-src 1))]
         [(string-lit)
-         (make-object literal% $1 (create-type null 'String) (build-src 1))]
+         (make-object literal% $1 (create-type 'String) (build-src 1))]
         [(char-lit)
          (make-object literal% $1 (create-type 'char) (build-src 1))]
         [(null-lit)
@@ -143,7 +143,7 @@
 
       (<reference-type>
         [(<name>)
-         (create-type (send $1 get-list) (send $1 get-id))]
+         (create-type (send $1 get-id))]
         [(<array-type>) $1])
 
       (<array-type>

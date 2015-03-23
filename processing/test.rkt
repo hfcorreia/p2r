@@ -1,7 +1,9 @@
 #lang racket
 
 (require rackunit
+         racket/runtime-path
          "compile.rkt"
+         "processing/runtime-bindings.rkt"
          rackunit/text-ui)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -9,31 +11,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (test-parser path)
   (test-case
-    "Testing Parser")
-  (check-not-exn
-    (lambda () (build-ast path))))
+    "Testing Parser"
+    (check-not-exn
+      (lambda () (build-ast path)))))
 
-(define (test-bindings path)
-  (let ([ast (build-ast path)])
-    (test-case
-      "Checking Bindings"
-      (check-not-exn
-        (lambda () (bindings-check ast))))))
+(define (test-bindings ast scope)
+  (test-case
+    "Checking Bindings"
+    (check-not-exn
+      (lambda () (bindings-check ast scope)))))
 
-(define (test-types path)
-  (let ([ast (build-ast path)])
-    (bindings-check ast)
-    (test-case
-      "Checking Types"
-      (check-not-exn
-        (lambda () (type-check ast))))))
+(define (test-types ast)
+  (test-case
+    "Checking Types"
+    (check-not-exn
+      (lambda () (type-check ast)))))
 
-(define (test-compilation path)
-  (let ([ast (build-ast path)])
-    (test-case
-      "Compiling Code"
-      (check-not-exn
-        (lambda () (compile-processing ast))))))
+(define (test-compilation ast scope)
+  (test-case
+    "Compiling Code"
+    (check-not-exn
+      (lambda () (compile-processing ast scope)))))
 
 (define (test-runtime path)
   (test-case
@@ -41,15 +39,14 @@
     (check-not-exn
       (lambda () (system (string-append "racket " (path->string path)))))))
 
-(define (full-tests path)
+(define (full-tests path scope)
   (test-suite
     (format "Testing ~a" path)
     (test-parser      path)
-    (test-bindings    path)
-    (test-types       path)
-    (test-compilation path)
-    ;(test-runtime     path)
-  ))
+    (let ([ast (build-ast path)])
+      ;; (test-bindings    ast scope)
+      ;; (test-types       ast)
+      (test-compilation ast scope))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
@@ -69,14 +66,14 @@
              (set! dirs (cons complete-path dirs)))))
     dirs))
 
-(current-directory "test")
+(define-runtime-path test "test")
 
 (run-tests
   (make-test-suite
     "Processing Tests"
-    (for/list ([dir (find-dirs (current-directory))])
+    (for/list ([dir (find-dirs test)])
               (make-test-suite
                 (format "Testing dir: ~a" dir)
                 (for/list ([file (find-processing-files dir)])
-                          (full-tests file)))))
+                          (full-tests file (new-scope))))))
   'normal)

@@ -7,9 +7,11 @@
          "ast.rkt"
          "ast-expr.rkt"
          "errors.rkt"
-         "../bindings.rkt"
          "types.rkt"
-         "../mode.rkt")
+         "../bindings.rkt"
+         "../scopes.rkt"
+         "../mode.rkt"
+         "../util.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; AST stmt nodes
@@ -37,18 +39,66 @@
   (class stmt%
          (init-field name)
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! get-src-info)
+
+         (define bindings (list))
 
          (define/override (->racket)
                           (->syntax-object
-                            `(p-require ,(read (open-input-string name)))))
+                            `(p-require ,(read (open-input-string name))
+                                        ,(mangle-bindings bindings))))
 
-         ;; Everything from racket is an Object?
          (define/override (->type-check) #t)
 
-         ;; Possibly introduces bindings
          (define/override (->bindings scope)
+                          (add-exported-bindings scope (read (open-input-string name)))
                           (set-scope! scope))
+
+         (define (mangle-bindings bindings)
+           (map (lambda (x)
+                  (let ([mangled (racket->java (symbol->string (car x)))])
+                    (list (symbol->string (car x))
+                          (if (cdr x)
+                            (symbol->string (mangle-function-id
+                                              (string->symbol mangled)
+                                              (build-list (cdr x)
+                                                          (lambda (y)
+                                                            'Object))))
+                            mangled))))
+                bindings))
+
+         ;; types: int -> list/of type%
+         (define (types n)
+           (build-list n (lambda (x) (create-type 'Object))))
+
+         (define (add-exported-bindings scope mod)
+
+           ;; arity: symbol -> or/c int #f
+           ;; given the exported binding symbol determines the arity
+           (define (arity sym)
+             (let ([p (dynamic-require mod sym)])
+               (and (procedure? p) (procedure-arity p))))
+
+
+           ;; add-exported-bindings: sym
+           ;; given and exported symbol generates the respective binding%
+           ;; and adds it to the current scope
+           (define (add-exported-binding sym)
+             (let ([id (make-object identifier% null
+                                    (racket->java (symbol->string sym))
+                                    (get-src-info))]
+                   [arity (arity sym)]
+                   [type (create-type 'Object)])
+               (set! bindings
+                 (append (list (cons sym arity)) bindings))
+               (if (not arity)
+                 (add-binding scope ('() type : id))
+                 (add-binding scope ('() id (types arity)) -> (type '())))))
+
+           (dynamic-require mod #f)
+           (let-values ([(vars syntax) (module->exports mod)])
+             (when (not (null? vars))
+             (map add-exported-binding (map car (cdar vars))))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))
@@ -127,7 +177,7 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-variable scope modifiers type (send (car var) get-id))
+                                 (add-binding scope (modifiers type : (car var)))
                                  (node->bindings (car var) scope)
                                  (node->bindings (cadr var) scope))
                                vars))
@@ -183,37 +233,44 @@
 
 (define function-decl%
   (class stmt%
-         (init-field modifiers return-type id parameters throws body)
+         (init-field mods ret-type id args throws body)
 
          (inherit ->syntax-object set-scope!)
 
          (define/override (->racket)
                           (->syntax-object
-                            `(define (,(node->racket id)
-                                       ,@(node->racket parameters))
+                            `(define (,(build-mangled-id)
+                                       ,@(node->racket args))
                                (call/ec (lambda (return)
                                           ,(node->racket body))))))
 
          (define/override (->type-check)
-                          (node->type-check parameters)
+                          (node->type-check args)
                           (node->type-check body))
 
          (define/override (->bindings scope)
-                          (let ([local-scope (make-object local-scope% scope return-type)]
-                                [parameter-types  (map (lambda (x)
-                                                         (send x get-type))
-                                                       parameters)])
+                          (let ([local-scope (make-object local-scope% scope ret-type)]
+                                [args-types  (map (lambda (x) (send x get-type)) args)])
                             (set-scope! scope)
-                            (add-function scope modifiers return-type
-                                          (send id get-id)
-                                          parameter-types throws)
-                            (node->bindings parameters local-scope)
+                            (add-binding scope
+                                         (mods id args-types)
+                                         ->
+                                         (ret-type throws))
+                            (node->bindings args local-scope)
                             (node->bindings body local-scope)))
 
+         (define (build-mangled-id)
+           (send id
+                 mangled-id
+                 (mangle-function-id
+                   (send id get-id)
+                   (map (lambda (x) (send (send x get-type) get-type)) args))))
+
+
          (define/override (->print)
-                          `(function% ,modifiers ,(send return-type get-type)
+                          `(function% ,mods ,(send ret-type get-type)
                                       ,(node->print id)
-                                      ,(node->print parameters) ,throws
+                                      ,(node->print args) ,throws
                                       ,(node->print body)))
 
          (super-instantiate ())))
@@ -300,6 +357,7 @@
 
          (define/override (->bindings scope)
                           (set-scope! scope)
+                          (node->bindings test scope)
                           (node->bindings body scope))
 
          (define/override (->print)
@@ -336,6 +394,8 @@
                                                           (send scope return-type))])
                             (set-scope! local-scope)
                             (node->bindings initialization local-scope)
+                            (node->bindings test local-scope)
+                            (node->bindings increment local-scope)
                             (node->bindings body local-scope)))
 
          (define/override (->print)
@@ -402,60 +462,60 @@
                return-type
                (return-error this))))
 
-           (define/override (->print)
-                            `(return% ,(node->print expr)))
+         (define/override (->print)
+                          `(return% ,(node->print expr)))
 
-           (super-instantiate ())))
+         (super-instantiate ())))
 
-  (define break%
-    (class stmt%
-           (inherit ->syntax-object set-scope!)
+(define break%
+  (class stmt%
+         (inherit ->syntax-object set-scope!)
 
-           (define/override (->racket)
-                            (->syntax-object
-                              `(break (void))))
+         (define/override (->racket)
+                          (->syntax-object
+                            `(break (void))))
 
-           (define/override (->type-check) #t)
+         (define/override (->type-check) #t)
 
-           (define/override (->bindings scope)
-                            (set-scope! scope))
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
-           (define/override (->print)
-                            `(break%))
+         (define/override (->print)
+                          `(break%))
 
-           (super-instantiate ())))
+         (super-instantiate ())))
 
-  (define continue%
-    (class stmt%
-           (inherit ->syntax-object set-scope!)
+(define continue%
+  (class stmt%
+         (inherit ->syntax-object set-scope!)
 
-           (define/override (->racket)
-                            (->syntax-object
-                              `(continue (void))))
+         (define/override (->racket)
+                          (->syntax-object
+                            `(continue (void))))
 
-           (define/override (->type-check) #t)
+         (define/override (->type-check) #t)
 
-           (define/override (->bindings scope)
-                            (set-scope! scope))
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
-           (define/override (->print)
-                            `(continue%))
+         (define/override (->print)
+                          `(continue%))
 
-           (super-instantiate ())))
+         (super-instantiate ())))
 
-  (define empty-stmt%
-    (class stmt%
-           (inherit ->syntax-object set-scope!)
+(define empty-stmt%
+  (class stmt%
+         (inherit ->syntax-object set-scope!)
 
-           (define/override (->racket) (void))
+         (define/override (->racket) (void))
 
-           (define/override (->type-check) #t)
+         (define/override (->type-check) #t)
 
-           (define/override (->bindings scope)
-                            (set-scope! scope))
+         (define/override (->bindings scope)
+                          (set-scope! scope))
 
-           (define/override (->print)
-                            `(empty-stmt%))
+         (define/override (->print)
+                          `(empty-stmt%))
 
-           (super-instantiate ())))
+         (super-instantiate ())))
 
