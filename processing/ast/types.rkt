@@ -142,9 +142,7 @@
 ;; checks if from-type or to-type are of type object-type?
 ;; allowing the type-checker to skip the type-checking
 (define (object-type? to-type from-type)
-  (let ([to-type (send to-type get-type)]
-        [from-type (send from-type get-type)])
-    (or (symbol=? to-type 'Object) (symbol=? from-type 'Object))))
+  (or (send to-type object-type?) (send from-type object-type?)))
 
 ;; widening-primitive-conversion? type% type% -> boolean
 ;; checks if from-type can be converted to to-type
@@ -273,3 +271,4 @@
 (define (signature-promotable? args1 args2)
   (and (equal? (length args1) (length args2))
        (andmap widening-primitive-conversion? args2 args1)))
+

@@ -2,6 +2,9 @@
 
 (provide (all-defined-out))
 
+(define (boolean-conversion-error obj t)
+  (let ([t (send t get-type)])
+        (send obj type-error (format "Cannot convert a ~a to boolean" t))))
 
 (define (type-conversion-error obj t1 t2)
   (let ([t1 (send t1 get-type)]

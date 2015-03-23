@@ -98,7 +98,7 @@
            (dynamic-require mod #f)
            (let-values ([(vars syntax) (module->exports mod)])
              (when (not (null? vars))
-             (map add-exported-binding (map car (cdar vars))))))
+               (map add-exported-binding (map car (cdar vars))))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))
@@ -291,6 +291,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check then)
                           (and (not (null? else))
                                (node->type-check else)))
@@ -326,6 +329,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check body))
 
          (define/override (->bindings scope)
@@ -353,6 +359,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check body))
 
          (define/override (->bindings scope)
@@ -385,6 +394,9 @@
          (define/override (->type-check)
                           (node->type-check initialization)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check increment)
                           (node->type-check body))
 
