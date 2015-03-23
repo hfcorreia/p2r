@@ -1,7 +1,9 @@
 #lang racket
 
 (require rackunit
+         racket/runtime-path
          "compile.rkt"
+         "processing/runtime-bindings.rkt"
          rackunit/text-ui)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -13,11 +15,11 @@
     (check-not-exn
       (lambda () (build-ast path)))))
 
-(define (test-bindings ast)
+(define (test-bindings ast scope)
   (test-case
     "Checking Bindings"
     (check-not-exn
-      (lambda () (bindings-check ast)))))
+      (lambda () (bindings-check ast scope)))))
 
 (define (test-types ast)
   (test-case
@@ -25,11 +27,11 @@
     (check-not-exn
       (lambda () (type-check ast)))))
 
-(define (test-compilation ast)
+(define (test-compilation ast scope)
   (test-case
     "Compiling Code"
     (check-not-exn
-      (lambda () (compile-processing ast)))))
+      (lambda () (compile-processing ast scope)))))
 
 (define (test-runtime path)
   (test-case
@@ -37,16 +39,14 @@
     (check-not-exn
       (lambda () (system (string-append "racket " (path->string path)))))))
 
-(define (full-tests path)
+(define (full-tests path scope)
   (test-suite
     (format "Testing ~a" path)
-;   (test-parser      path)
+    (test-parser      path)
     (let ([ast (build-ast path)])
-;     (test-bindings    ast)
-;     (test-types       ast)
-      (test-compilation ast)
-      ;test-runtime     path)
-      )))
+      ;; (test-bindings    ast scope)
+      ;; (test-types       ast)
+      (test-compilation ast scope))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
@@ -66,14 +66,14 @@
              (set! dirs (cons complete-path dirs)))))
     dirs))
 
-(current-directory "test")
+(define-runtime-path test "test")
 
 (run-tests
   (make-test-suite
     "Processing Tests"
-    (for/list ([dir (find-dirs (current-directory))])
+    (for/list ([dir (find-dirs test)])
               (make-test-suite
                 (format "Testing dir: ~a" dir)
                 (for/list ([file (find-processing-files dir)])
-                          (full-tests file)))))
+                          (full-tests file (new-scope))))))
   'normal)

@@ -2,18 +2,14 @@
 
 (provide (all-defined-out))
 
-(require "ast/ast-expr.rkt"
-         (for-syntax "util.rkt")
-         (for-syntax racket/class)
-
-         "ast/errors.rkt"
+(require "ast/errors.rkt"
          "ast/types.rkt"
          "bindings.rkt"
          "util.rkt")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scopes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (define global-scope%
   (class object%
          (define scope (make-hash))
@@ -32,7 +28,8 @@
                           (filter function-binding? (get-binding id-sym))))
 
 
-         (define/public (get-scope) (hash->list scope))
+         (define/public (get-scope) scope)
+         (define/public (set-scope! s) (set! scope s))
 
          (define/public (add-binding bind)
                         (let ([id-sym (send (send bind get-id) get-id)])
@@ -90,53 +87,3 @@
                           (hash-has-key? scope id))
 
          (super-instantiate ())))
-
-;; Create the global enviroment
-(define global-scope (make-object global-scope%))
-
-;; Add bindings to the global scope
-(define-syntax (define-types stx)
-  (syntax-case stx ()
-    [(_ type id value)
-     #'(begin
-         (add-binding global-scope ('() (create-type 'type) : (build-id #'id)))
-         (define id value))]
-    [(_ (id [type . arg] -> ret-type) body ...)
-     (with-syntax
-       ([new-id
-          (datum->syntax stx
-                         (mangle-function-id
-                           (syntax-e #'id)
-                           (list (syntax-e #'type))))])
-       #'(begin
-           (add-binding global-scope
-                        (null (build-id #'id) (create-types (list 'type)))
-                        ->
-                        ((create-type 'ret-type) null))
-           (define (new-id . arg)
-             body ...)))]
-    [(_ (id [type arg] ... -> ret-type) body ...)
-     (with-syntax
-       ([new-id
-          (datum->syntax stx
-                         (mangle-function-id
-                           (syntax-e #'id)
-                           (map (lambda (x)
-                                  (syntax-e x))
-                                (syntax->list #'(type ...)))))])
-       #'(begin
-           (add-binding global-scope
-                        (null (build-id #'id) (create-types (list 'type ...)))
-                        ->
-                        ((create-type 'ret-type) null))
-           (define (new-id arg ...)
-             body ...)))]))
-
-(define-syntax-rule
-  (build-id id)
-  (make-object identifier% null (symbol->string (syntax-e id))
-               (list (syntax-source-module id)
-                     (syntax-line id)
-                     (syntax-column id)
-                     (syntax-position id)
-                     (syntax-span id))))

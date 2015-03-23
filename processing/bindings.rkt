@@ -5,10 +5,10 @@
 (require "ast/errors.rkt"
          "ast/types.rkt"
          "util.rkt")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (define-syntax add-binding
   (syntax-rules ()
     ;; scope% (list/of symbol) symbol (list/of type%) -> type% exn%
@@ -21,7 +21,9 @@
      (send scope
            add-binding
            (make-object variable-binding% mods type id))]))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Binding object
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define binding%
   (class object%
          (init-field id)

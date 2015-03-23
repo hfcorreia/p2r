@@ -5,15 +5,16 @@
 (require (rename-in (planet aml/rosetta)
                     [backend ros-backend]
                     [autocad ros-autocad])
-         "../scopes.rkt"
+         "runtime-bindings.rkt"
          racket/system)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Rosetta Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define-types Object autocad ros-autocad)
+(define/types Object autocad ros-autocad)
 
-(define-types (backend [Object id] -> Object)
+(define/types (backend [Object id] -> Object)
   (ros-backend id))
 
 #|

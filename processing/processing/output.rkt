@@ -4,17 +4,17 @@
 
 (require racket/class
          "../util.rkt"
-         "../scopes.rkt"
+         "runtime-bindings.rkt"
          "objects.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-types (print [int . args] -> void)
+(define/types (print [Object . args] -> void)
               (display
                 (build-seperated-string (map arg->string args) #\space)))
 
-(define-types (println [int . args] -> void)
+(define/types (println [Object . args] -> void)
               (displayln
               (build-seperated-string (map arg->string args) #\space)))
 

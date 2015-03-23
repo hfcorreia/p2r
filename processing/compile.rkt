@@ -7,15 +7,11 @@
          build-ast)
 
 (require "ast/ast.rkt"
-         "parser.rkt"
-         "scopes.rkt"
-
-         ;; needed to load the runtime bindings
-         "processing/api.rkt")
+         "parser.rkt")
 
 ;;; build-ast: file input-port= #f -> (listof ast-node%)
 ;;; parses the input file and constructs an ast of ast-node%
-(define (build-ast file #:input-port [input-port #f])
+(define (build-ast file [input-port #f])
   (if (eq? input-port #f)
     (with-input-from-file
       file
@@ -30,17 +26,17 @@
 
 ;;; bindings-check : ast -> (or/c #t type-error)
 ;;; traverse the ast and create the necessary scopes
-(define (bindings-check ast)
-  (node->bindings ast global-scope))
+(define (bindings-check ast scope)
+  (node->bindings ast scope))
 
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
-(define (compile-processing ast)
-  (bindings-check ast)
-  (node->type-check ast)
+(define (compile-processing ast scope)
+  (bindings-check ast scope)
+  (type-check ast)
   (node->racket ast))
 
 ;;; compile-processing-repl : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast consumed by the repl
-(define (compile-processing-repl ast)
-  (send ast ->repl global-scope))
+(define (compile-processing-repl ast scope)
+  (send ast ->repl scope))
