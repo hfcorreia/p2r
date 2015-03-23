@@ -43,6 +43,11 @@
     [(_ #:send full-name method-name args ...)
      (send full-name method-name args ...)]))
 
+;;; Generate blocks
+(define-syntax-rule
+  (p-block stmt ...)
+  (void (begin stmt ...)))
+
 ;;; Declaration Operator
 (define-syntax (p-declaration stx)
   (syntax-case stx ()

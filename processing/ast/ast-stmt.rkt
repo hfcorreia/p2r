@@ -212,9 +212,7 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(let ()
-                               ,@(node->racket stmts)
-                               (void))))
+                            `(p-block ,@(node->racket stmts))))
 
          (define/override (->type-check)
                           (node->type-check stmts))
@@ -241,8 +239,8 @@
                           (->syntax-object
                             `(define (,(build-mangled-id)
                                        ,@(node->racket args))
-                               (call/ec (lambda (return)
-                                          ,(node->racket body))))))
+                               (let/ec return
+                                      ,(node->racket body)))))
 
          (define/override (->type-check)
                           (node->type-check args)
