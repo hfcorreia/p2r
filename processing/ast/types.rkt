@@ -57,12 +57,18 @@
          ;; checks if the type is an numeric type
          (define/public (numeric-type?)
                         (or (integral-type?)
+                            (object-type?)
                             (memq type '(float double))))
 
          ;; boolean-type?:  -> boolean
          ;; checks if the type is an boolean type
          (define/public (boolean-type?)
                         (eq? type 'boolean))
+
+         ;; object-type?:  -> boolean
+         ;; checks if the type is an boolean type
+         (define/public (object-type?)
+                        (eq? type 'Object))
 
          (super-instantiate ())))
 

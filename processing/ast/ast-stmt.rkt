@@ -97,7 +97,8 @@
 
            (dynamic-require mod #f)
            (let-values ([(vars syntax) (module->exports mod)])
-             (map add-exported-binding (map car (cdar vars)))))
+             (when (not (null? vars))
+             (map add-exported-binding (map car (cdar vars))))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))

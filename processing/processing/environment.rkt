@@ -2,20 +2,21 @@
 
 (provide (all-defined-out))
 
+(require (rename-in (planet aml/rosetta)
+                    [backend ros-backend]
+                    [autocad ros-autocad])
+         "../scopes.rkt"
+         racket/system)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Rosetta Configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define-types Object autocad ros-autocad)
+
+(define-types (backend [Object id] -> Object)
+  (ros-backend id))
+
 #|
- |(require (rename-in (planet aml/rosetta:1:=50)
- |                    [backend ros-backend]
- |                    [tikz ros-tikz])
- |         racket/system)
- |
- |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- |;;; Rosetta Configuration
- |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- |(define tikz ros-tikz)
- |
- |(define (backend id)
- |  (ros-backend id))
- |
  |;;; Generates a pdf using the tikz backend
  |(define (generateTikz [file-name "tmp"] [scale 1] [pdf-viewer "evince"])
  |  (define (tikz->tex str out)

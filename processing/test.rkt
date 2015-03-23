@@ -9,31 +9,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define (test-parser path)
   (test-case
-    "Testing Parser")
-  (check-not-exn
-    (lambda () (build-ast path))))
+    "Testing Parser"
+    (check-not-exn
+      (lambda () (build-ast path)))))
 
-(define (test-bindings path)
-  (let ([ast (build-ast path)])
-    (test-case
-      "Checking Bindings"
-      (check-not-exn
-        (lambda () (bindings-check ast))))))
+(define (test-bindings ast)
+  (test-case
+    "Checking Bindings"
+    (check-not-exn
+      (lambda () (bindings-check ast)))))
 
-(define (test-types path)
-  (let ([ast (build-ast path)])
-    (bindings-check ast)
-    (test-case
-      "Checking Types"
-      (check-not-exn
-        (lambda () (type-check ast))))))
+(define (test-types ast)
+  (test-case
+    "Checking Types"
+    (check-not-exn
+      (lambda () (type-check ast)))))
 
-(define (test-compilation path)
-  (let ([ast (build-ast path)])
-    (test-case
-      "Compiling Code"
-      (check-not-exn
-        (lambda () (compile-processing ast))))))
+(define (test-compilation ast)
+  (test-case
+    "Compiling Code"
+    (check-not-exn
+      (lambda () (compile-processing ast)))))
 
 (define (test-runtime path)
   (test-case
@@ -44,12 +40,13 @@
 (define (full-tests path)
   (test-suite
     (format "Testing ~a" path)
-    (test-parser      path)
-    (test-bindings    path)
-    (test-types       path)
-    (test-compilation path)
-    ;(test-runtime     path)
-  ))
+;   (test-parser      path)
+    (let ([ast (build-ast path)])
+;     (test-bindings    ast)
+;     (test-types       ast)
+      (test-compilation ast)
+      ;test-runtime     path)
+      )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils

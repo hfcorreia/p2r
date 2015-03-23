@@ -196,8 +196,7 @@
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               `(p-build-identifier ,(build-id)
-                                                    ,(node->racket name))]
+                               (node->racket name)]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)
