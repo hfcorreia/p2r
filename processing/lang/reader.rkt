@@ -35,7 +35,8 @@ processing/lang/processing
           (apply string (reverse chars))))))
   (let ([code (map strip-context
                    (compile-processing-repl
-                     (build-ast src (filter-unready-port input-port))))])
+                     (build-ast src (filter-unready-port input-port))
+                     scope))])
     (if (null? code)
       eof
       #`(begin #,@code))))
