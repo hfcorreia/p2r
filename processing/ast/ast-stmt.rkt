@@ -177,11 +177,17 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-binding scope (modifiers type : (car var)))
+                                 (add-to-scope scope (car var))
                                  (node->bindings (car var) scope)
                                  (node->bindings (cadr var) scope))
                                vars))
 
+
+         (define (add-to-scope scope var)
+           (if (is-a? var array-id%)
+             (let ([type (create-type (send type get-type) (send var get-dims))])
+               (add-binding scope (modifiers type : (send var get-array-id))))
+             (add-binding scope (modifiers type : var))))
 
          ;; check-node-type: ast-node% -> (or/c any error)
          ;; checks if types are the same or can be promoted
@@ -189,14 +195,24 @@
          (define (check-node-type node)
            (let ([node-type (send node get-type)])
              (cond
-               [(or (type=? type node-type)
-                    (object-type? type node-type)
-                    (widening-primitive-conversion? type node-type))
-                (send node set-type! type)]
-               [else (type-conversion-error node node-type type)])))
+               [(primitive-type? node-type)
+                (if (primitive-promotable? type node-type)
+                  (send node set-type! type)
+                  (type-conversion-error node node-type type))]
+               [(array-type? node-type)
+                (unless (type=? type node-type)
+                  (type-conversion-array-error node node-type type))]
+               [else "Missing type!"])))
+
+
 
          (define/override (->print)
-                          `(var-decl% ,modifiers ,type
+                          `(var-decl% ,modifiers
+                                      ,(if (array-type? type)
+                                         (list (send (send type get-type)
+                                                     get-type)
+                                               (send type get-dims))
+                                         (send type get-type))
                                       ,@(map (lambda (x)
                                                (list
                                                  (node->print (car x))
@@ -263,7 +279,6 @@
                  (mangle-function-id
                    (send id get-id)
                    (map (lambda (x) (send (send x get-type) get-type)) args))))
-
 
          (define/override (->print)
                           `(function% ,mods ,(send ret-type get-type)
@@ -450,13 +465,7 @@
          (define/override (->type-check)
                           (let ([return-type (get-return-type)])
                             (node->type-check expr)
-                            (if (or (type=? (send expr get-type)
-                                            return-type)
-                                    (object-type? (send expr get-type)
-                                                  return-type)
-                                    (widening-primitive-conversion?
-                                      return-type
-                                      (send expr get-type)))
+                            (if (primitive-promotable? return-type (send expr get-type))
                               (send expr set-type! return-type)
                               (type-conversion-error expr
                                                      (send expr get-type)
@@ -528,4 +537,3 @@
                           `(empty-stmt%))
 
          (super-instantiate ())))
-

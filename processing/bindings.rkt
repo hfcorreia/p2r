@@ -28,7 +28,6 @@
   (class object%
          (init-field id)
 
-         ;; get-id: -> symbol
          (define/public (get-id) id)
 
          (super-instantiate ())))
@@ -61,7 +60,7 @@
          (super-instantiate ())))
 
 (define (variable-binding? binding)
-  (is-a? binding variable-binding%))
+  (or (is-a? binding variable-binding%)))
 
 (define (function-binding? binding)
   (is-a? binding function-binding%))

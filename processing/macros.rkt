@@ -92,9 +92,12 @@
     (void node)))
 
 ;;; Arrays
-(define-syntax-rule
-  (p-vector (dim ...) init-val)
-  (make-n-vector (list dim ...) init-val))
+(define-syntax p-vector
+  (syntax-rules ()
+    [(_ (dim ...) init-val)
+     (make-n-vector (list dim ...) init-val)]
+    [(_ val ...)
+     (vector val ...)]))
 
 ;;; Build an identifier
 (define-syntax-rule

@@ -11,6 +11,17 @@
         [t2 (send t2 get-type)])
     (send obj type-error (format "Cannot convert a ~a to ~a" t1 t2))))
 
+(define (type-conversion-array-error obj t1 t2)
+  (define (type-string t dim)
+    (string-append* (symbol->string t) (make-list dim "[]")))
+  (let ([t1 (send (send t1 get-type) get-type)]
+        [t2 (send (send t2 get-type) get-type)]
+        [dim1 (send t1 get-dims)]
+        [dim2 (send t2 get-dims)])
+    (send obj type-error (format "Cannot convert a ~a to ~a"
+                                 (type-string t1 dim1)
+                                 (type-string t2 dim2)))))
+
 (define (binary-error obj op t1 t2)
   (let ([t1 (send t1 get-type)]
         [t2 (send t2 get-type)])
