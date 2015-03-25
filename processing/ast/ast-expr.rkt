@@ -553,7 +553,7 @@
            (define/public (get-id)   (node->racket id))
            (define/public (get-expr) (node->racket expr))
 
-           (inherit ->syntax-object set-scope!)
+           (inherit ->syntax-object set-scope! set-type!)
 
            (define/override (->racket)
                             (->syntax-object
@@ -562,12 +562,18 @@
 
            (define/override (->type-check)
                             (node->type-check id)
-                            (node->type-check expr))
+                            (set-type! (send (send id get-type) get-type))
+                            (check-expr))
 
            (define/override (->bindings scope)
                             (set-scope! scope)
                             (node->bindings id scope)
                             (node->bindings expr scope))
+
+           (define (check-expr)
+             (node->type-check expr)
+             (unless (send (send expr get-type) integral-type?)
+               (boolean-conversion-error expr (send expr get-type))))
 
            (define/override (->print)
                             `(array-acces% ,(node->print id) ,(node->print expr)))

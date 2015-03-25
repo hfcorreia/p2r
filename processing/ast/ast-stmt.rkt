@@ -185,7 +185,7 @@
 
          (define (add-to-scope scope var)
            (if (is-a? var array-id%)
-             (let ([type (create-type (send type get-type) (send var get-dims))])
+             (let ([type (create-type type (send var get-dims))])
                (add-binding scope (modifiers type : (send var get-array-id))))
              (add-binding scope (modifiers type : var))))
 
@@ -195,6 +195,8 @@
          (define (check-node-type node)
            (let ([node-type (send node get-type)])
              (cond
+               ; needs a rethink
+               [(send node-type object-type?) #t]
                [(primitive-type? node-type)
                 (if (primitive-promotable? type node-type)
                   (send node set-type! type)

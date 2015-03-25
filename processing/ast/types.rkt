@@ -112,7 +112,6 @@
 (define (primitive-type? type)
   (is-a? type primitive-type%))
 
-
 (define (array-type? type)
   (is-a? type array-type%))
 
@@ -260,8 +259,17 @@
 ;; checks the type signatures are compatible
 (define (signature-promotable? args1 args2)
   (and (equal? (length args1) (length args2))
-       (andmap widening-primitive-conversion? args2 args1)))
+       (andmap (lambda (t1 t2)
+                 (or (widening-primitive-conversion? t1 t2)
+                     (object-conversion? t1 t2)))
+               args2
+               args1)))
 
+(define (object-conversion? t1 t2)
+  (or (send t1 object-type?) (send t2 object-type?)))
+
+;; primitive-promotable? type% type% -> boolean?
+;; checks if t1 and t2 are promotable to primitive types
 (define (primitive-promotable? t1 t2)
   (or (type=? t1 t2)
-               (widening-primitive-conversion? t1 t2)))
+      (widening-primitive-conversion? t1 t2)))
