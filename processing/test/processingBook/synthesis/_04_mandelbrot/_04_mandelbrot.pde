@@ -18,29 +18,29 @@ float xOff = dx/width * xscale / 2;
 float yOff = -1 + (dy/height * yscale / 2);
 
 for ( int i=0; i<width; i++ ) {
-  for (int j=0; j<height; j++) { 
-    // For every point on complex plane     
-    float re = i/zoom - xOff - width/2.0/zoom; 
-    float im = j/zoom - yOff - height/2.0/zoom; 
-    // Complex number z, c 
+  for (int j=0; j<height; j++) {
+    // For every point on complex plane
+    float re = i/zoom - xOff - width/2.0/zoom;
+    float im = j/zoom - yOff - height/2.0/zoom;
+    // Complex number z, c
     float z1 = 0.0;
-    float z2 = 0.0; 
-    co = 0;  
+    float z2 = 0.0;
+    co = 0;
 
-    for (int k=0; k<accuracy; k++) { 
+    for (int k=0; k<accuracy; k++) {
       float zz1 = sq(z1) - sq(z2) + re;
       float zz2 = 2*z1*z2 + im;
       z1 = zz1;
-      z2 = zz2; 
-      // Check if the modulus of complex num is within limit 
-      if ( sqrt((sq(z1) + sq(z2)) ) > 2 ) { 
-        co = 1 - k/float(accuracy); 
+      z2 = zz2;
+      // Check if the modulus of complex num is within limit
+      if ( sqrt((sq(z1) + sq(z2)) ) > 2 ) {
+        co = 1 - k/float(accuracy);
         break; // NOTE: This is new syntax!!!
-      } 
-    } 
+      }
+    }
     stroke(color(255*co, 255*co, 255*co));
     point(i, j);
-  } 
+  }
 }
 
 

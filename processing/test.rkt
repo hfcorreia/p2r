@@ -42,7 +42,7 @@
 (define (full-tests path scope)
   (test-suite
     (format "Testing ~a" path)
-    (test-parser      path)
+    (test-parser path)
     (let ([ast (build-ast path)])
       ;; (test-bindings    ast scope)
       ;; (test-types       ast)
@@ -51,29 +51,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define (find-processing-files directory-path)
-  (let ((files '()))
-    (for ([path (directory-list directory-path)])
-      (when (regexp-match? #rx"[.]pde$" path)
-        (set! files (cons (build-path directory-path path) files))))
-    files))
-
-(define (find-dirs directory-path)
-  (let ((dirs '()))
-    (for ([path (directory-list directory-path)])
-      (let ([complete-path (build-path directory-path path)])
-        (and (directory-exists? complete-path)
-             (set! dirs (cons complete-path dirs)))))
-    dirs))
-
-(define-runtime-path test "test")
+(current-directory "test")
+(current-load-relative-directory (current-directory))
 
 (run-tests
   (make-test-suite
     "Processing Tests"
-    (for/list ([dir (find-dirs test)])
-              (make-test-suite
-                (format "Testing dir: ~a" dir)
-                (for/list ([file (find-processing-files dir)])
-                          (full-tests file (new-scope))))))
+    (for/list ([path (in-directory)]
+               #:when (regexp-match? #rx"[.]pde$" path))
+              (full-tests path (new-scope))))
   'normal)
