@@ -196,7 +196,8 @@
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               (node->racket name)]
+                               `(p-name ,(node->racket name)
+                                        ,(conversion-type))]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)
@@ -212,17 +213,23 @@
                           (node->bindings name scope))
 
          ;; transforms the itentifier's value to the corret type
-         (define (build-id)
+         (define (conversion-type)
            (let ([defined-id-type (send name get-id-type)]
                  [type (get-type)])
-             (cond
-               [(and (send defined-id-type char-type?)
-                     (send type long-or-int-type?))
-                char->integer]
-               [(and (send type char-type?)
-                     (send defined-id-type long-or-int-type?))
-                integer->char]
-               [else identity])))
+             (if (and (primitive-type? defined-id-type)
+                      (primitive-type? type))
+               (cond
+                 [(and (send defined-id-type char-type?)
+                       (send type long-or-int-type?))
+                  '#:char->int]
+                 [(and (send defined-id-type long-or-int-type?)
+                       (send type char-type?))
+                  '#:int->char]
+                 [(and (send defined-id-type long-or-int-type?)
+                       (send type float-or-double-type?))
+                  '#:int->float]
+                 [else '#:none])
+               '#:none)))
 
          (define/override (->print)
                           `(name% ,(node->print name)))
@@ -538,43 +545,43 @@
                   initializer)))
 
 
-           (define/override (->print)
-                            `(new-array% ,(send type get-type)
-                                         ,(node->print dim-expr)
-                                         ,dims
-                                         ,(node->print initializer)))
+         (define/override (->print)
+                          `(new-array% ,(send type get-type)
+                                       ,(node->print dim-expr)
+                                       ,dims
+                                       ,(node->print initializer)))
 
-           (super-instantiate ())))
+         (super-instantiate ())))
 
-  (define array-acces%
-    (class expression%
-           (init-field id expr)
+(define array-acces%
+  (class expression%
+         (init-field id expr)
 
-           (define/public (get-id)   (node->racket id))
-           (define/public (get-expr) (node->racket expr))
+         (define/public (get-id)   (node->racket id))
+         (define/public (get-expr) (node->racket expr))
 
-           (inherit ->syntax-object set-scope! set-type!)
+         (inherit ->syntax-object set-scope! set-type!)
 
-           (define/override (->racket)
-                            (->syntax-object
-                              `(vector-ref ,(node->racket id)
-                                           ,(node->racket expr))))
+         (define/override (->racket)
+                          (->syntax-object
+                            `(vector-ref ,(node->racket id)
+                                         ,(node->racket expr))))
 
-           (define/override (->type-check)
-                            (node->type-check id)
-                            (set-type! (send (send id get-type) get-type))
-                            (check-expr))
+         (define/override (->type-check)
+                          (node->type-check id)
+                          (set-type! (send (send id get-type) get-type))
+                          (check-expr))
 
-           (define/override (->bindings scope)
-                            (set-scope! scope)
-                            (node->bindings id scope)
-                            (node->bindings expr scope))
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings id scope)
+                          (node->bindings expr scope))
 
-           (define (check-expr)
-             (node->type-check expr)
-             (unless (send (send expr get-type) integral-type?)
-               (boolean-conversion-error expr (send expr get-type))))
+         (define (check-expr)
+           (node->type-check expr)
+           (unless (send (send expr get-type) integral-type?)
+             (boolean-conversion-error expr (send expr get-type))))
 
-           (define/override (->print)
-                            `(array-acces% ,(node->print id) ,(node->print expr)))
-           (super-instantiate ())))
+         (define/override (->print)
+                          `(array-acces% ,(node->print id) ,(node->print expr)))
+         (super-instantiate ())))

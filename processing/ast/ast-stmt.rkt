@@ -197,15 +197,18 @@
              (cond
                ; needs a rethink
                [(send node-type object-type?) #t]
-               [(primitive-type? node-type)
+               [(and (primitive-type? node-type)
+                     (primitive-type? type))
                 (if (primitive-promotable? type node-type)
                   (send node set-type! type)
                   (type-conversion-error node node-type type))]
-               [(array-type? node-type)
+               [(and (array-type? node-type) (array-type? type))
                 (unless (type=? type node-type)
-                  (type-conversion-array-error node node-type type))]
+                  (type-conversion-error node node-type type))]
+               [(or (and (array-type? node-type) (primitive-type? type))
+                    (and (primitive-type? node-type) (array-type? type)))
+                (type-conversion-error node node-type type)]
                [else "Missing type!"])))
-
 
 
          (define/override (->print)

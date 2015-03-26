@@ -48,6 +48,11 @@
          (define/public (long-or-int-type?)
                         (memq type '(short int long)))
 
+         ;; float-or-double-type?:  -> boolean
+         ;; checks if the type is an int or long
+         (define/public (float-or-double-type?)
+                        (memq type '(float double)))
+
          ;; numeric-type?:  -> boolean
          ;; checks if the type is an numeric type
          (define/public (numeric-type?)

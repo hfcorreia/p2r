@@ -100,9 +100,15 @@
      (vector val ...)]))
 
 ;;; Build an identifier
-(define-syntax-rule
-  (p-build-identifier func id)
-  (func id))
+(define-syntax p-name
+  (syntax-rules ()
+    [(_ id #:int->float)
+     (exact->inexact id)]
+    [(_ id #:char->int)
+     (char->integer id)]
+    [(_ id #:int->char)
+     (integer->char id)]
+    [(_ id #:none) id]))
 
 ;;; check if a identifier is a vector, if true get the vector's length else
 ;;; get field length of the identifier
