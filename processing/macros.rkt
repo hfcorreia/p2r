@@ -43,6 +43,11 @@
     [(_ #:send full-name method-name args ...)
      (send full-name method-name args ...)]))
 
+;;; Generate blocks
+(define-syntax-rule
+  (p-block stmt ...)
+  (void (begin stmt ...)))
+
 ;;; Declaration Operator
 (define-syntax (p-declaration stx)
   (syntax-case stx ()
@@ -87,14 +92,23 @@
     (void node)))
 
 ;;; Arrays
-(define-syntax-rule
-  (p-vector (dim ...) init-val)
-  (make-n-vector (list dim ...) init-val))
+(define-syntax p-vector
+  (syntax-rules ()
+    [(_ (dim ...) init-val)
+     (make-n-vector (list dim ...) init-val)]
+    [(_ val ...)
+     (vector val ...)]))
 
 ;;; Build an identifier
-(define-syntax-rule
-  (p-build-identifier func id)
-  (func id))
+(define-syntax p-name
+  (syntax-rules ()
+    [(_ id #:int->float)
+     (exact->inexact id)]
+    [(_ id #:char->int)
+     (char->integer id)]
+    [(_ id #:int->char)
+     (integer->char id)]
+    [(_ id #:none) id]))
 
 ;;; check if a identifier is a vector, if true get the vector's length else
 ;;; get field length of the identifier

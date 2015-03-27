@@ -11,27 +11,22 @@
 
          (define/public (get-type) type)
 
-         ;; reference-type?: -> boolean
-         ;; checks if the type is a reference type
-         (define/public (is-reference-type?) #f)
-
-         ;; array-type?: -> boolean
-         ;; checks if the type is an array type
-         (define/public (is-array-type?) #f)
-
-         ;; primitive-type?: -> boolean
-         ;; checks if the type is an array type
-         (define/public (is-primitive-type?) #f)
-
-         ;; undef-type?:  -> boolean
-         ;; checks if the type is an undef type
-         (define/public (undef-type?)
-                        (eq? type 'String))
+         ;; TODO: CHANGE
+         ;; object-type?:  -> boolean
+         ;; checks if the type is an boolean type
+         (define/public (object-type?)
+                        (eq? type 'Object))
 
          ;; string-type?:  -> boolean
          ;; checks if the type is an string type
          (define/public (string-type?)
                         (eq? type 'String))
+
+         (super-instantiate ())))
+
+(define primitive-type%
+  (class type%
+         (inherit-field type)
 
          ;; color-type?:  -> boolean
          ;; checks if the type is an color type
@@ -53,11 +48,15 @@
          (define/public (long-or-int-type?)
                         (memq type '(short int long)))
 
+         ;; float-or-double-type?:  -> boolean
+         ;; checks if the type is an int or long
+         (define/public (float-or-double-type?)
+                        (memq type '(float double)))
+
          ;; numeric-type?:  -> boolean
          ;; checks if the type is an numeric type
          (define/public (numeric-type?)
                         (or (integral-type?)
-                            (object-type?)
                             (memq type '(float double))))
 
          ;; boolean-type?:  -> boolean
@@ -65,54 +64,37 @@
          (define/public (boolean-type?)
                         (eq? type 'boolean))
 
-         ;; object-type?:  -> boolean
-         ;; checks if the type is an boolean type
-         (define/public (object-type?)
-                        (eq? type 'Object))
-
-         (super-instantiate ())))
-
-(define primitive-type%
-  (class type%
-
-         ;; primitive-type?: -> boolean
-         ;; checks if the type is an array type
-         (define/override (is-primitive-type?) #t)
-
          (super-instantiate ())))
 
 (define reference-type%
   (class type%
-         (init-field qualified-types)
          (inherit-field type)
-
-         ;; checks if the type is a reference type
-         (define/override (is-reference-type?) #t)
 
          (super-instantiate ())))
 
 (define array-type%
   (class reference-type%
          (init-field dims)
-         (inherit-field type qualified-types)
+         (inherit-field type)
 
-         ;; array-type?: -> boolean
-         ;; checks if the type is an array type
-         (define/override (is-array-type?) #t)
+         (define/public (get-dims) dims)
 
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; create-type: symbol -> type%
 ;; Simplyfies the type creation
-(define (create-type symbol)
-   ;; need to add other types
-    (make-object primitive-type% symbol))
+(define-syntax create-type
+  (syntax-rules ()
+    [(_ symbol) (make-object primitive-type% symbol)]
+    [(_ symbol dim) (make-object array-type% dim symbol)]))
 
 ;; create-types: (listof symbol) -> type%
 ;; Simplyfies of a list of types
 (define (create-types types)
-  (map create-type types))
+  (map (lambda (x)
+         (create-type x))
+       types))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Type Structure:
 ;;;
@@ -132,19 +114,32 @@
 ;;;      | array-type
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; type=? : type% type% -> boolean
-;; checks if two type symbols are the same
-(define (type=? to-type from-type)
-  (symbol=? (send to-type get-type)
-            (send from-type get-type)))
+(define (primitive-type? type)
+  (is-a? type primitive-type%))
 
-;; object-type?: type% type% -> boolean
-;; checks if from-type or to-type are of type object-type?
-;; allowing the type-checker to skip the type-checking
-(define (object-type? to-type from-type)
-  (let ([to-type (send to-type get-type)]
-        [from-type (send from-type get-type)])
-    (or (symbol=? to-type 'Object) (symbol=? from-type 'Object))))
+(define (array-type? type)
+  (is-a? type array-type%))
+
+(define (reference-type? type)
+  (is-a? type reference-type%))
+
+(define (array=? t1 t2)
+  (and (eq? (send t1 get-dims) (send t2 get-dims))
+       (primitive=? (send t1 get-type) (send t2 get-type))))
+
+(define (primitive=? t1 t2)
+  (symbol=? (send t1 get-type) (send t2 get-type)))
+
+;; type=? : type% type% -> boolean
+;; checks if two types are the same
+(define (type=? to-type from-type)
+  (cond
+    [(and (primitive-type? to-type)
+          (primitive-type? from-type))
+     (primitive=? to-type from-type)]
+    [(and (array-type? to-type)
+          (array-type? from-type))
+     (array=? to-type from-type)]))
 
 ;; widening-primitive-conversion? type% type% -> boolean
 ;; checks if from-type can be converted to to-type
@@ -152,9 +147,6 @@
   (let ([to-type (send to-type get-type)]
         [from-type (send from-type get-type)])
     (cond
-      [(symbol=? to-type 'Object) #t]
-      [(symbol=? from-type 'Object) #t]
-
       [(symbol=? to-type 'char)
        (memq from-type '(int))]
       [(symbol=? to-type 'short)
@@ -272,4 +264,17 @@
 ;; checks the type signatures are compatible
 (define (signature-promotable? args1 args2)
   (and (equal? (length args1) (length args2))
-       (andmap widening-primitive-conversion? args2 args1)))
+       (andmap (lambda (t1 t2)
+                 (or (widening-primitive-conversion? t1 t2)
+                     (object-conversion? t1 t2)))
+               args2
+               args1)))
+
+(define (object-conversion? t1 t2)
+  (or (send t1 object-type?) (send t2 object-type?)))
+
+;; primitive-promotable? type% type% -> boolean?
+;; checks if t1 and t2 are promotable to primitive types
+(define (primitive-promotable? t1 t2)
+  (or (type=? t1 t2)
+      (widening-primitive-conversion? t1 t2)))

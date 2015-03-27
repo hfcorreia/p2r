@@ -148,9 +148,9 @@
 
       (<array-type>
         [(<primitive-type> <dims>)
-         (create-type $2 null $1)]
+         (create-type $1 $2)]
         [(<name> <dims>)
-         (create-type $2 (send $1 get-list) (send $1 get-id))])
+         (create-type $1 $2)])
 
       (<class-or-interface-type>
         [(<name>) $1])
@@ -174,8 +174,7 @@
         [(<dim-exprs> <dim-expr>) (cons $2 $1)])
 
       (<dim-expr>
-        [(l-sbrack <expr> r-sbrack)
-         (make-object array-dim% $2 (build-src 2))])
+        [(l-sbrack <expr> r-sbrack) $2])
 
       (<dims>
         ;; returns a number corresponding to the dimension of the array
@@ -446,10 +445,8 @@
       ;; Array init
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (<array-initializer>
-        [(l-cbrack <var-initializers> r-cbrack)
-         (make-object array-initializer% (reverse $2) (build-src 1 3))]
-        [(l-cbrack r-cbrack)
-         (make-object array-initializer% null (build-src 1 2))])
+        [(l-cbrack <var-initializers> r-cbrack) (reverse $2)]
+        [(l-cbrack r-cbrack) null])
 
       (<var-initializers>
         [(<var-initializer>)
@@ -476,14 +473,21 @@
         [(<var-declarators> comma <var-declarator>) (cons $3 $1)])
 
       (<var-declarator>
-        [(<var-decl-id>)  (list $1 (make-object literal% undefined 'undef (build-src 1)))]
+        [(<var-decl-id>)  (list $1
+                                (make-object literal%
+                                             undefined
+                                             (create-type 'Object)
+                                             (build-src 1)))]
         [(<var-decl-id> = <var-initializer>) (list $1 $3)])
 
       (<var-decl-id>
         [(identifier)
          (make-object identifier% null $1 (build-src 1))]
         [(identifier <dims>)
-         (make-todo 'var-declartor-id (build-src 1))])
+         (make-object array-id%
+                      (make-object identifier% null $1 (build-src 1))
+                      $2
+                      (build-src 1 2))])
 
       (<var-initializer>
         [(<expr>) $1]
@@ -578,13 +582,28 @@
         [(for l-paren <finit> semicolon <expr> semicolon <fupdate> r-paren <stmt>)
          (make-object for% $3 $5 $7 $9 (build-src 1))]
         [(for l-paren <finit> semicolon semicolon <fupdate> r-paren <stmt>)
-         (make-object for% $3 null $8 (build-src 1))])
+         (make-object for%
+                      $3
+                      (make-object literal%
+                                   #t
+                                   (create-type 'boolean)
+                                   (build-src 4 5))
+                      $6
+                      $8
+                      (build-src 1 8))])
 
       (<for-stmt-no-short-if>
         [(for l-paren <finit> semicolon <expr> semicolon <fupdate> r-paren <stmt-no-short-if>)
          (make-object for% $3 $5 $7 $9 (build-src 1))]
         [(for l-paren <finit> semicolon semicolon <fupdate> r-paren <stmt-no-short-if>)
-         (make-object for% $3 null $8 (build-src 1))])
+         (make-object for% $3
+                      (make-object literal%
+                                   #t
+                                   (create-type 'boolean)
+                                   (build-src 4 5))
+                      $6
+                      $8
+                      (build-src 1 8))])
 
       (<finit>
         [() (make-object empty-stmt% null)]
@@ -825,13 +844,13 @@
 
       (<array-creation-expr>
         [(new <primitive-type> <dim-exprs>)
-         (make-object new-array% $2 (reverse $3) null null (build-src 1 3))]
+         (make-object new-array% $2 (reverse $3) 0 null (build-src 1 3))]
         [(new <primitive-type> <dim-exprs> <dims>)
          (make-object new-array% $2 (reverse $3) $4 null (build-src 1 4))]
         [(new <primitive-type> <dims> <array-initializer>)
          (make-object new-array% $2 null $3 $4 (build-src 1 4))]
         [(new <class-or-interface-type> <dim-exprs>)
-         (make-object new-array% $2 $3 null null (build-src 1 3))]
+         (make-object new-array% $2 $3 0 null (build-src 1 3))]
         [(new <class-or-interface-type> <dim-exprs> <dims>)
          (make-object new-array% $2 $3 $4 null (build-src 1 4))]
         [(new <class-or-interface-type> <dims> <array-initializer>)

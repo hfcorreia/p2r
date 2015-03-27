@@ -2,22 +2,33 @@
 
 (provide (all-defined-out))
 
+(require "types.rkt")
+
+(define (build-type-string t)
+  (if (array-type? t)
+    (string-append* (symbol->string (send (send t get-type) get-type))
+                    (make-list (send t get-dims) "[]"))
+    (send t get-type)))
+
+(define (boolean-conversion-error obj t)
+  (let ([t (build-type-string t)])
+        (send obj type-error (format "Cannot convert a ~a to boolean" t))))
 
 (define (type-conversion-error obj t1 t2)
-  (let ([t1 (send t1 get-type)]
-        [t2 (send t2 get-type)])
+  (let ([t1 (build-type-string t1)]
+        [t2 (build-type-string t2)])
     (send obj type-error (format "Cannot convert a ~a to ~a" t1 t2))))
 
 (define (binary-error obj op t1 t2)
-  (let ([t1 (send t1 get-type)]
-        [t2 (send t2 get-type)])
+  (let ([t1 (build-type-string t1)]
+        [t2 (build-type-string t2)])
     (send obj
           type-error
           (format "The operator ~a is undefined for argument types(s) ~a,~a"
                   op t1 t2))))
 
 (define (unary-error obj op t)
-  (let ([t (send t get-type)])
+  (let ([t (build-type-string t)])
     (send obj
           type-error
           (format "The operator ~a is undefined for argument types(s) ~a"

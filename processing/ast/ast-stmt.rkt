@@ -98,7 +98,7 @@
            (dynamic-require mod #f)
            (let-values ([(vars syntax) (module->exports mod)])
              (when (not (null? vars))
-             (map add-exported-binding (map car (cdar vars))))))
+               (map add-exported-binding (map car (cdar vars))))))
 
          (define/override (->print)
                           `(require% ,(node->print name)))
@@ -177,11 +177,17 @@
          (define/override (->bindings scope)
                           (set-scope! scope)
                           (map (lambda (var)
-                                 (add-binding scope (modifiers type : (car var)))
+                                 (add-to-scope scope (car var))
                                  (node->bindings (car var) scope)
                                  (node->bindings (cadr var) scope))
                                vars))
 
+
+         (define (add-to-scope scope var)
+           (if (is-a? var array-id%)
+             (let ([type (create-type type (send var get-dims))])
+               (add-binding scope (modifiers type : (send var get-array-id))))
+             (add-binding scope (modifiers type : var))))
 
          ;; check-node-type: ast-node% -> (or/c any error)
          ;; checks if types are the same or can be promoted
@@ -189,14 +195,29 @@
          (define (check-node-type node)
            (let ([node-type (send node get-type)])
              (cond
-               [(or (type=? type node-type)
-                    (object-type? type node-type)
-                    (widening-primitive-conversion? type node-type))
-                (send node set-type! type)]
-               [else (type-conversion-error node node-type type)])))
+               ; needs a rethink
+               [(send node-type object-type?) #t]
+               [(and (primitive-type? node-type)
+                     (primitive-type? type))
+                (if (primitive-promotable? type node-type)
+                  (send node set-type! type)
+                  (type-conversion-error node node-type type))]
+               [(and (array-type? node-type) (array-type? type))
+                (unless (type=? type node-type)
+                  (type-conversion-error node node-type type))]
+               [(or (and (array-type? node-type) (primitive-type? type))
+                    (and (primitive-type? node-type) (array-type? type)))
+                (type-conversion-error node node-type type)]
+               [else "Missing type!"])))
+
 
          (define/override (->print)
-                          `(var-decl% ,modifiers ,type
+                          `(var-decl% ,modifiers
+                                      ,(if (array-type? type)
+                                         (list (send (send type get-type)
+                                                     get-type)
+                                               (send type get-dims))
+                                         (send type get-type))
                                       ,@(map (lambda (x)
                                                (list
                                                  (node->print (car x))
@@ -212,9 +233,7 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(let ()
-                               ,@(node->racket stmts)
-                               (void))))
+                            `(p-block ,@(node->racket stmts))))
 
          (define/override (->type-check)
                           (node->type-check stmts))
@@ -241,8 +260,8 @@
                           (->syntax-object
                             `(define (,(build-mangled-id)
                                        ,@(node->racket args))
-                               (call/ec (lambda (return)
-                                          ,(node->racket body))))))
+                               (let/ec return
+                                      ,(node->racket body)))))
 
          (define/override (->type-check)
                           (node->type-check args)
@@ -265,7 +284,6 @@
                  (mangle-function-id
                    (send id get-id)
                    (map (lambda (x) (send (send x get-type) get-type)) args))))
-
 
          (define/override (->print)
                           `(function% ,mods ,(send ret-type get-type)
@@ -291,6 +309,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check then)
                           (and (not (null? else))
                                (node->type-check else)))
@@ -326,6 +347,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check body))
 
          (define/override (->bindings scope)
@@ -353,6 +377,9 @@
 
          (define/override (->type-check)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check body))
 
          (define/override (->bindings scope)
@@ -385,6 +412,9 @@
          (define/override (->type-check)
                           (node->type-check initialization)
                           (node->type-check test)
+                          (let ([type (send test get-type)])
+                            (unless (send type boolean-type?)
+                              (boolean-conversion-error test type)))
                           (node->type-check increment)
                           (node->type-check body))
 
@@ -440,13 +470,7 @@
          (define/override (->type-check)
                           (let ([return-type (get-return-type)])
                             (node->type-check expr)
-                            (if (or (type=? (send expr get-type)
-                                            return-type)
-                                    (object-type? (send expr get-type)
-                                                  return-type)
-                                    (widening-primitive-conversion?
-                                      return-type
-                                      (send expr get-type)))
+                            (if (primitive-promotable? return-type (send expr get-type))
                               (send expr set-type! return-type)
                               (type-conversion-error expr
                                                      (send expr get-type)
@@ -518,4 +542,3 @@
                           `(empty-stmt%))
 
          (super-instantiate ())))
-
