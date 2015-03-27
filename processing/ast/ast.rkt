@@ -94,6 +94,8 @@
 
          (inherit ->syntax-object set-scope!)
 
+         (define/public (get-ast) ast)
+
          (define/public (->repl scope)
                         (set-active-mode! #f)
                         (node->bindings ast scope)
@@ -122,6 +124,28 @@
 
          (super-instantiate ())))
 
+(define repl-unit%
+  (class ast-node%
+         (init-field ast)
+
+         (inherit ->syntax-object set-scope!)
+
+         ;; injects call to setup and draw functions if in active-mode
+         (define/override (->racket)
+                          (set-active-mode! #f)
+                          (node->racket ast))
+
+         (define/override (->type-check)
+                          (node->type-check ast))
+
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings ast scope))
+
+         (define/override (->print)
+                          `(repl-unit% ,(node->print ast)))
+
+         (super-instantiate ())))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Debug stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -38,7 +38,7 @@
          (inherit get-id)
 
          (define/public (get-modifiers) modifiers)
-         (define/public (get-return-type) return-type)
+         (define/public (get-type) return-type)
          (define/public (get-arity) (length args))
          (define/public (get-args) args)
          (define/public (get-mangled-id)
