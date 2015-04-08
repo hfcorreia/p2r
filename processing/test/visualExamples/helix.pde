@@ -19,5 +19,5 @@ void setup() {
 }
 
 void draw(){
-  helix(0, 4 * PI);
+  helix(0.0, 4 * PI);
 }

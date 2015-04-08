@@ -2,6 +2,8 @@
 
 (provide (all-defined-out))
 
+(require "runtime-bindings.rkt")
+
 #|
  |(require (prefix-in ros- (planet aml/rosetta)))
  |
@@ -114,10 +116,14 @@
  |     (error "box: Not implemented yet!")]
  |    [(_ w d h)
  |     (error "box: Not implemented yet!")]))
- |
- |(define (sphere r)
- |  (error "sphere: Not implemented yet!"))
- |
+ |#
+
+ (define/types (sphere [float a] [float b] [float c] [int d] -> float)
+   (error "sphere: Not implemented yet!"))
+
+ (define/types (cylinder [float a] [float b] [float c] [float d] [float e] [float f] [float r] -> float)
+  (error "sphere: Not implemented yet!"))
+ #|
  |(define-syntax sphereDetail
  |  (syntax-rules ()
  |    [(_ res)

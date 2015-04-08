@@ -47,7 +47,7 @@
   (node->racket ast))
 
 (define (compile-processing-repl ast scope)
-  (pretty-display (node->print ast))
+  ;; (pretty-display (node->print ast))
   (bindings-check ast scope)
   (type-check ast)
   (node->racket ast))

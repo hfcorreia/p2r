@@ -4,10 +4,10 @@
            ;; "environment.rkt"
            "operators.rkt"
            ;; "data.rkt"
-           ;; "shapes.rkt"
+           "shapes.rkt"
            ;; "color.rkt"
-           ;; "math.rkt"
-           ;; "constants.rkt"
+           "math.rkt"
+           "constants.rkt"
            ;; "objects.rkt"
            "output.rkt"))
 
@@ -15,10 +15,10 @@
   ;; "environment.rkt"
   "operators.rkt"
   ;; "data.rkt"
-  ;; "shapes.rkt"
+  "shapes.rkt"
   ;; "color.rkt"
-  ;; "math.rkt"
-  ;; "constants.rkt"
+  "math.rkt"
+  "constants.rkt"
   ;; "objects.rkt"
   "output.rkt")
 

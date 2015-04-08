@@ -196,8 +196,10 @@
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               `(p-name ,(node->racket name)
-                                        ,(conversion-type))]
+                               (if (not (eq? #f (conversion-type)))
+                                 `(p-name ,(node->racket name)
+                                          ,(conversion-type))
+                                 (node->racket name))]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)
@@ -228,8 +230,8 @@
                  [(and (send defined-id-type long-or-int-type?)
                        (send type float-or-double-type?))
                   '#:int->float]
-                 [else '#:none])
-               '#:none)))
+                 [else #f])
+               #f)))
 
          (define/override (->print)
                           `(name% ,(node->print name)))

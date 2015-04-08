@@ -46,7 +46,7 @@
 ;;; Generate blocks
 (define-syntax-rule
   (p-block stmt ...)
-  (void (begin stmt ...)))
+  (let () stmt ... (void)))
 
 ;;; Declaration Operator
 (define-syntax (p-declaration stx)
@@ -107,8 +107,7 @@
     [(_ id #:char->int)
      (char->integer id)]
     [(_ id #:int->char)
-     (integer->char id)]
-    [(_ id #:none) id]))
+     (integer->char id)]))
 
 ;;; check if a identifier is a vector, if true get the vector's length else
 ;;; get field length of the identifier

@@ -28,7 +28,6 @@ processing/lang/processing
 (define (processing-read-syntax-repl src input-port)
   (let* ([ast  (build-repl-interaction src input-port)]
          [code (map strip-context (compile-processing-repl ast scope))])
-    (display "Generated code:\n\t")
     (if (null? code)
       eof
       #`(begin #,@code))))

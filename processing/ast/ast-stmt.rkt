@@ -301,11 +301,12 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(if ,(node->racket test)
-                               ,(node->racket then)
-                               ,(if (null? else)
-                                  (void)
-                                  (node->racket else)))))
+                            (if (null? else)
+                              `(when ,(node->racket test)
+                                     ,(node->racket then))
+                              `(if ,(node->racket test)
+                                 ,(node->racket then)
+                                 ,(node->racket else)))))
 
          (define/override (->type-check)
                           (node->type-check test)
