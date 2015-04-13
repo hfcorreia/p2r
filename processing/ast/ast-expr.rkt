@@ -78,11 +78,11 @@
                                             types))]
                [(null? applicable-fn)
                 (begin
-                  (set-type! (send (car promotable-fn) get-return-type))
+                  (set-type! (send (car promotable-fn) get-type))
                   (build-mangled-id (car promotable-fn)))]
                [else
                  (begin
-                   (set-type! (send (car applicable-fn) get-return-type))
+                   (set-type! (send (car applicable-fn) get-type))
                    (build-mangled-id (car applicable-fn)))])))
 
          (define (build-mangled-id binding)
@@ -159,10 +159,10 @@
 
          ;;; lookup the id in current scope a get the defined type
          (define/public (get-id-type)
-                        (let ([variable (send (get-scope) get-variable this)])
-                          (if (null? variable)
+                        (let ([binding (send (get-scope) get-binding this)])
+                          (if (null? binding)
                             (binding-not-found this (get-id))
-                            (send (car variable) get-type))))
+                            (send (car binding) get-type))))
 
          ;;; generates a syntax object with mangled info
          (define/public (mangled-id mangled-id)
@@ -196,8 +196,10 @@
                           (->syntax-object
                             (cond
                               [(null? (send name get-list))
-                               `(p-name ,(node->racket name)
-                                        ,(conversion-type))]
+                               (if (not (eq? #f (conversion-type)))
+                                 `(p-name ,(node->racket name)
+                                          ,(conversion-type))
+                                 (node->racket name))]
                               ; call fields
                               [else
                                 `(get-field ,(node->racket name)
@@ -228,8 +230,8 @@
                  [(and (send defined-id-type long-or-int-type?)
                        (send type float-or-double-type?))
                   '#:int->float]
-                 [else '#:none])
-               '#:none)))
+                 [else #f])
+               #f)))
 
          (define/override (->print)
                           `(name% ,(node->print name)))

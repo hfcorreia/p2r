@@ -17,15 +17,13 @@
          (define/public (return-type) #f)
 
          (define/public (get-binding id)
-                        (hash-ref scope id))
+                        (hash-ref scope (send id get-id)))
 
          (define/public (get-variable id)
-                        (let ([id-sym (send id get-id)])
-                          (filter variable-binding? (get-binding id-sym))))
+                        (filter variable-binding? (get-binding id)))
 
          (define/public (get-functions id)
-                        (let ([id-sym (send id get-id)])
-                          (filter function-binding? (get-binding id-sym))))
+                        (filter function-binding? (get-binding id)))
 
 
          (define/public (get-scope) scope)
@@ -56,11 +54,11 @@
          (init-field parent [ret-type #f])
          (define scope (make-hash))
 
-         (define/override (add-binding binding)
-                          (let ([id (send binding get-id)])
-                            (if (not (local? id))
-                              (hash-set! scope (send id get-id) (list binding))
-                              (duplicate-variable id (send id get-id)))))
+         (define/override (add-binding bind)
+                          (let ([id-sym (send (send bind get-id) get-id)])
+                            (if (not (local? id-sym))
+                              (hash-set! scope id-sym (list bind))
+                              (duplicate-variable (send bind get-id) id-sym))))
 
          (define/override (get-functions id)
                           (send parent get-functions id))
@@ -71,14 +69,14 @@
 
          (define/override (get-binding id)
                           (hash-ref scope
-                                    id
+                                    (send id get-id)
                                     (lambda () (send parent get-binding id))))
 
          (define/override (return-type) ret-type)
 
          (define/override (bound? id)
                           (or (local? id)
-                              (global? id)))
+                              (send parent bound? id)))
 
          (define/override (global? id)
                           (send parent global? id))

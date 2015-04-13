@@ -53,7 +53,13 @@
       `(,(symbol->string id)
          "-"
          ,(if (not (null? args))
-            (string-append* (list (build-seperated-string (map symbol->string args) "-") "-fn"))
+            (string-append* (append
+                              (map (lambda (x)
+                                   (string (char-upcase (string-ref
+                                                          (symbol->string x)
+                                                          0))))
+                                 args)
+                            (list "-fn")))
             "fn")))))
 
 ;;; Given a list of strings generates a string seprated by char
