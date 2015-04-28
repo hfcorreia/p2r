@@ -9,16 +9,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define-syntax add-binding
-  (syntax-rules ()
+(define-syntax (add-binding stx)
+  (syntax-case stx ()
     ;; scope% (list/of symbol) symbol (list/of type%) -> type% exn%
     [(_ scope (mods id types) -> (ret-type throws))
-     (send scope
+     #'(send scope
            add-binding
            (make-object function-binding% mods ret-type types throws id))]
     ;; scope% (list/of symbol) type% symbol
     [(_ scope (mods type : id))
-     (send scope
+     #'(send scope
            add-binding
            (make-object variable-binding% mods type id))]))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

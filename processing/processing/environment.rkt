@@ -2,9 +2,10 @@
 
 (provide (all-defined-out))
 
-(require (rename-in (planet aml/rosetta)
-                    [backend ros-backend]
-                    [autocad ros-autocad])
+(require (rename-in (planet aml/rosetta:1:54)
+                    [autocad ros-autocad]
+                    [rhino5 ros-rhino5])
+         (for-syntax "runtime-bindings.rkt")
          "runtime-bindings.rkt"
          racket/system)
 
@@ -12,13 +13,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Rosetta Configuration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define/types Object autocad ros-autocad)
+(define/types Object : autocad ros-autocad)
+(define/types Object : rhinocerous ros-rhino5)
+
+(define/types (foo [int i] [int j] -> Object) (displayln j))
+
 
 (define/types (backend [Object id] -> Object)
-  (ros-backend id))
+  (backend  id)
+  (white-renders))
 
-#|
- |;;; Generates a pdf using the tikz backend
+
+(define/types (render [Object f] [Object p1] [Object p2] [Object t]  -> void)
+   (render-dir "C:\\Users\\hugo\\render")
+   (view-with-background p1 p2 t)
+   (render-view f))
+
+(define/types (view-expression -> void)
+  (view-expression))
+
+(define/types (view [Object p1] [Object p2] [Object t] -> void)
+  (view p1 p2 t))
+
+(define/types (delete -> void)
+  (delete-all-shapes))
+
+(define/types (render-size [int w] [int h] -> void)
+  (render-size w h))
+ #|;;; Generates a pdf using the tikz backend
  |(define (generateTikz [file-name "tmp"] [scale 1] [pdf-viewer "evince"])
  |  (define (tikz->tex str out)
  |    (let ((scale (* scale 0.024)))

@@ -145,6 +145,10 @@
 
 (define (randomSeed seed)
   (set! current-random-generator (double-generator seed)))
+
+(define/types (random [float i] -> float)
+  (orig-rand (inexact->exact i)))
+  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; randomGaussian
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

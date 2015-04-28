@@ -117,6 +117,10 @@
 (define (primitive-type? type)
   (is-a? type primitive-type%))
 
+(define (object-type? type)
+  (and (symbol? type)
+  (symbol=? type 'Object)))
+
 (define (array-type? type)
   (is-a? type array-type%))
 
@@ -124,8 +128,11 @@
   (is-a? type reference-type%))
 
 (define (array=? t1 t2)
+
   (and (eq? (send t1 get-dims) (send t2 get-dims))
-       (primitive=? (send t1 get-type) (send t2 get-type))))
+       (if (or (object-type? (send t1 get-type)) (object-type?(send t1 get-type)))
+           #t
+       (primitive=? (send t1 get-type) (send t1 get-type)))))
 
 (define (primitive=? t1 t2)
   (symbol=? (send t1 get-type) (send t2 get-type)))

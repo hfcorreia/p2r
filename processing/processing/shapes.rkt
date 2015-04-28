@@ -4,9 +4,9 @@
 
 (require "runtime-bindings.rkt")
 
-#|
- |(require (prefix-in ros- (planet aml/rosetta)))
- |
+
+(require (prefix-in ros- (planet aml/rosetta)))
+ #|
  |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  |;;; Shapes
  |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -105,26 +105,134 @@
  |
  |(define (curveTightness tightness)
  |  (error "curveTightness: Not implemented yet!"))
- |
- |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- |;;; 3D Primitives
- |;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- |
- |(define-syntax box
- |  (syntax-rules ()
- |    [(_ size)
- |     (error "box: Not implemented yet!")]
- |    [(_ w d h)
- |     (error "box: Not implemented yet!")]))
  |#
 
- (define/types (sphere [float a] [float b] [float c] [int d] -> float)
-   (error "sphere: Not implemented yet!"))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; 3D Primitives
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- (define/types (cylinder [float a] [float b] [float c] [float d] [float e] [float f] [float r] -> float)
-  (error "sphere: Not implemented yet!"))
- #|
- |(define-syntax sphereDetail
+;;; xyz : float float float -> xyz
+;;; coordinate abstraction
+(define/types (xyz [float x] [float y] [float z] -> Object)
+  (ros-xyz x y z))
+
+;;; xyz : float float float -> xyz
+;;; coordinate abstraction
+(define/types (pol [float r] [float ang] -> Object)
+  (ros-pol r ang))
+
+;;; xyz : float float float -> xyz
+;;; coordinate abstraction
+(define/types (cyl [float r] [float th] [float fi] -> Object)
+  (ros-cyl r th fi))
+
+;;; box : -> void
+;;; unary rectangular cuboid from the bottom-left corner 
+(define/types (box -> Object)
+  (ros-box))
+
+;;; box : xyz xyz -> void
+;;; rectagular cuboid from the bottom-left corner to opposite top corner
+(define/types (box [Object p1] [Object p2] -> Object)
+  (ros-box p1 p2))
+
+;;; box : xyz float float float -> void
+;;; rectagular cuboid from the bottom-left with length, witdh and height
+(define/types (box [Object p1] [float dx] [float dy] [float dz] -> Object)
+  (ros-box p1 dx dy dz))
+
+;;; right-cuboid : xyz float float float -> void
+;;; cuboid base centered on a point
+(define/types (right-cuboid [Object p1] [float dx] [float dy] [float dz] -> Object)
+  (ros-right-cuboid p1 dx dy dz))
+
+;;; cuboid : xyz ... xyz -> void 
+;;; cuboid based on 4 top vertices and 4 bot vertices
+(define/types (cuboid [Object b1] [Object b2] [Object b3] [Object b4] [Object t1] [Object t2] [Object t3] [Object t4] -> Object)
+  (ros-cuboid b1 b2 b3 b4 t1 t2 t3 t4))
+
+;;; sphere : xyz float -> void
+;;; sphere given the centroid point and the radius
+(define/types (sphere [Object p] [float r] -> Object)
+   (ros-sphere p r))
+
+;;; cylinder : xyz float float -> void
+;;; cylinder given base center, radius and height
+(define/types (cylinder [Object p] [float r] [float h] -> Object)
+  (ros-cylinder p r h))
+
+;;; cylinder : xyz float float -> void
+;;; cylinder given base center, radius and height
+(define/types (cylinder [Object b] [float r] [Object t] -> Object)
+  (ros-cylinder b r t))
+
+;;; cone : xyz float float -> void
+;;; cone given base center, radius and height
+(define/types (cone [Object b] [float r] [float h] -> Object)
+  (ros-cone b r h))
+
+;;; cone : xyz float xyz -> void
+;;; cone given the base center, radius and top center
+(define/types (cone [Object b] [float r] [Object t] -> Object)
+  (ros-cone b r t))
+
+;;; cone-frustum : xyz float float float -> void
+;;; cone-frustum given the base center, bottom radius , height and top radius
+(define/types (cone-frustum [Object b] [float r1] [float h] [float r2] -> Object)
+  (ros-cone-frustum b r1 h r2))
+
+;;; cone-frustum : xyz float xyz float -> void
+;;; given the base center, bottom radius , top center and top radius
+(define/types (cone-frustum [Object b] [float r1] [Object t] [float r2] -> Object)
+  (ros-cone-frustum b r1 t r2))
+
+
+;;; pyramid : int xyz float float float -> void
+;;; takes the number of sides, base point, base radius, initial angle and height
+(define/types (pyramid [float n] [Object p] [float r] [float ang] [float h] -> Object)
+  (ros-regular-pyramid n p r ang h))
+
+;;; pyramid : int xyz float xyz float -> void
+;;; takes the number of sides, base point, base radius, initial angle and top point
+(define/types (pyramid [float n] [Object p] [float r] [float ang] [Object t] -> Object)
+  (ros-regular-pyramid n p r ang t))
+
+;;; pyramid-frustum : int xyz float float float float -> void
+;;; takes the number of sides, base point, base radius, initial angle, height, and top radius
+(define/types (pyramid-frustum [float n] [Object p] [float r] [float ang] [float h] [float r2] -> Object)
+  (ros-regular-pyramid-frustum n p r ang h r2))
+
+;;; pyramid-frustum : int xyz float xyz float float -> void
+;;; takes the number of sides, base point, base radius, initial angle, top point, and top radius
+(define/types (pyramid-frustum [float n] [Object p] [float r] [float ang] [Object t] [float r2] -> Object)
+  (ros-regular-pyramid-frustum n p r ang t r2))
+
+;;; irregular-pyramid : (vector/of xyz) xyz -> void
+;;; takes a list of points that define the base and the location of the apex
+(define/types (irregular-pyramid [Object lst] [Object apex] -> Object)
+  (ros-irregular-pyramid  (vector->list lst) apex #t))
+
+;;; prism : int xyz float float float -> void
+;;; takes the number of sides, base point, base radius, initial angle, height.
+(define/types (prism [float n] [Object p] [float r] [float ang] [float h] -> Object)
+  (ros-regular-prism n p r ang h))
+
+;;; prism : int xyz float float xyz -> void
+;;; takes the number of sides, base point, base radius, initial angle, top point.
+(define/types (prism [float n] [Object p] [float r] [float ang] [Object t] -> Object)
+  (ros-regular-prism n p r ang t))
+
+;;; irregular-prism : (vector/of xyz) xyz -> void
+;;; takes a list of points that define the base and the location of the apex
+(define/types (irregular-prism [Object lst] [Object apex] -> Object)
+  (ros-irregular-prism (vector->list lst) apex))
+
+;;; irregular-prism : (vector/of xyz) xyz -> void
+;;; takes the center point of the torus, the torus radius and the section radius
+(define/types (torus  [Object p] [float r1] [float r2] -> Object)
+  (ros-torus p r1 r2))
+
+#|(define-syntax sphereDetail
  |  (syntax-rules ()
  |    [(_ res)
  |     (error "sphereDetail: Not implemented yet!")]

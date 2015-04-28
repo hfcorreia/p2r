@@ -50,7 +50,7 @@
 (define (mangle-function-id id args)
   (string->symbol
     (string-append*
-      `(,(symbol->string id)
+      `(,(racket->java (symbol->string id))
          "-"
          ,(if (not (null? args))
             (string-append* (append

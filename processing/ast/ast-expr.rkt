@@ -571,7 +571,7 @@
 
          (define/override (->type-check)
                           (node->type-check id)
-                          (set-type! (send (send id get-type) get-type))
+                          (set-type! (send id get-type))
                           (check-expr))
 
          (define/override (->bindings scope)

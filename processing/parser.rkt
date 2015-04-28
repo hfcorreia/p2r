@@ -157,10 +157,10 @@
           [(<primitive-type> <dims>)
            (create-type $1 $2)]
           [(<name> <dims>)
-           (create-type $1 $2)])
+           (create-type (send $1 get-id) $2)])
 
         (<class-or-interface-type>
-          [(<name>) $1])
+          [(<name>) (create-type (send $1 get-id))])
 
 
         (<class-type>
