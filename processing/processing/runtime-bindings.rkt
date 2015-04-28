@@ -2,7 +2,8 @@
 
 (provide (all-defined-out))
 
-(require (for-syntax "../util.rkt")
+(require "../util.rkt"
+         (for-syntax "../util.rkt")
          racket/runtime-path
          "../ast/ast-expr.rkt"
          "../ast/types.rkt"
@@ -11,22 +12,30 @@
 
 (define-runtime-path api "api.rkt")
 
-(define runtime null)
+(define runtime (make-object global-scope%))
+
+(define (get-runtime) runtime)
 
 (define (load-runtime)
-  (if (not (null? runtime))
-      runtime
-      (begin
-        (set! runtime (make-object global-scope%))
         (dynamic-require api 0)
-        runtime)))
+        runtime)
 
+(define-syntax  runtime-add
+  (syntax-rules ()
+    [(_ id type)
+     (add-binding (get-runtime) (null type : id))]
+    [(_ id types ret-type)
+     (add-binding (get-runtime) (null id types) -> (ret-type null))]))
+  
 (define-syntax (define/types stx)
   (syntax-case stx ()
-    [(_ type id value)
-     #'(begin
-         (add-binding runtime ('() (create-type 'type) : (build-id #'id)))
-         (define id value))]
+    [(_ (id -> ret-type) body ...)
+     (with-syntax
+         ([new-id
+           (datum->syntax stx (mangle-function-id (syntax-e #'id) null))])
+       #'(begin
+           (runtime-add (build-id #'id) null (create-type 'type))
+           (define (new-id) body ...)))]
     [(_ (id [type . arg] -> ret-type) body ...)
      (with-syntax
          ([new-id
@@ -35,12 +44,9 @@
                            (syntax-e #'id)
                            (list (syntax-e #'type))))])
        #'(begin
-           (add-binding runtime
-                        (null (build-id #'id) (create-types (list 'type)))
-                        ->
-                        ((create-type 'ret-type) null))
+          (runtime-add (build-id #'id) (create-types (list 'type)) (create-type 'ret-type))
            (define (new-id . arg)
-             body ...)))]
+           body ...)))]
     [(_ (id [type arg] ... -> ret-type) body ...)
      (with-syntax
          ([new-id
@@ -51,21 +57,23 @@
                                   (syntax-e x))
                                 (syntax->list #'(type ...)))))])
        #'(begin
-           (add-binding runtime
-                        (null (build-id #'id) (create-types (list 'type ...)))
-                        ->
-                        ((create-type 'ret-type) null))
+           (runtime-add (build-id #'id) (create-types (list 'type ...)) (create-type 'ret-type))
            (define (new-id arg ...)
-             body ...)))]))
+             body ...)))]
+     [(_ type : id value)
+     #'(begin
+         (runtime-add (build-id #'id) (create-type 'type))
+         (define id value))]))
 
 (define-syntax-rule
   (build-id id)
-  (make-object identifier% null (symbol->string (syntax-e id))
+  (make-object identifier% null (racket->java (symbol->string (syntax-e id)))
     (list (syntax-source-module id)
           (syntax-line id)
           (syntax-column id)
           (syntax-position id)
           (syntax-span id))))
+
 
 (define (new-scope)
   (let ([bindings-hash (send (load-runtime) get-scope)]

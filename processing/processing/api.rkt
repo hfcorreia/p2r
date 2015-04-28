@@ -1,24 +1,26 @@
 #lang racket
 
 (provide (all-from-out
-           ;; "environment.rkt"
+           "environment.rkt"
            "operators.rkt"
            ;; "data.rkt"
            "shapes.rkt"
            ;; "color.rkt"
            "math.rkt"
+             "transform.rkt"
            "constants.rkt"
            ;; "objects.rkt"
            "output.rkt"))
 
 (require
-  ;; "environment.rkt"
+  "environment.rkt"
   "operators.rkt"
   ;; "data.rkt"
   "shapes.rkt"
   ;; "color.rkt"
   "math.rkt"
   "constants.rkt"
+  "transform.rkt"
   ;; "objects.rkt"
   "output.rkt")
 
