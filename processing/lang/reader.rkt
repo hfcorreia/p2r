@@ -3,12 +3,14 @@ processing/lang/processing
 
 #:read processing-read
 #:read-syntax processing-read-syntax
+#:info processing-info
 #:language-info '#(processing/lang/language-info get-language-info #f)
 #:whole-body-readers? #t
 
 (require syntax/strip-context
          racket/class
          "../compile.rkt"
+         "../lexer.rkt"
          "../processing/runtime-bindings.rkt")
 
 (provide processing-read
@@ -31,3 +33,8 @@ processing/lang/processing
     (if (null? code)
       eof
       #`(begin #,@code))))
+
+(define (processing-info key default default-filter)
+  (case key
+    [(color-lexer) colourizer]
+    [else       (default-filter key default)]))

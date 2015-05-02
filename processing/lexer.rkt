@@ -1,4 +1,4 @@
-#lang racket/base
+#lang racket
 
 (provide (all-defined-out))
 
@@ -266,3 +266,112 @@
     ((string=? es "\\'") #\')
     ((string=? es "\\\\") #\\)
     (else (integer->char (string->number (trim-string es 1 0)) 8))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Aux funtions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define colourizer
+  (lexer
+    ;; special rule to ignore #lang processing directives
+    ((re:: #\# "lang processing") (color-token 'other))
+
+    ;; whitespaces, linefeeds, newline, etc
+    ((re:+ whitespace)    (color-token 'white-space))
+    ((re:+ blank)         (color-token 'white-space))
+    (line-comment         (color-token 'comment))
+    ("/*"           (color-token 'comment (string->symbol lexeme)))
+    ("*/"           (color-token 'comment (string->symbol lexeme)))
+
+    ;; seperators
+    (";"     (color-token 'parenthesis))
+    ("."     (color-token 'parenthesis))
+    (","     (color-token 'parenthesis))
+    ("("     (color-token 'parenthesis (string->symbol lexeme)))
+    (")"     (color-token 'parenthesis (string->symbol lexeme)))
+    ("{"     (color-token 'parenthesis (string->symbol lexeme)))
+    ("}"     (color-token 'parenthesis (string->symbol lexeme)))
+    ("["     (color-token 'parenthesis (string->symbol lexeme)))
+    ("]"     (color-token 'parenthesis (string->symbol lexeme)))
+
+    ;; operators
+    (operator     (color-token 'other))
+
+    ;; boolean
+    ("true"
+     (color-token 'constant))
+    ("false"
+     (color-token 'constant))
+
+    ;; integers
+    (binary
+      (color-token 'constant))
+    (octal
+      (color-token 'constant))
+    (hexa
+      (color-token 'constant))
+    (decimal
+      (color-token 'constant))
+
+    ;; longs
+    ((re:: decimal long-suf)
+     (color-token 'constant))
+    ((re:: hexa long-suf)
+     (color-token 'constant))
+    ((re:: octal long-suf)
+     (color-token 'constant))
+
+    ;; floats
+    ((re:: (re:or float-a float-b float-c))
+     (color-token 'constant))
+    ((re:: (re:or float-a float-b float-c) float-suf)
+     (color-token 'constant))
+    ((re:: (re:or float-a float-b float-c) double-suf)
+     (color-token 'constant))
+
+    ;; chars
+    (char
+      (color-token 'constant))
+    ((re:: #\' escape-seq #\')
+     (color-token 'constant))
+
+    ;; strings
+    (string         (color-token 'string))
+
+    ;; webcolor
+    (web-color      (color-token 'constant))
+
+    ;; null
+    ("null"         (color-token 'constant))
+
+    ;; keywords
+    (keyword        (color-token 'hash-colon-keyword))
+
+    ;; identifiers
+    (identifier     (color-token 'symbol))
+
+    ;; used in require
+    ((re:: "require" (re:* (re:~ ";"))) (color-token 'symbol))
+
+    ;; terminator
+    ((eof)    (values lexeme 'eof #f #f #f))
+    (any-char (color-token 'error))))
+
+(define-syntax (color-token stx)
+  (syntax-case stx ()
+    [(_ category)
+     #'(color-token category #f)]
+    [(_ category paren)
+     (with-syntax ([lexeme    (datum->syntax stx
+                                             'lexeme)]
+                   [start-pos
+                     (datum->syntax
+                       stx
+                       'start-pos)]
+                   [end-pos
+                     (datum->syntax
+                       stx
+                       'end-pos)])
+       #'(values lexeme category paren
+                 (position-offset start-pos)
+                 (position-offset end-pos)))]))

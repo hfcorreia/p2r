@@ -91,6 +91,41 @@
     (apply raise-read-error (cons "Mixing Static and Active Mode" src-loc))
     (void node)))
 
+(define-syntax-rule
+  (p-function (id arg ...) body)
+  (begin
+    (provide id)
+    (define (id arg ...)
+      body)))
+
+(define-syntax p-if
+  (syntax-rules ()
+    [(_ condition alternative)
+     (when condition alternative)]
+    [(_ condition alternative consequent)
+     (if condition alternative consequent)]))
+
+(define-syntax p-loop
+  (syntax-rules ()
+    [(_  #:do test body)
+     (let do-loop ()
+       body
+       (when test
+         (do-loop)))]
+    [(_ #:while test body)
+     (let while-loop ()
+       (when test
+         body
+         (while-loop)))]
+    [(_ init test increment body)
+     (let for ()
+       init
+       (let for-loop ()
+         (when test
+           body
+           increment
+           (for-loop))))]))
+
 ;;; Arrays
 (define-syntax p-vector
   (syntax-rules ()

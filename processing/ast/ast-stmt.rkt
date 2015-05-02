@@ -302,9 +302,9 @@
          (define/override (->racket)
                           (->syntax-object
                             (if (null? else)
-                              `(when ,(node->racket test)
+                              `(p-if ,(node->racket test)
                                      ,(node->racket then))
-                              `(if ,(node->racket test)
+                              `(p-if ,(node->racket test)
                                  ,(node->racket then)
                                  ,(node->racket else)))))
 
