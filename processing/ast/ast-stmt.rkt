@@ -404,7 +404,7 @@
                           (->syntax-object
                             `(let/ec break
                                      ,(node->racket initialization)
-                                     (let for loop ()
+                                     (let for-loop ()
                                        (when ,(node->racket test)
                                          (let/ec continue ,(node->racket body))
                                          ,(node->racket increment)

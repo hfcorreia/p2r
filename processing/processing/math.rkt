@@ -148,6 +148,9 @@
 
 (define/types (random [float i] -> float)
   (orig-rand (inexact->exact i)))
+
+(define/types (random [float i] [float j] -> float)
+  (random i j))
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; randomGaussian
