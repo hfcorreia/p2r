@@ -25,7 +25,6 @@
 
 
 (define/types (render [Object f] [Object p1] [Object p2] [Object t]  -> void)
-   (render-dir "C:\\Users\\hugo\\render")
    (view-with-background p1 p2 t)
    (render-view f))
 
@@ -40,6 +39,9 @@
 
 (define/types (render-size [int w] [int h] -> void)
   (render-size w h))
+
+(define/types (render-dir [String dir] -> void)
+  (render-dir dir))
  #|;;; Generates a pdf using the tikz backend
  |(define (generateTikz [file-name "tmp"] [scale 1] [pdf-viewer "evince"])
  |  (define (tikz->tex str out)

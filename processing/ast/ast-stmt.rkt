@@ -258,7 +258,7 @@
 
          (define/override (->racket)
                           (->syntax-object
-                            `(define (,(build-mangled-id)
+                            `(p-function (,(build-mangled-id)
                                        ,@(node->racket args))
                                (let/ec return
                                       ,(node->racket body)))))
@@ -302,9 +302,9 @@
          (define/override (->racket)
                           (->syntax-object
                             (if (null? else)
-                              `(when ,(node->racket test)
+                              `(p-if ,(node->racket test)
                                      ,(node->racket then))
-                              `(if ,(node->racket test)
+                              `(p-if ,(node->racket test)
                                  ,(node->racket then)
                                  ,(node->racket else)))))
 
@@ -341,10 +341,10 @@
          (define/override (->racket)
                           (->syntax-object
                             `(let/ec break
-                                     (let loop ()
+                                     (let dowhile-loop ()
                                        (let/ec continue ,(node->racket body))
                                        (when ,(node->racket test)
-                                         (loop))))))
+                                         (dowhile-loop))))))
 
          (define/override (->type-check)
                           (node->type-check test)
@@ -371,10 +371,10 @@
          (define/override (->racket)
                           (->syntax-object
                             `(let/ec break
-                                     (let loop ()
+                                     (let while-loop ()
                                        (when ,(node->racket test)
                                          (let/ec continue ,(node->racket body))
-                                         (loop))))))
+                                         (while-loop))))))
 
          (define/override (->type-check)
                           (node->type-check test)
@@ -404,11 +404,11 @@
                           (->syntax-object
                             `(let/ec break
                                      ,(node->racket initialization)
-                                     (let loop ()
+                                     (let for-loop ()
                                        (when ,(node->racket test)
                                          (let/ec continue ,(node->racket body))
                                          ,(node->racket increment)
-                                         (loop))))))
+                                         (for-loop))))))
 
          (define/override (->type-check)
                           (node->type-check initialization)
@@ -463,6 +463,8 @@
          (inherit ->syntax-object set-scope! get-scope)
 
          (define/override (->racket)
+                          (displayln (send (send expr get-type) get-type))
+                          (displayln expr)
                           (->syntax-object
                             (if(null? expr)
                               `(return (void))
