@@ -463,6 +463,8 @@
          (inherit ->syntax-object set-scope! get-scope)
 
          (define/override (->racket)
+                          (displayln (send (send expr get-type) get-type))
+                          (displayln expr)
                           (->syntax-object
                             (if(null? expr)
                               `(return (void))

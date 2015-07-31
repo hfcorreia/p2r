@@ -119,7 +119,7 @@
 
 (define (object-type? type)
   (and (symbol? type)
-  (symbol=? type 'Object)))
+       (symbol=? type 'Object)))
 
 (define (array-type? type)
   (is-a? type array-type%))
@@ -131,8 +131,8 @@
 
   (and (eq? (send t1 get-dims) (send t2 get-dims))
        (if (or (object-type? (send t1 get-type)) (object-type?(send t1 get-type)))
-           #t
-       (primitive=? (send t1 get-type) (send t1 get-type)))))
+         #t
+         (primitive=? (send t1 get-type) (send t1 get-type)))))
 
 (define (primitive=? t1 t2)
   (symbol=? (send t1 get-type) (send t2 get-type)))
@@ -267,12 +267,13 @@
   (and (equal? (length args1) (length args2))
        (andmap type=? args1 args2)))
 
-;; signature-equals? (list/of type) (list/of type) -> bool
+;; signature-promotable? (list/of type) (list/of type) -> bool
 ;; checks the type signatures are compatible
 (define (signature-promotable? args1 args2)
   (and (equal? (length args1) (length args2))
        (andmap (lambda (t1 t2)
-                 (or (widening-primitive-conversion? t1 t2)
+                 (or (type=? t1 t2)
+                     (widening-primitive-conversion? t1 t2)
                      (object-conversion? t1 t2)))
                args2
                args1)))
