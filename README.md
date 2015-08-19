@@ -34,6 +34,9 @@ Check the examples for some ideas of how to use P2R.
   * Processing's object system and exceptions
   * Map Processing's runtime and primitives to Racket's
 
+## Known Issue
+Importing Rosetta in our implementation generates a `cannot instantiate 'racket/gui/base' a second time in the same process` warning which breaks DrRacket arrow/binding traking.
+
 ## Acknowledgments
 
 This work was partially supported by national funds through Fundação para a Ciência e a Tecnologia (FCT) with reference UID/CEC/50021/2013, and by the Rosetta project under contract PTDC/ATP-AQI/5224/2012.
