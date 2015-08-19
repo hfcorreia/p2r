@@ -130,9 +130,7 @@
 (define-syntax p-vector
   (syntax-rules ()
     [(_ (dim ...) init-val)
-     (make-n-vector (list dim ...) init-val)]
-    [(_ val ...)
-     (vector val ...)]))
+     (make-n-vector (list dim ...) init-val)]))
 
 ;;; Build an identifier
 (define-syntax p-name

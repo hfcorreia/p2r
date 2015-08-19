@@ -4,19 +4,16 @@
 
 (require racket/class
          "../util.rkt"
-         "runtime-bindings.rkt"
-         "objects.rkt")
+         "runtime-bindings.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define/types (print [Object . args] -> void)
-              (display
-                (build-seperated-string (map arg->string args) #\space)))
+(define/types (print [Object arg] -> void)
+              (display (arg->string arg)))
 
-(define/types (println [Object . args] -> void)
-              (displayln
-              (build-seperated-string (map arg->string args) #\space)))
+(define/types (println [Object arg] -> void)
+              (displayln (arg->string arg)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Aux procedures
@@ -29,6 +26,5 @@
             [(and (boolean? arg) arg) "true"]
             [(and (boolean? arg) (not arg)) "false"]
             [(void? arg)  ""]
-            [(is-a? arg PVector) (send arg toString)]
             [(not (null? arg)) arg]
             [else ""])))

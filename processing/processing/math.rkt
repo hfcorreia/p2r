@@ -16,12 +16,7 @@
 
 (require racket/math
          "runtime-bindings.rkt"
-         (rename-in racket/base
-                    [max orig-max]
-                    [min orig-min]
-                    [random orig-rand]
-                    [map orig-map]))
-
+         racket/base)
 
 (define/types (abs [float n] -> float)
               (abs n))
@@ -30,7 +25,7 @@
               (abs n))
 
 (define/types (ceil [float n] -> int)
-   (inexact->exact (ceiling n)))
+              (inexact->exact (ceiling n)))
 
 (define/types (dist [float x1] [float y1] [float x2] [float y2] -> float)
               (sqrt (+ (expt (- x2 x1) 2) (expt (- y2 y1) 2))))
@@ -56,66 +51,51 @@
 (define/types (sin [float val] -> float)
               (sin val))
 
+(define/types (max [int a] [int b] -> int)
+              (max a b))
 
-(define-syntax max
-  (syntax-rules ()
-    [(_ array)
-     (apply orig-max (vector->list array))]
-    [(_ elem elem2 ...)
-     (orig-max elem elem2 ...)]))
+(define/types (min [int a] [int b] -> int)
+              (min a b))
 
-(define-syntax min
-  (syntax-rules ()
-    [(_ array)
-     (apply orig-min (vector->list array))]
-    [(_ elem elem2 ...)
-     (orig-min elem elem2 ...)]))
+(define/types (max [float a] [float b] -> float)
+              (max a b))
 
-(define (pow b e)
+(define/types (min [float a] [float b] -> float)
+              (min a b))
+
+(define/types (pow [float b] [float e] -> float)
   (expt b e))
 
-(define (sq n)
-  (* n n))
+(define/types (sq [float n] -> float) (* n n))
 
-(define (radian ang)
-  (degrees->radians ang))
+(define/types (radian [float ang] -> float) (degrees->radians ang))
 
-(define (degrees ang)
-  (radians->degrees ang))
+(define/types (degrees [float ang] -> float) (radians->degrees ang))
 
-
-(define (lerp a b t)
+(define/types (lerp [float a] [float b] [float t] -> float)
   (+  a (* t (- b a))))
 
-(define-syntax mag
-  (syntax-rules ()
-    [(_ a b)
-     (sqrt (+ (sq a) (sq b)))]
-    [(_ a b c)
-     (sqrt (+ (sq a) (sq b) (sq c)))]))
+(define/types (mag [float a] [float b] -> float)
+              (sqrt (+ (* a a) (* b b))))
 
-(define-syntax map
-  (syntax-rules ()
-    [(_ value start1 stop1 start2 stop2)
-     (+ start2
-        (/ (* (- stop2 start2)
-              (- value start1))
-           (- stop1 start1)))]
-    [(_ func lst ...)
-     (orig-map func lst ...)]))
+(define/types (mag [float a] [float b] [float c] -> float)
+              (sqrt (+ (* a a) (* b b) (* c c))))
 
-(define (norm value low high)
-  (/ (- value low) (- high low)))
+(define/types (map [float value] [float start1] [float stop1] [float start2] [float stop2] -> float)
+              (+ start2
+                 (/ (* (- stop2 start2) (- value start1))
+                    (- stop1 start1))))
 
-(define (atan2 x y)
-  (atan x y))
+(define/types (norm [float value] [float low] [float high] -> float)
+              (/ (- value low) (- high low)))
 
-
+(define/types (atan2 [float x] [float y] -> float)
+              (atan x y))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; random
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (define current-random-generator
-  (lambda () (orig-rand (make-pseudo-random-generator))))
+  (lambda () (random (make-pseudo-random-generator))))
 
 (define (int-generator [i1 null] [i2 null])
   (let ([a (if (null? i1) 362436069 i1)]
@@ -137,7 +117,7 @@
     (let ([i (/ (int-generator i1 i2) 4294967296)])
       (if (< i 0) (+ i 1) i))))
 
-(define (random [i1 null] [i2 null])
+(define (rand [i1 null] [i2 null])
   (cond
     [(null? i1) (current-random-generator)]
     [(null? i2) (* i1 (current-random-generator))]
@@ -147,11 +127,11 @@
   (set! current-random-generator (double-generator seed)))
 
 (define/types (random [float i] -> float)
-  (orig-rand (inexact->exact i)))
+              (random (inexact->exact i)))
 
 (define/types (random [float i] [float j] -> float)
-  (random i j))
-  
+              (rand i j))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; randomGaussian
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -170,9 +150,9 @@
         (set! next-gaussian null)
         w)
       (let loop ()
-        (set! x1 (- (* 2.0 (orig-rand)) 1))
-        (set! x2 (- (* 2.0 (orig-rand (make-pseudo-random-generator))) 1))
-        (set! w  (+ (sq x1) (sq x2)))
+        (set! x1 (- (* 2.0 (random)) 1))
+        (set! x2 (- (* 2.0 (random (make-pseudo-random-generator))) 1))
+        (set! w  (+ (* x1 x1) (* x2 x2)))
         (if (>= w 1.0)
           (loop)
           (let ([val (calculate-random w)])
@@ -186,14 +166,14 @@
 
 (define octaves 4)
 (define fallout 0.5)
-(define seed (orig-rand 200000))
+(define seed (random 200000))
 
 (define (generate-permutations)
   (define p (make-vector 512))
   (for ([i 256])
     (vector-set! p i i))
   (for ([i 256])
-    (let* ([j  (orig-rand 256)]
+    (let* ([j  (random 256)]
            [t (vector-ref p j)])
       (vector-set! p j (vector-ref p i))
       (vector-set! p i t)))
@@ -205,8 +185,11 @@
 (define (fade t)
   (* t t t (+ (* t (- (* t 6.0) 15.0)) 10.0)))
 
+(define (lerp  a b t) (+  a (* t (- b a))))
+
 (define (noise1D x)
   (define perm (generate-permutations))
+
   (define (grad1D i x)
     (if (bitwise-bit-set? (bitwise-and i #x01) 0) (- x) x))
   (let* ([X  (bitwise-and (exact-floor x) 255)]
@@ -300,25 +283,25 @@
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
-                 ([i octaves])
-                 (set! effect (* effect fallout))
-                 (set! k (* k 2))
-                 (+ sum (* effect (/ (+ 1 (noise1D (* k x)) 2))))))]
+         ([i octaves])
+         (set! effect (* effect fallout))
+         (set! k (* k 2))
+         (+ sum (* effect (/ (+ 1 (noise1D (* k x)) 2))))))]
     [(_ x y)
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
-                 ([i octaves])
-                 (set! effect (* effect fallout))
-                 (set! k (* k 2))
-                 (+ sum (/ (+ 1 (noise2D (* k x) (* k y)) 2)))))]
+         ([i octaves])
+         (set! effect (* effect fallout))
+         (set! k (* k 2))
+         (+ sum (/ (+ 1 (noise2D (* k x) (* k y)) 2)))))]
     [(_ x y z)
      (let ([k 0.5]
            [effect 1])
        (for/fold ([sum 0])
-                 ([i octaves])
-                 (set! effect (* effect fallout))
-                 (set! k (* k 2))
-                 (+ sum (/ (+ 1 (noise3D (* k x) (* k y) (* k z)))2))))]))
+         ([i octaves])
+         (set! effect (* effect fallout))
+         (set! k (* k 2))
+         (+ sum (/ (+ 1 (noise3D (* k x) (* k y) (* k z)))2))))]))
 
 

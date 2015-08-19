@@ -79,15 +79,19 @@
 
          (define/public (get-dims) dims)
 
+         (define/public (get-element-type)
+                        (if (eq? dims 1)
+                          (create-type (send type get-type))
+                          (create-type (create-type (send type get-type)) (- dims 1))))
+
          (super-instantiate ())))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; create-type: symbol -> type%
 ;; Simplyfies the type creation
 (define-syntax create-type
   (syntax-rules ()
     [(_ symbol) (make-object primitive-type% symbol)]
-    [(_ symbol dim) (make-object array-type% dim symbol)]))
+    [(_ type dim) (make-object array-type% dim type)]))
 
 ;; create-types: (listof symbol) -> type%
 ;; Simplyfies of a list of types
@@ -128,7 +132,6 @@
   (is-a? type reference-type%))
 
 (define (array=? t1 t2)
-
   (and (eq? (send t1 get-dims) (send t2 get-dims))
        (if (or (object-type? (send t1 get-type)) (object-type?(send t1 get-type)))
          #t
@@ -286,3 +289,4 @@
 (define (primitive-promotable? t1 t2)
   (or (type=? t1 t2)
       (widening-primitive-conversion? t1 t2)))
+

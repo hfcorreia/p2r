@@ -7,7 +7,6 @@
          syntax/readerr
          racket/undefined
 
-         "todo.rkt"
          "mode.rkt"
 
          "lexer.rkt"
@@ -460,8 +459,9 @@
         ;; Array init
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (<array-initializer>
-          [(l-cbrack <var-initializers> r-cbrack) (reverse $2)]
-          [(l-cbrack r-cbrack) null])
+          [(l-cbrack <var-initializers> r-cbrack)
+           (make-object array-init% (reverse $2) (build-src 2))]
+          [(l-cbrack r-cbrack) (make-object array-init% null (build-src 2))])
 
         (<var-initializers>
           [(<var-initializer>)
@@ -507,6 +507,7 @@
         (<var-initializer>
           [(<expr>) $1]
           [(<array-initializer>) $1])
+
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Statements
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

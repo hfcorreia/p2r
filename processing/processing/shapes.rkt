@@ -2,11 +2,8 @@
 
 (provide (all-defined-out))
 
-(require "runtime-bindings.rkt")
-
-
-(require (prefix-in ros- (planet aml/rosetta)))
-
+(require (prefix-in ros- (planet aml/rosetta))
+         "runtime-bindings.rkt")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; 2D Shapes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -94,7 +91,7 @@
   (ros-cyl r th fi))
 
 ;;; box : -> void
-;;; unary rectangular cuboid from the bottom-left corner 
+;;; unary rectangular cuboid from the bottom-left corner
 (define/types (box -> Object)
   (ros-box))
 
@@ -113,7 +110,7 @@
 (define/types (right-cuboid [Object p1] [float dx] [float dy] [float dz] -> Object)
   (ros-right-cuboid p1 dx dy dz))
 
-;;; cuboid : xyz ... xyz -> void 
+;;; cuboid : xyz ... xyz -> void
 ;;; cuboid based on 4 top vertices and 4 bot vertices
 (define/types (cuboid [Object b1] [Object b2] [Object b3] [Object b4] [Object t1] [Object t2] [Object t3] [Object t4] -> Object)
   (ros-cuboid b1 b2 b3 b4 t1 t2 t3 t4))
@@ -152,7 +149,6 @@
 ;;; given the base center, bottom radius , top center and top radius
 (define/types (cone-frustum [Object b] [float r1] [Object t] [float r2] -> Object)
   (ros-cone-frustum b r1 t r2))
-
 
 ;;; pyramid : int xyz float float float -> void
 ;;; takes the number of sides, base point, base radius, initial angle and height

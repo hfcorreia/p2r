@@ -502,16 +502,16 @@
          (define/override (->racket)
                           (->syntax-object
                             (if (not (null? initializer))
-                              `(p-vector ,@(node->racket initializer))
+                              (node->racket initializer)
                               `(p-vector ,(node->racket dim-expr)
                                          ,(initial-value)))))
 
          (define/override (->type-check)
                           (check-dims)
-                          (check-initializer)
-                          (set-type! (create-type type
-                                                  (+ (length dim-expr)
-                                                     dims))))
+                          (set-type! (create-type type (+ (length dim-expr) dims)))
+                          (unless (null? initializer)
+                            (send initializer set-type! (send this get-type))
+                            (node->type-check initializer)))
 
          (define/override (->bindings scope)
                           (node->bindings dim-expr scope)
@@ -536,22 +536,49 @@
                     (boolean-conversion-error x (send x get-type))))
                 dim-expr))
 
-         (define  (check-initializer)
-           (unless (null? initializer)
-             (node->type-check initializer)
-             (map (lambda (x)
-                    (let ([expr-type (send x get-type)])
-                      (if (primitive-promotable?  type expr-type)
-                        (send x set-type! type)
-                        (type-conversion-error x expr-type type))))
-                  initializer)))
-
 
          (define/override (->print)
                           `(new-array% ,(send type get-type)
                                        ,(node->print dim-expr)
                                        ,dims
                                        ,(node->print initializer)))
+
+         (super-instantiate ())))
+
+(define array-init%
+  (class expression%
+         (init-field initializer)
+
+         (inherit ->syntax-object set-scope!)
+
+         (define/override (->racket)
+                          (->syntax-object
+                            `(vector ,@(node->racket initializer))))
+
+         (define/override (->type-check) (check-init))
+
+         (define/override (->bindings scope)
+                          (node->bindings initializer scope)
+                          (set-scope! scope))
+
+         (define (check-init)
+           (unless (null? initializer)
+             (let ([type (send this get-type)])
+               (map (lambda (x)
+                      (if (array-type? type)
+                        (begin
+                          (send x set-type! (send type get-element-type))
+                          (node->type-check x))
+                        (begin
+                          (node->type-check x)
+                          (let ([expr-type (send x get-type)])
+                            (if (primitive-type? type expr-type)
+                              (send x set-type! type)
+                              (type-conversion-error x expr-type type))))))
+                    initializer))))
+
+         (define/override (->print)
+                          `(array-init% ,(node->print initializer)))
 
          (super-instantiate ())))
 
@@ -571,7 +598,7 @@
 
          (define/override (->type-check)
                           (node->type-check id)
-                          (set-type! (send id get-type))
+                          (set-type! (send (send id get-type) get-type))
                           (check-expr))
 
          (define/override (->bindings scope)

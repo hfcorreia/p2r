@@ -26,7 +26,7 @@
      (add-binding (get-runtime) (null type : id))]
     [(_ id types ret-type)
      (add-binding (get-runtime) (null id types) -> (ret-type null))]))
-  
+
 (define-syntax (define/types stx)
   (syntax-case stx ()
     [(_ (id -> ret-type) body ...)
@@ -36,17 +36,6 @@
        #'(begin
            (runtime-add (build-id #'id) null (create-type 'type))
            (define (new-id) body ...)))]
-    [(_ (id [type . arg] -> ret-type) body ...)
-     (with-syntax
-         ([new-id
-           (datum->syntax stx
-                          (mangle-function-id
-                           (syntax-e #'id)
-                           (list (syntax-e #'type))))])
-       #'(begin
-          (runtime-add (build-id #'id) (create-types (list 'type)) (create-type 'ret-type))
-           (define (new-id . arg)
-           body ...)))]
     [(_ (id [type arg] ... -> ret-type) body ...)
      (with-syntax
          ([new-id
