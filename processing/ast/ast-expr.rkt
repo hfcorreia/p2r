@@ -613,4 +613,32 @@
 
          (define/override (->print)
                           `(array-acces% ,(node->print id) ,(node->print expr)))
+
+         (super-instantiate ())))
+
+(define array-length%
+  (class expression%
+         (init-field id)
+
+         (define/public (get-list) (send id get-list))
+         (define/public (get-id-type) (send id get-id-type))
+
+         (inherit ->syntax-object set-scope!)
+
+         (define/override (->racket)
+                          (->syntax-object
+                            `(vector-length ,(node->racket id))))
+
+         (define/override (->type-check)
+                          (node->type-check id)
+                          (unless (array-type? (send id get-type))
+                            (array-type-error id (send id get-id))))
+
+         (define/override (->bindings scope)
+                          (set-scope! scope)
+                          (node->bindings id scope))
+
+         (define/override (->print)
+                          `(array-length ,(node->print id)))
+
          (super-instantiate ())))

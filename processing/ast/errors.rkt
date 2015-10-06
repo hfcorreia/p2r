@@ -34,6 +34,9 @@
           (format "The operator ~a is undefined for argument types(s) ~a"
                   op t))))
 
+(define (array-type-error obj id)
+  (send obj read-error  (format "~a is not of type array." id)))
+
 (define (binding-not-found obj id)
   (send obj read-error (format "Cannot find anything named \"~a\"" id)))
 

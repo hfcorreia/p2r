@@ -40,8 +40,8 @@
 ;;; compile-processing : ast -> (listof syntax-object?)
 ;;; generates the list of syntax-objects based on the ast
 (define (compile-processing ast scope)
-  ;; (pretty-display (node->print ast))
-   ;;(pretty-display (send scope get-scope))
+  ;;(pretty-display (node->print ast))
+  ;;(pretty-display (send scope get-scope))
   (bindings-check ast scope)
   (type-check ast)
   (node->racket ast))

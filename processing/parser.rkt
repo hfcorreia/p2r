@@ -196,10 +196,12 @@
 
         (<qualified-name>
           [(<name> period identifier)
-           (make-object identifier%
-                        (append (list (send $1 get-id)) (send $1 get-list))
-                        $3
-                        (build-src 1 3))])
+           (if (equal? $3 "length")
+             (make-object array-length% $1 (build-src 1 3))
+             (make-object identifier%
+                          (append (list (send $1 get-id)) (send $1 get-list))
+                          $3
+                          (build-src 1 3)))])
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; Compilation unit
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
