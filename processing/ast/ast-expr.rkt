@@ -563,7 +563,7 @@
 
          (define (check-init)
            (unless (null? initializer)
-             (let ([type (send this get-type)])
+             (let ([type (send (send this get-type) get-element-type)])
                (map (lambda (x)
                       (if (array-type? type)
                         (begin
@@ -572,7 +572,7 @@
                         (begin
                           (node->type-check x)
                           (let ([expr-type (send x get-type)])
-                            (if (primitive-type? type expr-type)
+                            (if (primitive=? type expr-type)
                               (send x set-type! type)
                               (type-conversion-error x expr-type type))))))
                     initializer))))
@@ -623,7 +623,7 @@
          (define/public (get-list) (send id get-list))
          (define/public (get-id-type) (send id get-id-type))
 
-         (inherit ->syntax-object set-scope!)
+         (inherit ->syntax-object set-scope! set-type!)
 
          (define/override (->racket)
                           (->syntax-object
@@ -631,6 +631,7 @@
 
          (define/override (->type-check)
                           (node->type-check id)
+                          (set-type! (create-type 'int))
                           (unless (array-type? (send id get-type))
                             (array-type-error id (send id get-id))))
 

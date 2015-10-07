@@ -170,6 +170,7 @@
          (define/override (->type-check)
                           (map (lambda (var)
                                  (send (car var) set-type! type) ; set types
+                                 (send (cadr var) set-type! type)
                                  (node->type-check (cadr var))
                                  (check-node-type (cadr var)))
                                vars))
